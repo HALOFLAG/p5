@@ -5,7 +5,7 @@
 //   persistence: transient | persistent | sticky | pinned   （sticky M3 後啟用）
 //   interaction: display | advance | choice | timed_choice  （timed_choice M3 後啟用）
 //
-// schema 完整定義見 BUBBLE_TYPES.md / SPECIFICATION.md §2.3
+// schema 完整定義見 文件/對話氣泡類型.md / 文件/技術規格.md §2.3
 // 預設值：type=speech, persistence=transient, interaction=advance, auto_close_ms=12000
 
 const TYPING_SPEED_MS = 30;

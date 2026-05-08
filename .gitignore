@@ -5,9 +5,6 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json.bak
 
-# ─── Portable Node（37MB，不入 git）──────────────────────────
-tools/node/
-
 # ─── 打包輸出 ────────────────────────────────────────────────
 dist/
 out/
