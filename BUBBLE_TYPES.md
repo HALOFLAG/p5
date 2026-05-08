@@ -35,12 +35,21 @@
 
 ### 維度 2 — 持續性（怎麼關？）
 
-| 類型 | 怎麼關 | 用途 |
+| 類型 | 怎麼關 | 多句行為 | 用途 |
+|---|---|---|---|
+| **Transient 短暫** | 12 秒自動關 / 點完關 | 點過所有句後自動關閉 | 一般對話（M2 預設） |
+| **Persistent 持續** | **只能 ✕ / ESC 關** | **循環顯示**（最後一句點本體 → 回第一句重來） | 循環提醒（喝水、伸懶腰…）、互動式重複 |
+| **Sticky 條件解除** | 條件解除才關（如「離開閒置」） | — | 狀態指示 |
+| **Pinned 釘選** | **只能 ✕ / ESC 關**；點本體無作用 | 不循環、停在第一句 | 靜態狀態指示器（DND 啟用中…） |
+
+**Persistent vs Pinned 的核心差異**：
+
+| | Persistent | Pinned |
 |---|---|---|
-| **Transient 短暫** | 12 秒自動關 / 點完關 | 一般對話（M2 預設） |
-| **Persistent 持續** | 只能使用者點關（無自動） | 重要訊息、選項詢問 |
-| **Sticky 條件解除** | 條件解除才關（如「離開閒置」） | 狀態指示 |
-| **Pinned 釘選** | 直到使用者主動關 | 重要提醒 |
+| 點本體 | 推進 / 循環 | **無作用** |
+| 多句循環 | ✓ | ✗ |
+| 視覺 | 一般 | 左上角有 📌 |
+| 適合場景 | 想讓使用者反覆看不同提醒 | 想讓使用者意識到某狀態正啟用 |
 
 ### 維度 3 — 互動方式（使用者怎麼回應？）
 
@@ -48,8 +57,20 @@
 |---|---|---|
 | **Display 純顯示** | 沒互動，看了就好 | 想法、旁白、系統訊息 |
 | **Advance 點擊推進** | 點氣泡推進序列（M2 預設） | 標準對話 |
-| **Choice 選項分支** | 2-4 顆按鈕 → 分支 | 「要休息嗎？要 / 不要」 |
+| **Choice 選項分支** | 2-4 顆按鈕 → 分支 | 「要休息嗎？要 / 不要 / 等等再說」 |
+| **Binary Split 二元分區** | 氣泡內左/右兩區，hover 變色，點區即選 | 嚴格二元（是/否、接受/拒絕） |
 | **Timed Choice 時間敏感** | 倒數內回應 → 分支；超時也分支 | 快回 / 慢回 / 不回 各自不同台詞 |
+
+#### Choice vs Binary Split 何時用哪個？
+
+| 場景 | 建議 |
+|---|---|
+| 2-4 個選項、不對立 | Choice（多按鈕） |
+| **嚴格二元、語意對立**（同意/拒絕、是/否） | Binary Split（左綠右紅，視覺立即可懂） |
+| 選項標籤長 | Choice |
+| 選項是 1-3 字短詞 | 任一皆可 |
+| 重要決定要慎重 | Choice（按鈕分明，不易誤觸） |
+| 高頻日常二元 | Binary Split（節省垂直空間） |
 
 ### 維度 4 — 觸發/出現條件
 
@@ -143,17 +164,19 @@
 
 ## 5. 已採路線：Path A（2026-05-08 確認）
 
-### M2.5 範圍（1.5–2 天）
+### M2.5 範圍（含 B1，~2 天）
 
 **新增類型**：
 - type: speech / thought / narration / system / whisper
 - persistence: transient（既有）/ persistent / pinned
-- interaction: display / advance（既有）/ choice
+- interaction: display / advance（既有）/ choice / **binary_split**
 
 **M2.5 不做**（推到 M3 後）：
 - Sticky（依賴 trigger engine 的條件追蹤）
 - Timed Choice（高互動複雜度）
 - Schedule trigger（可在 M3 後一起做）
+- Inline 詞點擊（待評估，與 M7 prompt 工程一起設計）
+- 速度判定（待評估，與 timed_choice 一起設計）
 
 ### 視覺規格（M2.5 實作目標）
 
@@ -170,14 +193,21 @@
 ```jsonc
 // M2.5 階段，schema 完整存在但只實作部分行為
 {
-  "type": "thought",          // ✓ 完全支援
-  "persistence": "persistent", // ✓ 完全支援
-  "interaction": "choice",     // ✓ 完全支援
-  "choices": [...],            // ✓ 完全支援
+  "type": "thought",            // ✓ 完全支援
+  "persistence": "persistent",  // ✓ 完全支援
+  "interaction": "choice",      // ✓ 完全支援
+  "choices": [...],             // ✓ 完全支援
+
+  // 或：
+  "interaction": "binary_split", // ✓ 完全支援
+  "binary": {                   // ✓ 完全支援
+    "left":  { "label": "好啊", "next": "..." },
+    "right": { "label": "不要", "next": null }
+  },
 
   // M2.5 階段這些欄位「可寫但暫不啟用」
-  "until": {...},              // ⏳ M3 後啟用
-  "time_branches": [...]       // ⏳ M3 後啟用
+  "until": {...},               // ⏳ M3 後啟用
+  "time_branches": [...]        // ⏳ M3 後啟用
 }
 ```
 

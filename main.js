@@ -237,8 +237,10 @@ const DEMO_SEQUENCES = {
     type: 'speech',
     persistence: 'persistent',
     lines: [
-      { text: '這是持續氣泡，點 ✕ 才會關', expression: 'idle' },
-      { text: '它沒有自動關計時器', expression: 'idle' },
+      { text: '這是持續氣泡，會循環提醒', expression: 'idle' },
+      { text: '別忘了喝口水', expression: 'idle' },
+      { text: '起身伸個懶腰也好', expression: 'idle' },
+      { text: '點 ✕ 才會關閉', expression: 'idle' },
     ],
   },
   pinned: {
@@ -279,6 +281,30 @@ const DEMO_SEQUENCES = {
     auto_close_ms: 4000,
     lines: [
       { text: '（已切換到請勿打擾）' },
+    ],
+  },
+
+  // ── M2.5 interaction=binary_split（二元分區，左綠右紅）──
+  binary: {
+    sequenceId: 'demo_binary',
+    type: 'speech',
+    persistence: 'persistent',
+    interaction: 'binary_split',
+    lines: [
+      { text: '你要休息一下嗎？', expression: 'idle' },
+    ],
+    binary: {
+      left:  { label: '好啊',  next: 'rest_path' },
+      right: { label: '不要',  next: 'binary_decline' },
+    },
+  },
+  binary_decline: {
+    sequenceId: 'binary_decline',
+    type: 'thought',
+    interaction: 'display',
+    auto_close_ms: 4000,
+    lines: [
+      { text: '（哼，那就隨便你⋯⋯）' },
     ],
   },
 };

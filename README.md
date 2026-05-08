@@ -26,6 +26,7 @@
 | **[SPECIFICATION.md](SPECIFICATION.md)** v1.1 | 技術契約（**怎麼做**） | 寫程式時的 source of truth |
 | **[MILESTONES.md](MILESTONES.md)** v1.1 | 時程與交付（**何時**） | 排工作、驗收 |
 | [BUBBLE_TYPES.md](BUBBLE_TYPES.md) v1.0 | 對話氣泡多型態分析 | M2.5 / M7 prompt 撰寫前 |
+| [INSPIRATIONS.md](INSPIRATIONS.md) v1.0 | 業界對話 UI 設計參考與未來考慮點 | 體感發現痛點時 / M7 prompt 工程 |
 | [STAKEHOLDER_ANALYSIS.md](STAKEHOLDER_ANALYSIS.md) v1.0 | 三方視角分析 | 商業可行性回顧 |
 | [PRIVACY_ANALYSIS.md](PRIVACY_ANALYSIS.md) v1.0 | 隱私威脅與緩解 | 隱私功能設計 / 商業化合規評估 |
 | [CLAUDE.md](CLAUDE.md) | 工作流程規則 | — |

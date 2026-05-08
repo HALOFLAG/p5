@@ -92,6 +92,7 @@
   position: absolute;
   top: 4px;
   right: 6px;
+  z-index: 2;             /* 必須 > body 才能接到點擊 */
   width: 22px;
   height: 22px;
   padding: 0;
@@ -123,9 +124,11 @@
   position: absolute;
   top: 4px;
   left: 6px;
+  z-index: 2;             /* 與 close 同層；確保視覺上不被 body 蓋住 */
   font-size: 11px;
   opacity: 0.7;
   display: none;
+  pointer-events: none;   /* 純視覺，不接收滑鼠事件 */
 }
 
 .bubble[data-persistence="pinned"] .bubble-pin {
@@ -175,6 +178,52 @@
 }
 
 .bubble-choice:active {
+  transform: translateY(1px);
+}
+
+/* B1 — 二元分區（interaction=binary_split） */
+.bubble-binary {
+  display: none;
+  flex-direction: row;
+  margin: 6px 12px 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.bubble[data-interaction="binary_split"] .bubble-binary {
+  display: flex;
+}
+
+.bubble-binary-zone {
+  flex: 1 1 0;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.bubble-binary-zone + .bubble-binary-zone {
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.bubble-binary-zone[data-side="left"]:hover {
+  background: rgba(110, 190, 130, 0.28);
+  color: #d8f4d8;
+}
+
+.bubble-binary-zone[data-side="right"]:hover {
+  background: rgba(210, 130, 130, 0.28);
+  color: #f4d8d8;
+}
+
+.bubble-binary-zone:active {
   transform: translateY(1px);
 }
 

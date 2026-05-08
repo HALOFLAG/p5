@@ -234,13 +234,14 @@ Schema 修改範圍：見 [SPECIFICATION.md §2.3](SPECIFICATION.md)（v2 schema
 
 #### 持續性（3 種）
 - [ ] **transient**（既有）：12 秒自動關
-- [ ] **persistent**：不自動關，必須有右上 ✕ 鈕、ESC 關閉
-- [ ] **pinned**：類似 persistent，但加上「釘選」icon 提示
+- [ ] **persistent**：不自動關，**多句循環**（最後一句點本體回第一句）；只能 ✕ / ESC 關
+- [ ] **pinned**：不自動關，**點本體無作用**（不循環、不推進）；只能 ✕ / ESC 關；左上有 📌
 
-#### 互動方式（3 種，加既有 1 種）
+#### 互動方式（4 種，加既有 1 種）
 - [ ] **display**（既有 logic）：點擊不推進，自動關或手動關
 - [ ] **advance**（既有）
 - [ ] **choice**：氣泡下方多按鈕，選一個觸發 next
+- [ ] **binary_split**：氣泡內左/右二分，hover 左綠右紅，點區即選；專為「是/否」嚴格二元場景
 
 #### Schema 完整性
 - [ ] dialogues.json 升 `$schema: "v2"`，舊 v1 欄位向下相容
@@ -259,11 +260,17 @@ Schema 修改範圍：見 [SPECIFICATION.md §2.3](SPECIFICATION.md)（v2 schema
 | T2.5.2 | narration 視覺 | 觸發 narration，無尾巴、斜體 |
 | T2.5.3 | system 視覺 | 觸發 system，有 ⚙ icon、藍底等寬字 |
 | T2.5.4 | persistent 不自動關 | 觸發 persistent 範例 → 60 秒不動仍在 |
-| T2.5.5 | persistent 手動關 | 點 ✕ 或按 ESC 可關 |
+| T2.5.5a | persistent 循環 | 點本體推進到最後一句，再點 → 回到第一句重新打字 |
+| T2.5.5b | persistent 手動關 | 點 ✕ 或按 ESC 可關（點本體不會關） |
+| T2.5.5c | pinned 點本體無作用 | 觸發 pinned → 點氣泡本體任何位置（非 ✕）→ 無反應 |
+| T2.5.5d | pinned 手動關 | 點 ✕ 或按 ESC 可關 |
 | T2.5.6 | choice 多按鈕 | 觸發 choice 範例 → 看到 3 個按鈕；hover 高亮；點下後氣泡關 |
 | T2.5.7 | choice → next | 選項有 next 時，新氣泡接著出現 |
-| T2.5.8 | schema 向下相容 | 用 M2 舊格式 sequence（無 type 欄位）仍能正常顯示為 speech |
-| T2.5.9 | 視覺切換無殘留 | 從 speech 跳到 thought 再跳回 speech，無樣式殘留 |
+| T2.5.8 | binary_split 視覺 | 觸發 binary 範例 → 氣泡內有左/右兩區（中間一條分隔線） |
+| T2.5.9 | binary_split hover | hover 左半變綠、右半變紅 |
+| T2.5.10 | binary_split → next | 點「好啊」→ 接續顯示 rest_path；點「不要」→ 接續顯示 binary_decline |
+| T2.5.11 | schema 向下相容 | 用 M2 舊格式 sequence（無 type 欄位）仍能正常顯示為 speech |
+| T2.5.12 | 視覺切換無殘留 | 從 speech 跳到 thought 再跳回 speech，無樣式殘留 |
 
 ### 風險與緩解
 

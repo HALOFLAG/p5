@@ -14,7 +14,7 @@ const ANCHOR_GAP_PX = 12;
 
 const VALID_TYPES = ['speech', 'thought', 'narration', 'system', 'whisper'];
 const VALID_PERSISTENCE = ['transient', 'persistent', 'sticky', 'pinned'];
-const VALID_INTERACTION = ['display', 'advance', 'choice', 'timed_choice'];
+const VALID_INTERACTION = ['display', 'advance', 'choice', 'timed_choice', 'binary_split'];
 
 class SpeechBubble {
   constructor(rootEl, callbacks = {}) {
@@ -25,6 +25,7 @@ class SpeechBubble {
     this.cursorEl = rootEl.querySelector('.bubble-cursor');
     this.closeBtn = rootEl.querySelector('.bubble-close');
     this.choicesEl = rootEl.querySelector('.bubble-choices');
+    this.binaryEl = rootEl.querySelector('.bubble-binary');
 
     this.callbacks = {
       onAdvance: callbacks.onAdvance || (() => {}),
@@ -51,7 +52,8 @@ class SpeechBubble {
     // 主體點擊推進（advance / typing 跳完整句）
     this.body.addEventListener('click', (e) => {
       if (e.target.closest('.bubble-close')) return; // 關閉鈕另處理
-      if (e.target.closest('.bubble-choice')) return; // 選項另處理
+      if (e.target.closest('.bubble-choice')) return; // choice 按鈕另處理
+      if (e.target.closest('.bubble-binary-zone')) return; // binary 分區另處理
       e.stopPropagation();
       this._handleBodyClick();
     });
@@ -83,6 +85,7 @@ class SpeechBubble {
 
     // 處理 choice 按鈕
     this._renderChoices(this.sequence.choices || []);
+    this._renderBinary(this.sequence.binary || null);
 
     this._reposition();
     this.root.classList.remove('hidden');
@@ -145,6 +148,12 @@ class SpeechBubble {
       out.interaction = 'choice';
     }
 
+    // binary_split 校驗
+    if (out.interaction === 'binary_split' && !out.binary) {
+      console.warn('[bubble] interaction=binary_split 但無 binary 欄位，退回 advance');
+      out.interaction = 'advance';
+    }
+
     // interaction=display 強制不顯示游標、提示
     return out;
   }
@@ -177,6 +186,42 @@ class SpeechBubble {
       action: choice.action ?? null,
     });
     // 選後立刻關氣泡；後續是否展示 next 由 main 決定
+    this.dismiss('choice_selected');
+  }
+
+  _renderBinary(binary) {
+    this.binaryEl.innerHTML = '';
+    if (!binary) return;
+    if (this.sequence.interaction !== 'binary_split') return;
+
+    const left = this._createBinaryZone('left', binary.left);
+    const right = this._createBinaryZone('right', binary.right);
+    if (left) this.binaryEl.appendChild(left);
+    if (right) this.binaryEl.appendChild(right);
+  }
+
+  _createBinaryZone(side, config) {
+    if (!config) return null;
+    const zone = document.createElement('button');
+    zone.type = 'button';
+    zone.className = 'bubble-binary-zone';
+    zone.dataset.side = side;
+    zone.textContent = config.label || (side === 'left' ? '是' : '否');
+    zone.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this._handleBinaryChoice(side, config);
+    });
+    return zone;
+  }
+
+  _handleBinaryChoice(side, config) {
+    const seqId = this.sequence?.sequenceId;
+    this.callbacks.onChoiceSelected({
+      sequenceId: seqId,
+      side,
+      next: config.next ?? null,
+      action: config.action ?? null,
+    });
     this.dismiss('choice_selected');
   }
 
@@ -222,8 +267,10 @@ class SpeechBubble {
     // display 類型不顯示 hint（沒有「下一句」概念）
     if (this.sequence.interaction !== 'display') {
       const isLast = this.lineIndex === this.sequence.lines.length - 1;
-      // choice 互動最後一句不需要提示符
-      if (this.sequence.interaction === 'choice' && isLast) {
+      // choice / binary_split 互動最後一句不需要提示符（讓使用者選）
+      const isInteractive = this.sequence.interaction === 'choice' ||
+                             this.sequence.interaction === 'binary_split';
+      if (isInteractive && isLast) {
         this.hintEl.classList.remove('show');
       } else {
         this.hintEl.textContent = isLast ? '▶' : '▼';
@@ -246,8 +293,17 @@ class SpeechBubble {
     } else if (this.state === 'waiting') {
       const isLast = this.lineIndex === this.sequence.lines.length - 1;
       if (isLast) {
-        if (this.sequence.interaction === 'choice') {
-          // choice 不靠點本體關閉
+        if (this.sequence.interaction === 'choice' || this.sequence.interaction === 'binary_split') {
+          // choice / binary_split 不靠點本體關閉，必須選擇
+          return;
+        }
+        if (this.sequence.persistence === 'pinned') {
+          // pinned 只能透過 ✕ 關閉，點本體無作用
+          return;
+        }
+        if (this.sequence.persistence === 'persistent') {
+          // persistent 循環：最後一句後回到第一句重新打字
+          this._loop();
           return;
         }
         this.dismiss('user_close');
@@ -262,6 +318,16 @@ class SpeechBubble {
     this.callbacks.onAdvance({
       sequenceId: this.sequence.sequenceId,
       lineIndex: this.lineIndex,
+    });
+    this._startLine();
+  }
+
+  _loop() {
+    this.lineIndex = 0;
+    this.callbacks.onAdvance({
+      sequenceId: this.sequence.sequenceId,
+      lineIndex: 0,
+      loop: true,
     });
     this._startLine();
   }
