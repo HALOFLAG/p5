@@ -2,8 +2,8 @@
 //
 // 對外契約：
 //   - extends EventEmitter
-//   - emit 'typing-burst' / 'mouse-burst' / 'click-burst'  → 給 EventLogger
-//   - emit 'click'                                          → 給 TriggerEngine 即時觸發
+//   - emit 'typing-burst' / 'mouse-burst'                   → 給 EventLogger
+//   - emit 'click'                                          → 給 EventLogger + TriggerEngine
 //   - emit 'idle-start' / 'idle-end'                        → 給 EventLogger / TriggerEngine
 //   - emit 'plugin:degraded' { reason }                     → uiohook 啟動失敗時
 //   - snapshot()                                            → 給 TriggerEngine pull
@@ -12,14 +12,13 @@
 //
 // 設計要點（依 plan §4 Event Coalescing）：
 //   - 鍵盤不 emit 個別 key，改 emit typing-burst 摘要
-//   - 滑鼠 mousemove 每秒聚合為 mouse-burst
-//   - click 即時 emit + 5 秒視窗 click-burst summary 雙軌
+//   - 滑鼠 mousemove 每 10 秒聚合為 mouse-burst（細節對行為畫像無用，降低 events 量級）
+//   - click 即時 emit（量小，TriggerEngine 計數從 snapshot 拉，不需另開 click-burst）
 
 const EventEmitter = require('events');
 
 const TYPING_BURST_GAP_MS = 1500;
-const MOUSE_BURST_WINDOW_MS = 1000;
-const CLICK_BURST_WINDOW_MS = 5000;
+const MOUSE_BURST_WINDOW_MS = 10 * 1000;       // 1s -> 10s（細節對畫像沒用，降低 events 量級 10 倍）
 const IDLE_THRESHOLD_MS = 5 * 60 * 1000;
 const KEY_RING_RETENTION_MS = 30 * 1000;
 const UIOHOOK_BACKSPACE_KEYCODE = 14;
@@ -54,9 +53,6 @@ class InputMonitor extends EventEmitter {
     this._mouseBurst = null;
     this._mouseFlushInterval = null;
     this._lastMouseBurstSummary = null;
-
-    this._clickBurst = null;
-    this._clickFlushTimer = null;
 
     this._isIdle = false;
     this._idleStartAt = null;
@@ -108,11 +104,9 @@ class InputMonitor extends EventEmitter {
     if (this._mouseFlushInterval) clearInterval(this._mouseFlushInterval);
     if (this._idleCheckInterval) clearInterval(this._idleCheckInterval);
     if (this._typingBurstFlushTimer) clearTimeout(this._typingBurstFlushTimer);
-    if (this._clickFlushTimer) clearTimeout(this._clickFlushTimer);
 
     this._flushTypingBurst();
     this._flushMouseBurst(true);
-    this._flushClickBurst();
 
     this._started = false;
     this._healthy = false;
@@ -286,42 +280,7 @@ class InputMonitor extends EventEmitter {
     this._counters.clicks_since_last_trigger++;
 
     const buttonName = mapMouseButton(e.button);
-
     this.emit('click', { t: now, button: buttonName });
-
-    if (!this._clickBurst) {
-      this._clickBurst = {
-        started_at: now,
-        count: 0,
-        by_button: { left: 0, right: 0, middle: 0, other: 0 },
-      };
-      this._clickFlushTimer = setTimeout(() => this._flushClickBurst(), CLICK_BURST_WINDOW_MS);
-    }
-    this._clickBurst.count++;
-    if (this._clickBurst.by_button[buttonName] !== undefined) {
-      this._clickBurst.by_button[buttonName]++;
-    } else {
-      this._clickBurst.by_button.other++;
-    }
-  }
-
-  _flushClickBurst() {
-    if (!this._clickBurst) return;
-    const b = this._clickBurst;
-    const now = Date.now();
-    const summary = {
-      started_at: b.started_at,
-      ended_at: now,
-      duration_ms: now - b.started_at,
-      count: b.count,
-      by_button: b.by_button,
-    };
-    this._clickBurst = null;
-    if (this._clickFlushTimer) {
-      clearTimeout(this._clickFlushTimer);
-      this._clickFlushTimer = null;
-    }
-    this.emit('click-burst', summary);
   }
 
   _touchInput(now) {

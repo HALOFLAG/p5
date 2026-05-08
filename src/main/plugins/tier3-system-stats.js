@@ -1,11 +1,13 @@
 // tier3-system-stats — CPU/GPU/RAM 採樣
 //
-// 採樣：5 秒 / 次（systeminformation）
+// 採樣：30 秒 / 次（systeminformation）
+//   原 5 秒：events 量級過高且系統指標非行為畫像核心
+//   30 秒：in_game 判定的 GPU 持續 30 秒閾值仍能滿足，events 量級降 6 倍
 // emit: system:stats-tick { cpu_pct, gpu_pct, ram_pct, sampled_at }
 
 const { MonitorPlugin } = require('./plugin-base');
 
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 30 * 1000;
 
 class Tier3SystemStatsPlugin extends MonitorPlugin {
   static id = 'tier3-system-stats';

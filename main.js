@@ -14,6 +14,7 @@ const { MonitorRegistry } = require('./src/main/monitor-registry');
 const { ContextStateTracker } = require('./src/main/context-state-tracker');
 const { TriggerEngine } = require('./src/main/trigger-engine');
 const { DialogueDirector } = require('./src/main/dialogue-director');
+const { RollupAggregator } = require('./src/main/rollup-aggregator');
 
 const PROJECT_ROOT = __dirname;
 const CONFIG_PATH = path.join(PROJECT_ROOT, 'config', 'settings.json');
@@ -23,6 +24,7 @@ const APP_CLASSIFICATION_PATH = path.join(PROJECT_ROOT, 'config', 'app-classific
 const WINDOW_STATE_PATH = path.join(PROJECT_ROOT, 'data', 'window-state.json');
 const DATA_DIR = path.join(PROJECT_ROOT, 'data');
 const RECENT_DIALOGUES_PATH = path.join(DATA_DIR, 'recent-dialogues.json');
+const ROLLUPS_DIR = path.join(DATA_DIR, 'rollups');
 const PERSONAS_DIR = path.join(PROJECT_ROOT, 'personas');
 
 const argv = process.argv.slice(1);
@@ -41,6 +43,7 @@ let contextStateTracker = null;
 let eventLogger = null;
 let triggerEngine = null;
 let dialogueDirector = null;
+let rollupAggregator = null;
 
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
@@ -69,6 +72,7 @@ if (!gotLock) {
       if (windowState) await windowState.save();
       if (config) await config.save();
 
+      try { await rollupAggregator?.stop(); } catch (e) { console.warn('[main] rollup stop:', e.message); }
       try { triggerEngine?.stop(); } catch (e) { console.warn('[main] trigger stop:', e.message); }
       try { contextStateTracker?.stop(); } catch (e) { console.warn('[main] context stop:', e.message); }
       try { inputMonitor?.stop(); } catch (e) { console.warn('[main] input stop:', e.message); }
@@ -119,7 +123,6 @@ async function bootstrap() {
   eventLogger.subscribe(inputMonitor, {
     'typing-burst': 'typing-burst',
     'mouse-burst': 'mouse-burst',
-    'click-burst': 'click-burst',
     'click': 'click',
     'idle-start': 'idle-start',
     'idle-end': 'idle-end',
@@ -140,6 +143,19 @@ async function bootstrap() {
     logger: console,
   });
   contextStateTracker.start();
+
+  // 把 context state 變化也寫進 events（rollup 之後可以據此算各情境時段）
+  contextStateTracker.on('changed', ({ name, prev, current }) => {
+    eventLogger.log({
+      type: 'context:changed',
+      t: current?.evaluated_at || Date.now(),
+      state_name: name,
+      prev_value: prev,
+      new_value: current?.value,
+      confidence: current?.confidence,
+      sources: current?.sources,
+    });
+  });
 
   // ── TriggerEngine ──────────────────────────────────────
   triggerEngine = new TriggerEngine({
@@ -177,6 +193,10 @@ async function bootstrap() {
   });
 
   triggerEngine.start();
+
+  // ── RollupAggregator（每整點 flush hourly summary） ───
+  rollupAggregator = new RollupAggregator({ rollupsDir: ROLLUPS_DIR, logger: console });
+  rollupAggregator.startStreaming({ inputMonitor, monitorRegistry, contextStateTracker });
 
   // ── 視窗 / 系統匣 ──────────────────────────────────────
   mainWindow = createMainWindow();
