@@ -1,0 +1,19 @@
+{
+  "$schema": "v1",
+  "active_persona": "haiyin",
+  "active_renderer": "static-image",
+  "active_model": "default-static",
+  "voice": {
+    "enabled": false,
+    "language": "zh"
+  },
+  "volume": 0.6,
+  "do_not_disturb": {
+    "manual": false,
+    "schedule_enabled": false,
+    "schedule": []
+  },
+  "ai_provider": "local-ollama",
+  "log_level": "info",
+  "first_run_completed": false
+}

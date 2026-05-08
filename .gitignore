@@ -1,0 +1,51 @@
+# ─── Node / Electron ─────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+# ─── Portable Node（37MB，不入 git）──────────────────────────
+tools/node/
+
+# ─── 打包輸出 ────────────────────────────────────────────────
+dist/
+out/
+*.exe
+*.msi
+*.app
+
+# ─── 執行期狀態（敏感、不入 git）─────────────────────────────
+data/
+config/*.bak
+config/*.local.json
+
+# ─── 使用者個人內容 ──────────────────────────────────────────
+# personas 與 models 內可能含個人化素材；視情況決定
+# personas/*/voices/        ← 大量 mp3，可選排除
+# personas/*/archive/       ← 歷史台詞版本，可選排除
+
+# ─── 機密 ────────────────────────────────────────────────────
+.env
+.env.local
+*.key
+*.pem
+secrets.json
+
+# ─── IDE / 系統 ──────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── 日誌 ────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── 暫存 ────────────────────────────────────────────────────
+*.tmp
+*.temp
+.cache/

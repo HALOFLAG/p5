@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>p5</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="speech-bubble.css" />
+</head>
+<body>
+  <!-- M1 dev box：用來驗證滑鼠穿透切換、拖曳、位置記憶。M5a 起會被 character-stage 取代。 -->
+  <div id="dev-box" class="dev-box" role="region" aria-label="p5 dev panel">
+    <div class="dev-box-title">p5</div>
+    <div class="dev-box-info" id="dev-info">M2 對話氣泡</div>
+    <div class="dev-box-hint">拖曳測試 / 點桌面測穿透</div>
+
+    <!-- M2 範例 -->
+    <div class="dev-buttons">
+      <button class="dev-btn" data-variant="short">短</button>
+      <button class="dev-btn" data-variant="medium">中</button>
+      <button class="dev-btn" data-variant="long">長</button>
+      <button class="dev-btn" data-variant="interrupt">打斷</button>
+    </div>
+
+    <!-- M2.5 型態範例 -->
+    <div class="dev-buttons-label">型態</div>
+    <div class="dev-buttons">
+      <button class="dev-btn" data-variant="thought">想法</button>
+      <button class="dev-btn" data-variant="narration">旁白</button>
+      <button class="dev-btn" data-variant="system">系統</button>
+      <button class="dev-btn" data-variant="whisper">低語</button>
+    </div>
+    <div class="dev-buttons">
+      <button class="dev-btn" data-variant="persistent">持續</button>
+      <button class="dev-btn" data-variant="pinned">釘選</button>
+      <button class="dev-btn" data-variant="choice">選項</button>
+    </div>
+
+    <div class="dev-box-meta" id="env-meta">—</div>
+  </div>
+
+  <!-- 對話氣泡（M2.5 升級結構） -->
+  <div id="bubble" class="bubble hidden"
+       data-type="speech"
+       data-persistence="transient"
+       data-interaction="advance"
+       role="dialog"
+       aria-live="polite">
+    <span class="bubble-pin" aria-hidden="true">📌</span>
+    <button class="bubble-close" aria-label="關閉" type="button">✕</button>
+    <div class="bubble-body">
+      <span class="bubble-icon" aria-hidden="true">⚙</span><span class="bubble-text"></span><span class="bubble-cursor"></span><span class="bubble-hint"></span>
+    </div>
+    <div class="bubble-choices" role="group"></div>
+  </div>
+
+  <script src="speech-bubble.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

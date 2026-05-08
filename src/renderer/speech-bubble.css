@@ -1,0 +1,299 @@
+/* SpeechBubble — 對話氣泡樣式（M2.5 多型態） */
+/*
+ * 用 data-type 屬性驅動視覺變體：
+ *   .bubble[data-type="speech"]
+ *   .bubble[data-type="thought"]
+ *   .bubble[data-type="narration"]
+ *   .bubble[data-type="system"]
+ *   .bubble[data-type="whisper"]
+ *
+ * persistence 用 data-persistence 屬性
+ * interaction 用 data-interaction 屬性
+ */
+
+/* ─── 通用 ─────────────────────────────────────────── */
+
+.bubble {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  max-width: 320px;
+  min-width: 80px;
+  font-size: 14px;
+  line-height: 1.55;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+
+  /* 淡入淡出 */
+  opacity: 0;
+  --bubble-tx: -50%;
+  --bubble-ty: -90%;
+  transform: translate(var(--bubble-tx), var(--bubble-ty));
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.bubble.visible {
+  opacity: 1;
+  --bubble-ty: -100%;
+  transform: translate(var(--bubble-tx), var(--bubble-ty));
+}
+
+.bubble.hidden {
+  pointer-events: none;
+}
+
+/* 內部結構 */
+.bubble-body {
+  padding: 12px 16px;
+  position: relative;
+}
+
+.bubble-text {
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.bubble-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: currentColor;
+  opacity: 0;
+  animation: bubble-cursor-blink 0.9s steps(2, start) infinite;
+}
+
+.bubble-cursor.show { opacity: 1; }
+
+@keyframes bubble-cursor-blink {
+  to { visibility: hidden; }
+}
+
+.bubble-hint {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0;
+  animation: bubble-hint-pulse 1.3s ease-in-out infinite;
+  transition: opacity 180ms ease-out;
+}
+
+.bubble-hint.show { opacity: 1; }
+
+@keyframes bubble-hint-pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* 關閉鈕（persistent / pinned 顯示） */
+.bubble-close {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0.55;
+  cursor: pointer;
+  border-radius: 4px;
+  line-height: 1;
+  display: none;
+  transition: opacity 120ms, background 120ms;
+}
+
+.bubble-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.bubble[data-persistence="persistent"] .bubble-close,
+.bubble[data-persistence="pinned"] .bubble-close {
+  display: block;
+}
+
+/* Pin icon（pinned 才顯示） */
+.bubble-pin {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 11px;
+  opacity: 0.7;
+  display: none;
+}
+
+.bubble[data-persistence="pinned"] .bubble-pin {
+  display: block;
+}
+
+/* System icon */
+.bubble-icon {
+  display: none;
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.bubble[data-type="system"] .bubble-icon {
+  display: inline-block;
+}
+
+/* 選項區（interaction=choice 顯示） */
+.bubble-choices {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px 12px;
+  margin-top: 4px;
+}
+
+.bubble[data-interaction="choice"] .bubble-choices {
+  display: flex;
+}
+
+.bubble-choice {
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: inherit;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms;
+}
+
+.bubble-choice:hover {
+  background: rgba(140, 200, 255, 0.18);
+  border-color: rgba(140, 200, 255, 0.55);
+}
+
+.bubble-choice:active {
+  transform: translateY(1px);
+}
+
+/* ─── type=speech（預設）─────────────────────────────── */
+
+.bubble[data-type="speech"] {
+  background: rgba(28, 32, 48, 0.92);
+  color: #f4f7fb;
+  border: 1px solid rgba(140, 200, 255, 0.45);
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.bubble[data-type="speech"]::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid rgba(28, 32, 48, 0.92);
+  filter: drop-shadow(0 1px 0 rgba(140, 200, 255, 0.45));
+}
+
+/* ─── type=thought（雲朵 + 三泡泡尾巴）──────────────── */
+
+.bubble[data-type="thought"] {
+  background: rgba(50, 50, 60, 0.85);
+  color: #e0e4ec;
+  border: 2px dashed rgba(180, 180, 200, 0.55);
+  border-radius: 22px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  font-style: italic;
+}
+
+/* 三個小圓點尾巴：用兩個 ::before/::after 偽元素 + 一個 inset shadow trick */
+.bubble[data-type="thought"]::before {
+  content: '';
+  position: absolute;
+  left: 48%;
+  bottom: -10px;
+  width: 8px;
+  height: 8px;
+  background: rgba(50, 50, 60, 0.85);
+  border: 1px dashed rgba(180, 180, 200, 0.55);
+  border-radius: 50%;
+}
+
+.bubble[data-type="thought"]::after {
+  content: '';
+  position: absolute;
+  left: 42%;
+  bottom: -22px;
+  width: 5px;
+  height: 5px;
+  background: rgba(50, 50, 60, 0.85);
+  border: 1px dashed rgba(180, 180, 200, 0.55);
+  border-radius: 50%;
+}
+
+/* ─── type=narration（旁白）──────────────────────────── */
+
+.bubble[data-type="narration"] {
+  background: rgba(20, 20, 22, 0.82);
+  color: #ece4d2;
+  border: 1px solid rgba(180, 150, 90, 0.55);
+  border-left: 3px solid rgba(220, 180, 100, 0.85);
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* 無尾巴 */
+
+/* ─── type=system（系統訊息）────────────────────────── */
+
+.bubble[data-type="system"] {
+  background: rgba(30, 65, 120, 0.92);
+  color: #ffffff;
+  border: 1px solid rgba(120, 180, 255, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  font-family: Consolas, 'Courier New', 'Microsoft JhengHei', monospace;
+  font-size: 13px;
+}
+
+/* 無尾巴 */
+
+/* ─── type=whisper（低語）────────────────────────────── */
+
+.bubble[data-type="whisper"] {
+  background: rgba(28, 32, 48, 0.55);
+  color: rgba(244, 247, 251, 0.85);
+  border: 1px solid rgba(140, 200, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  max-width: 260px;
+}
+
+/* 無尾巴 */
+
+/* ─── persistence=pinned 視覺加強 ────────────────────── */
+
+.bubble[data-persistence="pinned"] {
+  box-shadow: 0 8px 28px rgba(255, 200, 100, 0.25);
+}
+
+/* ─── interaction=display 不顯示 cursor / hint ───────── */
+
+.bubble[data-interaction="display"] {
+  cursor: default;
+}
+
+.bubble[data-interaction="display"] .bubble-cursor,
+.bubble[data-interaction="display"] .bubble-hint {
+  display: none;
+}

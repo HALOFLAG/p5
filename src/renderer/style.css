@@ -1,0 +1,107 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans CJK TC', sans-serif;
+}
+
+/* dev box（M1 階段使用） */
+.dev-box {
+  position: absolute;
+  width: 220px;
+  padding: 12px 16px;
+  background: rgba(20, 24, 40, 0.85);
+  color: #fff;
+  border: 1px solid rgba(120, 180, 255, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  cursor: move;
+  font-size: 13px;
+  line-height: 1.5;
+  pointer-events: auto;
+  /* 提示：dev-box 上的事件不被 forward 給桌面，因為 main 已 setIgnoreMouseEvents(false) */
+}
+
+.dev-box.dragging {
+  border-color: rgba(180, 220, 255, 0.95);
+  box-shadow: 0 6px 32px rgba(120, 180, 255, 0.4);
+}
+
+.dev-box-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #88c8ff;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.dev-box-info {
+  font-size: 12px;
+  color: #c8ddf0;
+}
+
+.dev-box-hint {
+  font-size: 11px;
+  color: #88aabc;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.dev-box-meta {
+  font-size: 10px;
+  color: #6c8a9c;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(140, 160, 180, 0.3);
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+/* M2 / M2.5 debug 按鈕列 */
+.dev-buttons {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.dev-buttons-label {
+  font-size: 10px;
+  color: #6c8a9c;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.dev-btn {
+  flex: 1 1 auto;
+  min-width: 36px;
+  padding: 4px 8px;
+  background: rgba(80, 130, 200, 0.55);
+  color: #fff;
+  border: 1px solid rgba(140, 200, 255, 0.6);
+  border-radius: 5px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.dev-btn:hover {
+  background: rgba(110, 170, 230, 0.75);
+}
+
+.dev-btn:active {
+  background: rgba(60, 100, 160, 0.9);
+  transform: translateY(1px);
+}

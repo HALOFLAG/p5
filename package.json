@@ -1,0 +1,14 @@
+{
+  "name": "p5",
+  "version": "0.1.0",
+  "description": "桌面寵物互動程式（自用）",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:dev": "electron . -- --dev"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11"
+  }
+}

@@ -1,0 +1,780 @@
+# 里程碑計畫 — 桌面寵物互動程式
+
+> 版本：v1.1（對應 REQUIREMENTS.md v1.3 / SPECIFICATION.md v1.1）
+> 確認日期：2026-05-08
+> 開發者人數：1（自用主線）
+> 預估總工日：**21.5-37 天**（M2.5 新增 1.5-2 天）
+>
+> v1.0 → v1.1：插入 M2.5「氣泡多型態」階段。詳見 [BUBBLE_TYPES.md](BUBBLE_TYPES.md)。
+
+---
+
+## 0. 概覽
+
+### 0.1 里程碑列表
+
+| ID | 名稱 | 工日 | 累計 | 依賴 |
+|---|---|---|---|---|
+| M0 | 環境準備 | 完成 | — | — |
+| M1 | 應用程式骨架 | 1-2 | 1-2 | M0 |
+| M2 | 對話氣泡 UI | 1-2 | 2-4 | M1 |
+| **M2.5** | **氣泡多型態擴充** | **1.5-2** | **3.5-6** | **M2** |
+| M3 | 監聽 + 觸發 + Logger | 3-5 | 6.5-11 | M2.5 |
+| M4 | 台詞庫 + 人格 + Debug + Fallback | 4-7 | 10.5-18 | M3 |
+| M5a | 渲染器抽象 + 靜態圖 | 1.5-2 | 12-20 | M2 |
+| M5b | Live2D 渲染（可選） | 3-4 | 15-24 | M5a |
+| M6 | 語音 | 3-5 | 18-29 | M5a |
+| M7 | Stage 1 預生成管線 | 4-7 | 22-36 | M3, M4 |
+| M∞ | 持續維護 | — | — | M7 |
+
+### 0.2 路徑圖（依賴關係）
+
+```
+M0 環境準備
+   │
+   ▼
+M1 骨架  ──────────┐
+   │                │
+   ▼                ▼
+M2 氣泡 ─► M5a 靜態圖 ─► M5b Live2D
+   │                │             │
+   ▼                ▼             │
+M2.5 氣泡多型態     M6 語音       │
+   │                              │
+   ▼                              │
+M3 監聽 + Logger                  │
+   │                              │
+   ▼                              │
+M4 台詞 + Fallback ◄──────────────┘
+   │
+   ▼
+M7 Stage 1 預生成 ───► M∞
+```
+
+### 0.3 兩個關鍵里程碑
+
+- **M5a 完成 ＝ MVP**：靜態角色 + 對話 + 觸發 + Logger 跑得起來，**已可日常使用**。
+- **M7 完成 ＝ 完整體驗**：Stage 1 個人化台詞接上，達成設計初衷。
+
+M5b 與 M6 是「升級體驗」，可延後甚至略過。
+
+### 0.4 「資料累積期」併行策略
+
+M3 完成 → Logger 開始累積真實事件。
+之後每多開發一天，就多累積一天資料。
+**等 M7 完成時資料剛好滿 30 天，可直接試跑 Stage 1。**
+
+---
+
+## M0 — 環境準備（已完成）
+
+### 完成項
+- [x] portable Node 22 LTS 安裝於 `tools/node/`
+- [x] `env.ps1` / `env.bat` 啟用腳本
+- [x] REQUIREMENTS.md v1.2 / SPECIFICATION.md / 各分析文件
+
+### 進入 M1 條件
+- 確認專案根目錄結構（已建）
+- Node 環境就緒（已驗證）
+
+---
+
+## M1 — 應用程式骨架（P1）
+
+### 目標
+Electron 程式可啟動，托盤可控，透明全螢幕視窗就位，**滑鼠穿透機制**正確運作。
+
+### 工日
+1-2 天
+
+### 交付物（檔案級）
+
+```
+package.json
+main.js
+preload.js
+src/
+├── main/
+│   ├── window-mgr.js
+│   ├── tray.js
+│   ├── config-store.js
+│   └── window-state.js
+└── renderer/
+    ├── index.html
+    ├── renderer.js
+    └── style.css
+config/
+└── settings.json (預設範本)
+data/
+└── window-state.json (執行期生成)
+assets/
+└── tray-icon.png
+.gitignore
+```
+
+### 任務清單
+
+- [ ] `package.json`：宣告 electron 依賴、scripts (`start`, `start:dev`)
+- [ ] `npm install electron --save-dev`
+- [ ] `main.js`：建立透明 + 無邊框 + 永遠置頂 + 全螢幕覆蓋的 BrowserWindow
+- [ ] 視窗預設 `setIgnoreMouseEvents(true, { forward: true })`
+- [ ] preload 暴露 `window.api.{enableMouse, disableMouse, getSettings, setSettings}`
+- [ ] Tray 選單：「顯示/隱藏」「設定資料夾」「結束」
+- [ ] window-state 模組：開啟還原位置、結束/關閉時記錄
+- [ ] config-store：讀寫 `settings.json`，自動 `.bak`
+- [ ] `index.html`：透明背景 + 角落除錯小方塊（可拖曳測試穿透切換）
+- [ ] `--dev` 旗標：啟動時開 DevTools
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T1.1 | 啟動 | 系統匣出現圖示，桌面看不到視窗（除非有 dev 方塊） |
+| T1.2 | 滑鼠穿透 | 啟動後可正常點擊桌面任何應用程式（不被透明視窗擋） |
+| T1.3 | dev 方塊互動 | 滑鼠移到 dev 方塊上可拖曳；移開後桌面點擊恢復 |
+| T1.4 | 視窗位置記憶 | 拖曳 dev 方塊到 (100,100) → 結束 → 重啟 → 還在 (100,100) |
+| T1.5 | Tray 操作 | 「顯示/隱藏」可切換 dev 方塊可見性 |
+| T1.6 | 設定存取 | 結束時 `settings.json.bak` 出現；改檔重啟讀新值 |
+| T1.7 | dev 模式 | `npm start -- --dev` 啟動時 DevTools 自動開 |
+
+### 風險與緩解
+
+| 風險 | 機率 | 影響 | 緩解 |
+|---|---|---|---|
+| 透明視窗在 Win11 + 部分 GPU 閃爍 | 中 | 中 | 偵測閃爍率，自動切「不透明 + 像素級透明色 fallback」 |
+| 滑鼠穿透切換時序 race condition | 中 | 低 | 加 100ms 防抖；開發時用 dev 方塊密集測試 |
+| Electron 透明視窗在多螢幕大小變化時錯位 | 低 | 中 | 監聽 `screen` 事件重設視窗大小 |
+
+### 完成標準
+全部驗收測試通過 + 可日常掛在桌面 24h 不影響其他工作。
+
+---
+
+## M2 — 對話氣泡 UI（P2）
+
+### 目標
+能在指定座標彈出對話氣泡，打字機效果，點擊推進序列。
+
+### 工日
+1-2 天
+
+### 交付物
+
+```
+src/renderer/
+├── speech-bubble.js
+├── speech-bubble.css
+└── speech-bubble.html (template)
+src/main/
+└── ipc.js (handle dialogue:show/advance/dismiss)
+```
+
+### 任務清單
+
+- [ ] SpeechBubble 元件（DOM-based，淡入淡出 CSS transition）
+- [ ] 打字機效果：每 30ms 一字，可被點擊跳完
+- [ ] 序列推進：`lines[]` 一句一句點擊切換
+- [ ] 最後一句顯示 `▶` 提示符，再點淡出
+- [ ] 12 秒無互動自動關
+- [ ] IPC：`dialogue:show` 從 main 推送
+- [ ] Debug 觸發按鈕（dev 模式）：在 dev 方塊旁加按鈕，點一下塞範例對話進來
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T2.1 | 範例對話顯示 | 點 debug 按鈕，氣泡從上方淡入，打字機字字浮現 |
+| T2.2 | 跳完整句 | 打字中點氣泡，立刻顯示完整句 |
+| T2.3 | 序列推進 | 顯示完點氣泡，切下一句；最後一句後消失 |
+| T2.4 | 自動關 | 打字完後 12 秒不動，氣泡淡出 |
+| T2.5 | 多句不重疊 | 連續觸發兩次，新對話會打斷舊的 |
+| T2.6 | 字型可讀 | 半透明背景下字清楚（中文字型先用 PingFang/Microsoft JhengHei 系統字） |
+
+### 風險與緩解
+
+| 風險 | 緩解 |
+|---|---|
+| 滑鼠穿透下氣泡無法被點擊 | 氣泡 DOM 加 `mouse:enter-character` 等價的 hover 事件，呼叫 `enableMouse` |
+| 中文字型在透明視窗有羽化邊緣 | text-shadow + WebFont 替代字型 |
+
+### 完成標準
+全測試通過；用 5 種長度的範例對話跑過都正常。
+
+---
+
+## M2.5 — 氣泡多型態擴充
+
+### 目標
+把對話氣泡從單一形態擴充為三維設計（type / persistence / interaction）。詳細論述見 [BUBBLE_TYPES.md](BUBBLE_TYPES.md)。
+
+### 工日
+1.5-2 天
+
+### 交付物
+
+```
+src/renderer/
+├── speech-bubble.js                修改：加 type/persistence/interaction 處理
+├── speech-bubble.css               修改：加 thought / narration / system / whisper 視覺
+└── bubble-choices.js               新增：選項按鈕渲染與互動
+src/main/
+└── (main.js 內) IPC 加 dialogue:choice-selected
+```
+
+Schema 修改範圍：見 [SPECIFICATION.md §2.3](SPECIFICATION.md)（v2 schema）。
+
+### 任務清單
+
+#### 視覺類型（5 種）
+- [ ] **speech**（既有）：保留 M2 樣式
+- [ ] **thought**：雲朵形/虛線邊 + 三個小泡泡尾巴 + 淡灰背景
+- [ ] **narration**：矩形/無尾巴/斜體 + 暗金色細線 + 米白字
+- [ ] **system**：藍色調 + ⚙ icon + 等寬字 + 無尾巴
+- [ ] **whisper**：小一級字 + 半透明 + 無尾巴（可選，視時間）
+
+#### 持續性（3 種）
+- [ ] **transient**（既有）：12 秒自動關
+- [ ] **persistent**：不自動關，必須有右上 ✕ 鈕、ESC 關閉
+- [ ] **pinned**：類似 persistent，但加上「釘選」icon 提示
+
+#### 互動方式（3 種，加既有 1 種）
+- [ ] **display**（既有 logic）：點擊不推進，自動關或手動關
+- [ ] **advance**（既有）
+- [ ] **choice**：氣泡下方多按鈕，選一個觸發 next
+
+#### Schema 完整性
+- [ ] dialogues.json 升 `$schema: "v2"`，舊 v1 欄位向下相容
+- [ ] 所有新欄位有預設值，未指定時取 transient + advance + speech
+- [ ] 驗證器：interaction=choice 須有 choices；persistence=sticky 須有 until（M3 啟用前先告警）
+
+#### Debug 擴充
+- [ ] dev-box 按鈕加 5 種類型範例（thought / persistent / choice 等）
+- [ ] DevTools console 顯示每次 dialogue:show 的完整 payload
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T2.5.1 | thought 視覺 | 觸發 thought 範例，氣泡為虛線雲朵形，尾巴是三個圓點 |
+| T2.5.2 | narration 視覺 | 觸發 narration，無尾巴、斜體 |
+| T2.5.3 | system 視覺 | 觸發 system，有 ⚙ icon、藍底等寬字 |
+| T2.5.4 | persistent 不自動關 | 觸發 persistent 範例 → 60 秒不動仍在 |
+| T2.5.5 | persistent 手動關 | 點 ✕ 或按 ESC 可關 |
+| T2.5.6 | choice 多按鈕 | 觸發 choice 範例 → 看到 3 個按鈕；hover 高亮；點下後氣泡關 |
+| T2.5.7 | choice → next | 選項有 next 時，新氣泡接著出現 |
+| T2.5.8 | schema 向下相容 | 用 M2 舊格式 sequence（無 type 欄位）仍能正常顯示為 speech |
+| T2.5.9 | 視覺切換無殘留 | 從 speech 跳到 thought 再跳回 speech，無樣式殘留 |
+
+### 風險與緩解
+
+| 風險 | 緩解 |
+|---|---|
+| 多種視覺切換時 CSS class 殘留 | 用統一的 `data-type` 屬性，所有 type 視覺以單一 selector 切換 |
+| Choice 按鈕 hover 與氣泡 hover 干擾 | 按鈕在氣泡內，共用 hover 計數器（已在 M2 renderer.js 處理） |
+| Persistent 卡住使用者 | 強制存在 ✕ 鈕；tray 加「關閉所有氣泡」 |
+
+### 完成標準
+- 5 種類型視覺各驗收通過
+- persistent + choice 完整可用
+- schema 向下相容；M2 舊範例仍跑得起來
+
+### 目標
+全域鍵盤滑鼠事件可監聽，TriggerEngine 能依規則觸發對話，EventLogger 開始累積資料。
+
+### 工日
+3-5 天
+
+### 交付物
+
+```
+src/main/
+├── input-monitor.js     (uiohook-napi 包裝)
+├── event-logger.js
+├── fullscreen-detect.js
+├── trigger-engine.js
+└── dialogue-director.js
+config/
+└── triggers.json        (預設規則 4-6 條)
+data/
+├── events/              (執行期生成 JSONL)
+├── stats.json
+└── recent-dialogues.json
+```
+
+### 任務清單
+
+#### InputMonitor
+- [ ] `npm install uiohook-napi`
+- [ ] 啟動 hook，計數 click/key
+- [ ] 閒置偵測（last input timestamp）
+- [ ] 連續使用偵測（session_start 自第一次輸入）
+- [ ] 打字偵測（is_typing 演算法）
+- [ ] 失敗 fallback：不停應用，只停觸發
+
+#### EventLogger
+- [ ] JSONL 寫入器（buffer + flush）
+- [ ] 每天 00:00 換檔
+- [ ] 敏感過濾（email/URL/信用卡/IBAN/護照/身分證）
+- [ ] 30/60 天輪替清理
+- [ ] `purgeAll()` API
+
+#### FullscreenDetect
+- [ ] 每秒輪詢 `GetForegroundWindow` + `GetWindowRect`
+- [ ] 廣播 `fullscreen:start/end`
+
+#### TriggerEngine
+- [ ] 規則 DSL 解析（counter_threshold/idle/session/time_window/weekday/event/composite）
+- [ ] 優先級解析
+- [ ] 全域 + 分類雙層冷卻
+- [ ] 動態冷卻演算法
+- [ ] DND 排程
+- [ ] 打字偵測整合
+- [ ] 全螢幕暫停整合
+
+#### DialogueDirector
+- [ ] 載入 active persona
+- [ ] 抽 sequence（過濾 recent 50）
+- [ ] 變數插值
+- [ ] 寫 recent-dialogues.json + events JSONL
+
+### 預設 triggers.json
+4-6 條基本規則：click_too_much / long_idle / continuous_use / deep_night / drag
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T3.1 | uiohook 啟動 | 啟動後 stats.json 開始累積 click/key |
+| T3.2 | events 累積 | data/events/<today>.jsonl 開始有事件 |
+| T3.3 | 敏感過濾 | 在 chrome 開 gmail，title 中的 email 應被遮罩 |
+| T3.4 | 觸發 click_too_much | 短時間點 500 下，氣泡冒出 |
+| T3.5 | 觸發 long_idle | 30 分鐘不動，氣泡冒出 |
+| T3.6 | 冷卻 | click_too_much 觸發後 600 秒內再點 500 下不再觸發 |
+| T3.7 | 優先級 | 同時滿足 deep_night + continuous_use，priority 較高的（deep_night）先 |
+| T3.8 | 打字偵測 | 連續打字中不觸發任何氣泡，停手 5 秒後恢復 |
+| T3.9 | 全螢幕暫停 | 玩 LoL 全螢幕時不觸發；退出後恢復 |
+| T3.10 | DND 排程 | 設 09:00-18:00 靜音，期間 events 仍累積但無氣泡 |
+| T3.11 | 失敗韌性 | 殺掉 uiohook 進程不會崩主應用 |
+
+### 風險與緩解
+
+| 風險 | 機率 | 影響 | 緩解 |
+|---|---|---|---|
+| uiohook-napi 被防毒誤判 | 中 | 高 | 文件指引使用者白名單；提供「停用 hook」設定（功能降級但仍可用） |
+| 動態冷卻參數不自然 | 高 | 中 | M3 用保守參數，M4 開始使用後實際調整 |
+| 全螢幕偵測誤判（部分遊戲使用 borderless window） | 中 | 中 | 額外規則：應用名白/黑名單覆寫 |
+| 大量事件寫入導致 I/O 卡頓 | 低 | 中 | buffer + 批次 flush 已涵蓋 |
+
+### 完成標準
+- 全測試通過
+- 連續跑 24h 無 leak / 無崩潰
+- events 每日 < 5MB
+
+---
+
+## M4 — 台詞庫 + 人格 + Debug 面板 + Fallback（P4）
+
+### 目標
+- 雙人格資料夾運作；切換立即生效。
+- 手寫 fallback 200-300 句涵蓋所有分類。
+- Debug 面板可視化全部模組狀態。
+
+### 工日
+4-7 天（**fallback 撰寫是最大時間黑洞**）
+
+### 交付物
+
+```
+personas/
+├── gentle/
+│   ├── persona.json
+│   ├── dialogues.json    (200-300 句 fallback)
+│   └── archive/          (預留資料夾)
+└── snarky/
+    ├── persona.json
+    ├── dialogues.json    (200-300 句 fallback)
+    └── archive/
+src/main/
+├── variable-interpolator.js
+└── persona-loader.js
+src/renderer/
+├── debug-panel.html
+├── debug-panel.js
+├── settings-window.html
+└── settings.js
+scripts/
+└── csv-to-dialogues.js
+```
+
+### 任務清單
+
+#### 人格資料
+- [ ] 建立兩套 persona.json（溫柔 + 毒舌）
+- [ ] 撰寫 fallback 台詞 ≥ 200 句／人格，覆蓋所有 categories + hour_tips + seasons
+- [ ] 變數插值：實作 `{time}/{hour}/{weekday}/{usage_hours}/{window_title}` 替換
+- [ ] csv-to-dialogues 腳本（兩欄：category,line → JSON）
+
+#### 設定視窗
+- [ ] 切人格（即時生效）
+- [ ] 不打擾開關 + 排程編輯
+- [ ] 音量
+- [ ] 「打開設定資料夾」捷徑
+- [ ] 「Debug 面板」入口
+
+#### Debug 面板
+- [ ] 即時計數器（每秒更新）
+- [ ] 觸發紀錄表（最近 50 筆）
+- [ ] 時段熱力圖（24×7）
+- [ ] 應用使用 Top-10
+- [ ] 手動觸發任一分類按鈕
+- [ ] 「跳過冷卻」按鈕
+- [ ] 「清除所有資料並重置」按鈕
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T4.1 | 切人格立即生效 | 設定切 snarky → 下次觸發台詞語氣明顯不同 |
+| T4.2 | 變數插值 | 凌晨 3:00 觸發，台詞「都 3 點了」正確替換 |
+| T4.3 | fallback 量足 | 一週使用一個人格，每天 5-10 次觸發，重複感低 |
+| T4.4 | hour_tips | 12:00 重啟程式，自動觸發午餐問候 |
+| T4.5 | seasons | 修改系統時間到 12/24，觸發聖誕台詞 |
+| T4.6 | Debug 觸發 | 點「手動觸發 click_too_much」立即冒氣泡 |
+| T4.7 | Debug 視覺化 | 熱力圖顯示這週實際使用模式 |
+| T4.8 | CSV 匯入 | 編 csv 跑腳本，新台詞進入 dialogues.json |
+
+### 風險與緩解
+
+| 風險 | 緩解 |
+|---|---|
+| **fallback 撰寫卡很久** | 接受 200 句下限即可進 M5；不夠的之後 M7 補 |
+| 變數插值未完成的標記殘留 | 校驗：所有 `{var}` 必須在白名單，否則 M3 階段就拒入 |
+| 人格切換時舊氣泡未關 | 切換前先 dismiss 所有對話 |
+
+### 完成標準
+- 兩人格 fallback ≥ 200 句／套
+- Debug 面板全部驗收項通過
+- 連續使用一週無重複感超強烈
+
+---
+
+## M5a — 渲染器抽象 + 靜態圖（P5a）
+
+### 目標
+**MVP 完成點。** 角色（靜態圖）真正出現在桌面，表情會隨台詞情緒切換。
+
+### 工日
+1.5-2 天
+
+### 交付物
+
+```
+src/renderer/
+├── character-stage.js
+├── character-renderer.js     (interface 定義)
+├── static-image-renderer.js
+└── animations.css            (呼吸 / 淡入淡出)
+models/
+└── static/
+    └── default-static/
+        ├── manifest.json
+        ├── idle.png, idle_2.png, idle_3.png
+        ├── happy.png, pout.png, annoyed.png, sleepy.png, surprised.png, embarrassed.png
+        └── (optional) mouth_*.png
+```
+
+### 任務清單
+
+- [ ] 定義 `CharacterRenderer` interface（依 SPEC §3.1）
+- [ ] 實作 `StaticImageRenderer`：
+  - [ ] manifest.json 讀取與驗證
+  - [ ] 表情切換 + 淡入淡出
+  - [ ] 多 idle 圖隨機循環
+  - [ ] CSS 呼吸動畫（scale 微調）
+  - [ ] 嘴型同步：3 幀替代圖（若 manifest 有定義）
+  - [ ] `getBubbleAnchor()` 計算氣泡定位
+- [ ] CharacterStage：依 settings.active_renderer 決定載入哪個 renderer
+- [ ] 整合對話氣泡：sequence 的 expression 觸發 setExpression
+- [ ] 拖曳：位移 + drag-start 事件
+- [ ] **找/做 1 套靜態圖素材**（最小集 7 張：1 idle + 6 表情）
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T5a.1 | 角色出現 | 啟動可見靜態角色，呼吸動畫運作 |
+| T5a.2 | 表情切換 | 觸發毒舌台詞 → 角色換 pout 表情，淡入淡出順暢 |
+| T5a.3 | 多 idle 循環 | 8 秒後角色換另一張 idle 圖 |
+| T5a.4 | 拖曳 | 滑鼠拖角色到桌面任何位置；放開記錄到 window-state |
+| T5a.5 | 氣泡跟隨 | 對話氣泡始終在角色頭部上方 |
+| T5a.6 | 切人格 | 切人格後角色仍在原位置 |
+| T5a.7 | 切模型 | 設定中切換 default-static → 別套靜態圖正確載入 |
+
+### 風險與緩解
+
+| 風險 | 緩解 |
+|---|---|
+| 找不到合適的靜態圖素材 | M5a 進入前確認來源（自繪 / AI / 委託）；最小可接受 5 張 |
+| 透明視窗下 PNG 邊緣鋸齒 | 素材必須是預乘 alpha；CSS `image-rendering: -webkit-optimize-contrast` |
+| 切換 renderer 時記憶體 leak | destroy() 必須清乾淨 listener 與 DOM |
+
+### 完成標準
+- 角色 + 對話 + 觸發系統整合運作
+- **此時即為可日常使用的 MVP**
+- M5b/M6/M7 變成升級項而非阻擋項
+
+---
+
+## M5b — Live2D 渲染（P5b，可選）
+
+### 目標
+Live2D 角色完整體驗：眼神跟隨、平滑動作、嘴型同步。
+
+### 工日
+3-4 天
+
+### 交付物
+
+```
+src/renderer/
+└── live2d-renderer.js
+models/
+└── live2d/
+    └── default-l2d/
+        └── ... (cubism 檔)
+```
+
+### 任務清單
+
+- [ ] `npm install pixi-live2d-display pixi.js`
+- [ ] 實作 `Live2DRenderer`：load / setExpression / setMotion / setMouthOpen / setFocusPoint
+- [ ] PixiJS 應用整合到 character-stage
+- [ ] 眼神跟隨：滑鼠座標 → ParamAngleX/Y / EyeBallX/Y
+- [ ] 動作觸發：按 motion 名字播放
+- [ ] 表情：依 expression 名 setExpression
+- [ ] 拖曳發話：drag-start → 觸發 drag category
+- [ ] **找 1 套免費 Live2D 模型**（推薦 pixi-live2d-display 範例 Hiyori 或 Haru）
+- [ ] 使用者匯入機制：丟模型資料夾進 `models/live2d/` 自動偵測
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T5b.1 | 載入模型 | 設定切到 Live2D 模式，桌寵變 Live2D 角色 |
+| T5b.2 | 眼神跟隨 | 滑鼠移動，角色眼睛跟著轉 |
+| T5b.3 | 表情切換 | 觸發 pout，Live2D 表情正確切換 |
+| T5b.4 | 動作 | 觸發拖曳，動作 annoyed 播放 |
+| T5b.5 | 嘴型 | （需 M6）語音播放時嘴型平滑同步 |
+| T5b.6 | 切回靜態 | 從 Live2D 切回 static，無殘留 PixiJS canvas |
+| T5b.7 | 匯入新模型 | 把第三方 Live2D 模型放進資料夾，重啟自動偵測 |
+
+### 風險與緩解
+
+| 風險 | 機率 | 緩解 |
+|---|---|---|
+| pixi-live2d-display 與 Cubism Core 整合踩坑 | 高 | 文件 + 範例專案參考；卡 1 天就降級回 M5a |
+| Live2D 模型授權限制 | 高 | 自用先用 sample 模型，商業化前釐清 |
+| 透明視窗 + WebGL 在某些 GPU 黑屏 | 中 | 文件提示 + 提供切回靜態圖的快速路徑 |
+
+### 完成標準
+- 一套 Live2D 模型可正常運作
+- 與 M5a 可即時切換
+- 整合風險已驗證可控
+
+---
+
+## M6 — 語音（P6，可選）
+
+### 目標
+對話搭配預錄語音，嘴型同步，可切換語言。
+
+### 工日
+3-5 天
+
+### 交付物
+
+```
+src/renderer/
+├── audio-player.js
+└── lip-sync.js              (音量包絡 → mouth 0..1)
+scripts/
+└── generate-voices.js        (edge-tts 批次)
+personas/<id>/voices/
+├── zh/                       (mp3 檔，命名 sequence_id_line_index.mp3)
+└── ja/
+```
+
+### 任務清單
+
+- [ ] `scripts/generate-voices.js`：
+  - [ ] 讀 dialogues.json，掃出每行
+  - [ ] 呼叫 edge-tts 或 VOICEVOX 生成 mp3
+  - [ ] 增量：已存在不重生
+  - [ ] 失敗重試 + 報表
+- [ ] AudioPlayer（renderer）：
+  - [ ] HTML5 Audio 播放
+  - [ ] 觸發新對話打斷舊
+  - [ ] 音量 = settings.volume × persona.voice_profile.gain
+- [ ] LipSync：
+  - [ ] Web Audio API 取音量 RMS
+  - [ ] 平滑後 → setMouthOpen(0..1)
+  - [ ] 靜態圖三幀對應；Live2D 直接餵
+- [ ] 設定整合：語言切換立即生效
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T6.1 | 批次生成 | 跑腳本後 voices/zh/ 出現 200+ mp3 |
+| T6.2 | 增量 | 第二次跑腳本，已存在不重跑 |
+| T6.3 | 對話有語音 | 觸發對話，文字 + 語音同步 |
+| T6.4 | 嘴型同步 | 角色嘴型隨音量明顯變化 |
+| T6.5 | 切語言 | 切到 ja，下次觸發為日文版（需先生成日文 mp3） |
+| T6.6 | 打斷 | 對話 A 播一半時觸發對話 B，A 立即停 |
+| T6.7 | 音量 | 設定音量 0.3，實際聽起來明顯較小 |
+
+### 風險與緩解
+
+| 風險 | 緩解 |
+|---|---|
+| edge-tts 服務限流 / 中斷 | 本地 fallback 用 VOICEVOX；批次失敗重試 3 次 |
+| 嘴型同步聽感詭異 | 平滑係數可調；提供「停用嘴型同步」開關 |
+| mp3 檔大量佔空間 | 200 句約 15-30MB，可接受；提供「清除舊語音」工具 |
+
+### 完成標準
+- 兩種語言至少一個可用
+- 嘴型同步對齊主觀自然
+
+---
+
+## M7 — Stage 1 預生成管線（P7，最關鍵）
+
+### 目標
+讀 events 累積資料，呼叫 AI provider，產出個人化台詞庫，達成「真的懂我」效果。
+
+### 工日
+4-7 天
+
+### 交付物
+
+```
+scripts/
+├── generate-dialogues.js
+├── ai-providers/
+│   ├── index.js                (factory)
+│   ├── claude.js
+│   ├── openai.js
+│   └── ollama.js
+├── observation-summary.js      (events → summary)
+├── prompt-builder.js
+└── validator.js                (校驗器)
+personas/<id>/archive/<date>/    (歷史版本)
+data/last-generation.json
+```
+
+### 任務清單
+
+#### Provider 抽象
+- [ ] 定義 AIProvider interface
+- [ ] 實作 Ollama provider（**預設**，零隱私風險）
+- [ ] 實作 Claude provider（Anthropic SDK + prompt caching）
+- [ ] 實作 OpenAI provider
+- [ ] healthCheck 機制
+
+#### 資料管線
+- [ ] events JSONL → ObservationSummary 計算
+- [ ] prompt 模板與替換
+- [ ] 校驗器：長度 / 變數 / 禁用詞 / 語意去重 / 人格漂移
+- [ ] 補生迴圈（最多 3 輪）
+- [ ] archive 機制
+- [ ] last-generation.json 寫入
+
+#### UI 整合
+- [ ] 設定視窗：「立即重生」按鈕
+- [ ] 上傳前預覽 UI（顯示 ObservationSummary）+ 同意對話
+- [ ] 進度顯示（爬資料 → 呼叫 AI → 校驗 → 寫入）
+- [ ] 失敗錯誤提示
+- [ ] 自動提示：≥30 天未重生時 tray 顯示通知
+
+### 驗收測試
+
+| # | 測試 | 通過標準 |
+|---|---|---|
+| T7.1 | Ollama 跑通 | 本地 Ollama 啟動下，跑一次 generate 全程無錯 |
+| T7.2 | Claude 跑通 | 設 API key，跑 generate，產出 1500+ 句 |
+| T7.3 | 摘要正確 | ObservationSummary 中時段熱力 / top apps 與實際符合 |
+| T7.4 | 預覽 UI | 上傳前顯示「即將傳這些」，使用者可拒絕 |
+| T7.5 | 校驗器 | 故意餵 prompt 產出超長句，校驗器拒絕並補生 |
+| T7.6 | archive | 重生後舊 dialogues 出現在 archive/<date>/ |
+| T7.7 | 個人化生效 | 切到新 dialogues 後觸發，台詞引用使用模式（如「你週四常熬夜」） |
+| T7.8 | 失敗韌性 | 模擬 API 中斷，舊 dialogues 仍可用 |
+| T7.9 | 月提醒 | 把 last-generation 改 31 天前，重啟有提示 |
+
+### 風險與緩解
+
+| 風險 | 機率 | 影響 | 緩解 |
+|---|---|---|---|
+| **Prompt 工程失敗：產出敷衍化、與使用者觀察脫節** | 高 | 高 | 預留 1-2 天迭代調 prompt；先用小批次（每分類 10 句）驗證再放大 |
+| AI provider 連線不穩 | 中 | 中 | 重試 + zero-retention 條款 + 預設本地 LLM |
+| 校驗器太嚴生不出來 | 中 | 中 | 規則參數化；異常時放寬重試 |
+| Ollama 本地模型品質太差 | 高 | 中 | 用 7B+ 模型；不行就建議使用者切雲端 provider |
+
+### 完成標準
+- 至少一個 provider 可順利跑完整管線
+- 產出的 dialogues 主觀感覺「比 fallback 個人化」
+- 全測試通過
+
+---
+
+## M∞ — 持續維護
+
+### 月度節奏
+
+| 頻率 | 任務 |
+|---|---|
+| 每月 | 重新跑 Stage 1 產生新台詞庫 |
+| 每月 | 檢視 archive 是否需清理（保留最近 6 個月） |
+| 每月 | 看 stats.json 觀察使用模式變化 |
+| 季度 | 評估是否需新增規則 / 新增分類 |
+| 半年 | 評估 v1.2 隱私加固清單啟用順序 |
+| 不定 | 修 Bug、適配新 Live2D 模型、新增人格 |
+
+### 第二期可能加入（v2.0）
+
+- 動作引擎（REQUIREMENTS.md §22.1）
+- 時段自動化、情境自動化
+- 戳臉互動 hit-area
+- 開機自動啟動
+- 多人格並存
+
+---
+
+## 重要決策時間點（必須在進入該里程碑前確認）
+
+| 決策 | 必須在何時前確認 | 影響 |
+|---|---|---|
+| 兩套人格的具體名字、人設文字 | M4 開始前 | 寫 fallback 與 persona.json |
+| 靜態圖素材來源（自繪 / AI / 委託） | M5a 開始前 | 至少 7 張 PNG |
+| Live2D 模型來源 | M5b 開始前（可延後） | 整套 cubism 檔 |
+| 語音生成工具（edge-tts / VOICEVOX） | M6 開始前 | 影響腳本實作 |
+| AI provider（Ollama / Claude / OpenAI） | M7 開始前 | 影響 prompt 與成本 |
+
+---
+
+## 變更管理
+
+| 版本 | 日期 | 主要變更 |
+|---|---|---|
+| v1.0 | 2026-05-08 | 初版，對應 REQUIREMENTS.md v1.2 |
+
+後續若需大幅調整里程碑（合併、拆分、刪減），更新此文件並升 minor 版號。
+
+---
+
+## 關聯文件
+
+- [REQUIREMENTS.md](REQUIREMENTS.md) — 需求與決策（為何）
+- [SPECIFICATION.md](SPECIFICATION.md) — 技術契約（怎麼做）
+- [STAKEHOLDER_ANALYSIS.md](STAKEHOLDER_ANALYSIS.md) — 三方視角分析
+- [PRIVACY_ANALYSIS.md](PRIVACY_ANALYSIS.md) — 隱私威脅與緩解
+- [CLAUDE.md](CLAUDE.md) — 工作流程規則
