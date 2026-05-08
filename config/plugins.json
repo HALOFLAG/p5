@@ -1,0 +1,17 @@
+{
+  "$schema": "v1",
+  "_comment": "Tier 2/3 監控外掛啟用設定。修改後需重啟程式生效。",
+  "monitor_level": "tier1+2+3",
+  "_monitor_level_options": ["tier1", "tier1+2", "tier1+2+3", "custom"],
+  "plugins": {
+    "_comment": "個別 plugin override（覆蓋 monitor_level 預設）。例：tier3-clipboard-watcher: { enabled: false }",
+    "tier2-power": {},
+    "tier2-screen": {},
+    "tier2-theme": {},
+    "tier2-window-tracker": {},
+    "tier3-system-stats": {},
+    "tier3-audio-session": {},
+    "tier3-mic-cam-activity": {},
+    "tier3-clipboard-watcher": {}
+  }
+}

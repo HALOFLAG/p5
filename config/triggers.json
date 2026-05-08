@@ -1,0 +1,102 @@
+{
+  "$schema": "v1",
+  "rules": [
+    {
+      "name": "meeting_silence",
+      "category": "_suppress",
+      "priority": 999,
+      "cooldown_sec": 0,
+      "condition": { "type": "context_state", "state": "in_meeting", "equals": true, "min_confidence": 0.7 },
+      "action": "suppress_all",
+      "exempt_priority_gte": 100
+    },
+    {
+      "name": "game_silence",
+      "category": "_suppress",
+      "priority": 999,
+      "cooldown_sec": 0,
+      "condition": { "type": "context_state", "state": "in_game", "equals": true, "min_confidence": 0.6 },
+      "action": "suppress_all",
+      "exempt_priority_gte": 100
+    },
+    {
+      "name": "screen_locked_silence",
+      "category": "_suppress",
+      "priority": 999,
+      "cooldown_sec": 0,
+      "condition": { "type": "context_state", "state": "screen_locked", "equals": true, "min_confidence": 0.9 },
+      "action": "suppress_all",
+      "exempt_priority_gte": 100
+    },
+    {
+      "name": "video_partial_silence",
+      "category": "_suppress",
+      "priority": 998,
+      "cooldown_sec": 0,
+      "condition": { "type": "context_state", "state": "watching_video", "equals": true, "min_confidence": 0.6 },
+      "action": "suppress_categories",
+      "categories": ["click_too_much", "continuous_use"]
+    },
+    {
+      "name": "ide_calm_down",
+      "category": "_suppress",
+      "priority": 997,
+      "cooldown_sec": 0,
+      "condition": { "type": "context_state", "state": "in_ide", "equals": true, "min_confidence": 0.7 },
+      "action": "multiply_cooldown",
+      "factor": 2.0
+    },
+
+    {
+      "name": "drag_character",
+      "category": "drag",
+      "priority": 100,
+      "cooldown_sec": 5,
+      "condition": { "type": "event", "event": "character:drag-start" }
+    },
+
+    {
+      "name": "deep_night",
+      "category": "deep_night",
+      "priority": 60,
+      "cooldown_sec": 3600,
+      "condition": { "type": "time_window", "from": "23:00", "to": "05:00" }
+    },
+
+    {
+      "name": "long_idle",
+      "category": "long_idle",
+      "priority": 30,
+      "cooldown_sec": 1800,
+      "condition": { "type": "idle_duration", "operator": ">=", "value_sec": 1800 }
+    },
+    {
+      "name": "continuous_use",
+      "category": "continuous_use",
+      "priority": 25,
+      "cooldown_sec": 1200,
+      "condition": { "type": "session_duration", "operator": ">=", "value_sec": 14400 }
+    },
+
+    {
+      "name": "click_too_much",
+      "category": "click_too_much",
+      "priority": 10,
+      "cooldown_sec": 600,
+      "condition": {
+        "type": "counter_threshold",
+        "counter": "clicks_since_last_trigger",
+        "operator": ">=",
+        "value": 500
+      }
+    }
+  ],
+  "dynamic_cooldown": {
+    "enabled": true,
+    "window_min": 60,
+    "high_activity_threshold": 8,
+    "high_activity_multiplier": 0.7,
+    "low_activity_threshold": 2,
+    "low_activity_multiplier": 1.5
+  }
+}

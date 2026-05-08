@@ -1,0 +1,105 @@
+{
+  "$schema": "v2",
+  "persona_id": "liss",
+  "_comment": "M3 範本：每個分類 2 句測試樣本。M4 擴充至 200-300 句 fallback。",
+  "categories": {
+    "click_too_much": {
+      "sequences": [
+        {
+          "sequenceId": "liss_ctm_001",
+          "type": "speech",
+          "lines": [
+            { "text": "點什麼點，是滑鼠跟你有仇喔", "expression": "annoyed" }
+          ]
+        },
+        {
+          "sequenceId": "liss_ctm_002",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 4000,
+          "lines": [
+            { "text": "（這人是不是壞掉了）" }
+          ]
+        }
+      ]
+    },
+    "long_idle": {
+      "sequences": [
+        {
+          "sequenceId": "liss_idle_001",
+          "type": "speech",
+          "lines": [
+            { "text": "終於肯離開螢幕了？", "expression": "pout" }
+          ]
+        },
+        {
+          "sequenceId": "liss_idle_002",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 5000,
+          "lines": [
+            { "text": "（哼，跑去摸魚了吧）" }
+          ]
+        }
+      ]
+    },
+    "continuous_use": {
+      "sequences": [
+        {
+          "sequenceId": "liss_cont_001",
+          "type": "speech",
+          "lines": [
+            { "text": "{usage_hours} 小時，腰不痠嗎", "expression": "annoyed" }
+          ]
+        },
+        {
+          "sequenceId": "liss_cont_002",
+          "type": "speech",
+          "lines": [
+            { "text": "這時間還在這？是不會休息？", "expression": "pout" }
+          ]
+        }
+      ]
+    },
+    "deep_night": {
+      "sequences": [
+        {
+          "sequenceId": "liss_night_001",
+          "type": "speech",
+          "lines": [
+            { "text": "{time}⋯⋯你是真的不想活了", "expression": "annoyed" }
+          ]
+        },
+        {
+          "sequenceId": "liss_night_002",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 5000,
+          "lines": [
+            { "text": "（凌晨還醒，明天又要鬼叫好累⋯⋯）" }
+          ]
+        }
+      ]
+    },
+    "drag": {
+      "sequences": [
+        {
+          "sequenceId": "liss_drag_001",
+          "type": "speech",
+          "auto_close_ms": 4000,
+          "lines": [
+            { "text": "幹嘛拉我", "expression": "annoyed" }
+          ]
+        },
+        {
+          "sequenceId": "liss_drag_002",
+          "type": "speech",
+          "auto_close_ms": 4000,
+          "lines": [
+            { "text": "別動手動腳的", "expression": "pout" }
+          ]
+        }
+      ]
+    }
+  }
+}

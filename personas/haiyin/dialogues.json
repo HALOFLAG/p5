@@ -1,0 +1,103 @@
+{
+  "$schema": "v2",
+  "persona_id": "haiyin",
+  "_comment": "M3 範本：每個分類 2 句測試樣本。M4 會擴充至 200-300 句 fallback。",
+  "categories": {
+    "click_too_much": {
+      "sequences": [
+        {
+          "sequenceId": "haiyin_ctm_001",
+          "type": "speech",
+          "lines": [
+            { "text": "點得這麼急⋯⋯怎麼啦？", "expression": "annoyed" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_ctm_002",
+          "type": "speech",
+          "lines": [
+            { "text": "不要太用力，滑鼠會壞掉的", "expression": "pout" }
+          ]
+        }
+      ]
+    },
+    "long_idle": {
+      "sequences": [
+        {
+          "sequenceId": "haiyin_idle_001",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 6000,
+          "lines": [
+            { "text": "（怎麼不見了，去休息了嗎？）" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_idle_002",
+          "type": "speech",
+          "lines": [
+            { "text": "歡迎回來～有好好休息嗎？", "expression": "happy" }
+          ]
+        }
+      ]
+    },
+    "continuous_use": {
+      "sequences": [
+        {
+          "sequenceId": "haiyin_cont_001",
+          "type": "speech",
+          "lines": [
+            { "text": "已經 {usage_hours} 小時了，喝口水吧", "expression": "idle" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_cont_002",
+          "type": "speech",
+          "lines": [
+            { "text": "{weekday} 工作得這麼認真，要不要起來伸個懶腰？", "expression": "happy" }
+          ]
+        }
+      ]
+    },
+    "deep_night": {
+      "sequences": [
+        {
+          "sequenceId": "haiyin_night_001",
+          "type": "speech",
+          "lines": [
+            { "text": "都 {time} 了⋯⋯該睡了喔", "expression": "sleepy" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_night_002",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 6000,
+          "lines": [
+            { "text": "（這人怎麼又熬夜⋯⋯）" }
+          ]
+        }
+      ]
+    },
+    "drag": {
+      "sequences": [
+        {
+          "sequenceId": "haiyin_drag_001",
+          "type": "speech",
+          "auto_close_ms": 4000,
+          "lines": [
+            { "text": "誒誒～慢一點", "expression": "surprised" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_drag_002",
+          "type": "speech",
+          "auto_close_ms": 4000,
+          "lines": [
+            { "text": "好啦好啦，要去哪裡？", "expression": "happy" }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -47,9 +47,9 @@
         info.isDev ? ' / DEV' : ''
       }`;
       if (info.isDev) {
-        devInfo.textContent = 'M2 對話氣泡（DEV）';
+        devInfo.textContent = 'M3 監聽 + 觸發（DEV）';
       } else {
-        devInfo.textContent = 'M2 對話氣泡';
+        devInfo.textContent = 'M3 監聽 + 觸發';
       }
     })
     .catch(() => {
@@ -120,20 +120,57 @@
     bubble.show(sequence);
   });
 
-  // ── Debug 按鈕 ─────────────────────────────────────────
+  // ── Debug 按鈕（M2.5 UI 變體 + M3 debug 面板）────────
   devButtons.forEach((btn) => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // 不觸發 dev-box 拖曳
-      const variant = btn.dataset.variant;
-      window.api.debug.testBubble(variant);
+      e.stopPropagation();
+      if (btn.dataset.variant) {
+        window.api.debug.testBubble(btn.dataset.variant);
+      } else if (btn.dataset.debug) {
+        handleDebugAction(btn.dataset.debug).catch((err) =>
+          console.warn('[M3 debug]', btn.dataset.debug, 'failed:', err)
+        );
+      }
     });
-    // 按鈕的 mouseenter/leave 由父層 dev-box 處理
   });
 
-  // 阻止按鈕區域觸發拖曳
-  document.querySelector('.dev-buttons').addEventListener('mousedown', (e) => {
-    e.stopPropagation();
+  // 阻止按鈕區域觸發拖曳（涵蓋所有 .dev-buttons 區塊）
+  document.querySelectorAll('.dev-buttons').forEach((row) => {
+    row.addEventListener('mousedown', (e) => e.stopPropagation());
   });
+
+  async function handleDebugAction(action) {
+    switch (action) {
+      case 'counters': {
+        const data = await window.api.debug.countersGet();
+        console.log('[M3 counters]', data);
+        break;
+      }
+      case 'context-state': {
+        const data = await window.api.debug.contextStateGet();
+        console.log('[M3 context-state]', data);
+        break;
+      }
+      case 'fire-click': {
+        window.api.debug.fire('click_too_much');
+        console.log('[M3] fire click_too_much');
+        break;
+      }
+      case 'reset-cd': {
+        window.api.debug.resetCooldowns();
+        console.log('[M3] cooldowns reset');
+        break;
+      }
+      case 'purge': {
+        if (!confirm('確定要清空所有 events JSONL 與 stats 嗎？此操作不可復原。')) return;
+        await window.api.debug.purgeEvents();
+        console.log('[M3] events purged');
+        break;
+      }
+      default:
+        console.warn('[M3 debug] unknown action:', action);
+    }
+  }
 
   // ── 拖曳 ───────────────────────────────────────────────
   let dragging = false;
@@ -151,6 +188,8 @@
       boxX: state.character_x,
       boxY: state.character_y,
     };
+    // M3：通知 main 角色被拖曳，TriggerEngine 會 fire drag 規則
+    try { window.api.character.dragStart(); } catch (_e) { /* M2 fallback */ }
     e.preventDefault();
   });
 

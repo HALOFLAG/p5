@@ -10,5 +10,11 @@
   },
   "devDependencies": {
     "electron": "^33.4.11"
+  },
+  "dependencies": {
+    "get-windows": "^9.3.0",
+    "koffi": "^2.16.2",
+    "systeminformation": "^5.31.6",
+    "uiohook-napi": "^1.5.5"
   }
 }

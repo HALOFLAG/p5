@@ -33,7 +33,20 @@ contextBridge.exposeInMainWorld('api', {
     dismissAck: (payload) => ipcRenderer.send('dialogue:dismiss-ack', payload),
     choiceSelected: (payload) => ipcRenderer.send('dialogue:choice-selected', payload),
   },
+  character: {
+    dragStart: () => ipcRenderer.send('character:drag-start'),
+  },
   debug: {
     testBubble: (variant) => ipcRenderer.send('debug:test-bubble', { variant }),
+    countersGet: () => ipcRenderer.invoke('debug:counters:get'),
+    envGet: () => ipcRenderer.invoke('debug:env:get'),
+    contextStateGet: () => ipcRenderer.invoke('debug:context-state:get'),
+    pluginsStatus: () => ipcRenderer.invoke('debug:plugins:status'),
+    rulesStatus: () => ipcRenderer.invoke('debug:rules:status'),
+    fire: (ruleName) => ipcRenderer.send('debug:fire', { rule_name: ruleName }),
+    resetCooldowns: () => ipcRenderer.send('debug:reset-cooldowns'),
+    flushEvents: () => ipcRenderer.invoke('debug:flush-events'),
+    purgeEvents: () => ipcRenderer.invoke('debug:purge-events'),
+    triggerHistory: (limit) => ipcRenderer.invoke('debug:trigger-history', { limit: limit || 50 }),
   },
 });
