@@ -15,9 +15,12 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { interpolate } = require('./variable-interpolator');
+const { interpolate, ALLOWED_VARS } = require('./variable-interpolator');
+const { redactSensitive } = require('./redact');
 
 const RING_SIZE = 50;
+const VAR_SCAN_RE = /\{(\w+)\}/g;
+const ALLOWED_VAR_SET = new Set(ALLOWED_VARS);
 
 class DialogueDirector {
   constructor({
@@ -26,6 +29,7 @@ class DialogueDirector {
     getActivePersona,
     sender,
     eventLogger = null,
+    monitorRegistry = null,
     logger = console,
   } = {}) {
     this._personasDir = personasDir;
@@ -33,6 +37,7 @@ class DialogueDirector {
     this._getActivePersona = getActivePersona;
     this._sender = sender;
     this._eventLogger = eventLogger;
+    this._registry = monitorRegistry;
     this._log = logger;
 
     this._cache = new Map();
@@ -81,7 +86,16 @@ class DialogueDirector {
     const pool = fresh.length > 0 ? fresh : sequences;
     const chosen = pool[Math.floor(Math.random() * pool.length)];
 
-    const sequence = cloneAndInterpolate(chosen, context);
+    let fgTitle = '';
+    try {
+      const fgPlugin = this._registry?.getPluginByCapability?.('foreground_window');
+      fgTitle = fgPlugin?.snapshot?.()?.foreground?.title || '';
+    } catch (err) {
+      this._log.warn?.('[director] fg snapshot failed:', err.message);
+    }
+    const enrichedCtx = { ...(context || {}), fg_app_title: redactSensitive(fgTitle) };
+
+    const sequence = cloneAndInterpolate(chosen, enrichedCtx);
 
     if (this._sender) {
       try { this._sender('dialogue:show', sequence); } catch (err) {
@@ -112,11 +126,36 @@ class DialogueDirector {
     try {
       const text = await fs.promises.readFile(file, 'utf-8');
       const data = JSON.parse(text);
+      this._validateVars(personaId, data);
       this._cache.set(personaId, data);
       return data;
     } catch (err) {
       this._log.warn?.(`[director] load ${personaId}/dialogues.json:`, err.message);
       return null;
+    }
+  }
+
+  _validateVars(personaId, data) {
+    const cats = data?.categories;
+    if (!cats || typeof cats !== 'object') return;
+    for (const [catName, cat] of Object.entries(cats)) {
+      const seqs = cat?.sequences;
+      if (!Array.isArray(seqs)) continue;
+      for (const seq of seqs) {
+        if (!Array.isArray(seq?.lines)) continue;
+        for (const line of seq.lines) {
+          if (typeof line?.text !== 'string') continue;
+          let m;
+          VAR_SCAN_RE.lastIndex = 0;
+          while ((m = VAR_SCAN_RE.exec(line.text)) !== null) {
+            if (!ALLOWED_VAR_SET.has(m[1])) {
+              this._log.warn?.(
+                `[director] unknown var {${m[1]}} in ${personaId}/${catName}/${seq.sequenceId}`
+              );
+            }
+          }
+        }
+      }
     }
   }
 

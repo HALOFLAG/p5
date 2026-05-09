@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('api', {
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (partial) => ipcRenderer.invoke('settings:set', partial),
+    open: () => ipcRenderer.invoke('settings:open'),
   },
   windowState: {
     get: () => ipcRenderer.invoke('window-state:get'),

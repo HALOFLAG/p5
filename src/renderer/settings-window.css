@@ -1,0 +1,312 @@
+/* p5 settings 視窗：普通有邊框視窗、淺色為主，自動跟系統深色模式 */
+
+:root {
+  --bg: #f6f7fb;
+  --fg: #1f2233;
+  --fg-muted: #5a607a;
+  --border: #d8dceb;
+  --border-strong: #b9c0d6;
+  --surface: #ffffff;
+  --accent: #6c5ce7;
+  --accent-fg: #ffffff;
+  --accent-soft: rgba(108, 92, 231, 0.12);
+  --danger: #d3454c;
+  --shadow: 0 1px 2px rgba(20, 24, 50, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1d2a;
+    --fg: #e8eaf3;
+    --fg-muted: #8b91ad;
+    --border: #2e3144;
+    --border-strong: #3f4358;
+    --surface: #23253a;
+    --accent: #8c7cf0;
+    --accent-fg: #1b1d2a;
+    --accent-soft: rgba(140, 124, 240, 0.18);
+    --danger: #ef6f76;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans CJK TC',
+               -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-y: auto;
+}
+
+.settings-root {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 28px 28px;
+}
+
+.settings-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+
+.settings-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+/* row 通用：左標籤、右控制元件 */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.row + .row,
+.row + .schedule-block {
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+  padding-top: 10px;
+}
+
+.row-label {
+  flex: 0 0 70px;
+  color: var(--fg-muted);
+}
+
+.row-control {
+  flex: 1;
+}
+
+.row-control-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.row-checkbox {
+  cursor: pointer;
+  user-select: none;
+}
+
+.row-checkbox input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+/* 表單元件 */
+select,
+input[type="time"],
+input[type="text"] {
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  min-width: 120px;
+}
+
+select:focus,
+input[type="time"]:focus,
+input[type="text"]:focus,
+input[type="range"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+  height: 18px;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.value-tag {
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted);
+  min-width: 38px;
+  text-align: right;
+}
+
+/* 按鈕 */
+.btn {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: filter 120ms ease, transform 80ms ease;
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--accent-soft);
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.btn-icon:hover {
+  color: var(--danger);
+  background: var(--accent-soft);
+}
+
+.settings-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* DND 排程列表 */
+.schedule-block {
+  margin-top: 12px;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-list:empty::before {
+  content: '（尚無排程）';
+  color: var(--fg-muted);
+  font-style: italic;
+  font-size: 12px;
+  padding: 6px 0;
+}
+
+.schedule-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.schedule-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+.schedule-days {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.day-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--fg-muted);
+  font-size: 11px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.day-toggle.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+.day-toggle input {
+  display: none;
+}
+
+.schedule-hint {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.settings-footer {
+  text-align: center;
+  padding: 12px 0 4px;
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-family: Consolas, 'Courier New', monospace;
+}

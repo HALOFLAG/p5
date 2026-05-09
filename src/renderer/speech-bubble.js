@@ -251,11 +251,14 @@ class SpeechBubble {
   }
 
   _typeNext(fullText) {
-    if (this.charIndex >= fullText.length) {
+    // Array.from 會把 surrogate pair（如 🥺 / ❤️ ZWJ sequence）視為單一字元，
+    // 避免打字機在 emoji 中間切壞。中文 / 多數 BMP 顏文字 perf 無感。
+    const chars = Array.from(fullText);
+    if (this.charIndex >= chars.length) {
       this._onLineComplete();
       return;
     }
-    this.textEl.textContent = fullText.slice(0, this.charIndex + 1);
+    this.textEl.textContent = chars.slice(0, this.charIndex + 1).join('');
     this.charIndex++;
     this.typingTimer = setTimeout(() => this._typeNext(fullText), TYPING_SPEED_MS);
   }
@@ -288,7 +291,7 @@ class SpeechBubble {
       if (this.typingTimer) clearTimeout(this.typingTimer);
       const line = this.sequence.lines[this.lineIndex];
       this.textEl.textContent = line.text;
-      this.charIndex = line.text.length;
+      this.charIndex = Array.from(line.text).length;
       this._onLineComplete();
     } else if (this.state === 'waiting') {
       const isLast = this.lineIndex === this.sequence.lines.length - 1;

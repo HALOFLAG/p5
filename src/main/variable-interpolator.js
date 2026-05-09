@@ -1,13 +1,14 @@
 // variable-interpolator — 對話台詞變數插值
 //
-// 白名單變數（plan §15 邊界：M3 先支援前 3 個，{usage_hours}/{window_title} M4 補）：
+// 白名單變數（plan §15 邊界）：
 //   {time}        14:32
 //   {hour}        14
 //   {weekday}     星期三
-//   {usage_hours} M4 才實作完整版（M3 用 input.session_sec 粗略換算）
-//   {window_title} M4 才實作（M3 受隱私考量回空字串）
+//   {usage_hours} 由 ctx.input.session_sec 粗略換算
+//   {window_title} 由 ctx.fg_app_title 取得（caller 應傳已 redact 的字串）
 
 const VAR_RE = /\{(time|hour|weekday|usage_hours|window_title)\}/g;
+const ALLOWED_VARS = ['time', 'hour', 'weekday', 'usage_hours', 'window_title'];
 const WEEKDAY_ZH = ['日', '一', '二', '三', '四', '五', '六'];
 
 function interpolate(text, ctx = {}) {
@@ -25,8 +26,10 @@ function interpolate(text, ctx = {}) {
         return `星期${WEEKDAY_ZH[d.getDay()]}`;
       case 'usage_hours':
         return formatUsageHours(ctx?.input?.session_sec);
-      case 'window_title':
-        return '';
+      case 'window_title': {
+        const t = ctx?.fg_app_title;
+        return typeof t === 'string' ? t : '';
+      }
       default:
         return '';
     }
@@ -47,4 +50,4 @@ function formatUsageHours(seconds) {
   return h < 10 ? h.toFixed(1) : String(Math.floor(h));
 }
 
-module.exports = { interpolate };
+module.exports = { interpolate, ALLOWED_VARS };

@@ -130,6 +130,10 @@
         handleDebugAction(btn.dataset.debug).catch((err) =>
           console.warn('[M3 debug]', btn.dataset.debug, 'failed:', err)
         );
+      } else if (btn.dataset.action === 'open-settings') {
+        window.api.settings.open().catch((err) =>
+          console.warn('[M4] open settings failed:', err)
+        );
       }
     });
   });

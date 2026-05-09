@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>p5 設定</title>
+  <link rel="stylesheet" href="settings-window.css" />
+</head>
+<body>
+  <main class="settings-root">
+    <header class="settings-header">
+      <h1>p5 設定</h1>
+    </header>
+
+    <section class="settings-section">
+      <label class="row">
+        <span class="row-label">人格</span>
+        <select id="active-persona" class="row-control">
+          <option value="">（載入中…）</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="settings-section">
+      <label class="row">
+        <span class="row-label">音量</span>
+        <span class="row-control row-control-inline">
+          <input type="range" id="volume" min="0" max="1" step="0.05" value="0.6" />
+          <span class="value-tag" id="volume-value">60%</span>
+        </span>
+      </label>
+    </section>
+
+    <section class="settings-section">
+      <h2 class="section-title">語音</h2>
+      <label class="row row-checkbox">
+        <input type="checkbox" id="voice-enabled" />
+        <span>啟用語音</span>
+      </label>
+      <label class="row">
+        <span class="row-label">語言</span>
+        <select id="voice-language" class="row-control">
+          <option value="zh">中文</option>
+          <option value="ja">日文</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="settings-section">
+      <h2 class="section-title">請勿打擾</h2>
+      <label class="row row-checkbox">
+        <input type="checkbox" id="dnd-manual" />
+        <span>手動開啟（立即靜音）</span>
+      </label>
+      <label class="row row-checkbox">
+        <input type="checkbox" id="dnd-schedule-enabled" />
+        <span>排程啟用</span>
+      </label>
+
+      <div class="schedule-block">
+        <div class="schedule-header">
+          <span>排程列表</span>
+          <button type="button" id="add-schedule" class="btn btn-secondary">+ 新增排程</button>
+        </div>
+        <div id="schedule-list" class="schedule-list">
+          <!-- 由 JS 動態填入 -->
+        </div>
+        <p class="schedule-hint">若兩個時間相同，視為整天；跨午夜（如 22:00 → 06:00）會自動處理。</p>
+      </div>
+    </section>
+
+    <section class="settings-section settings-actions">
+      <button type="button" id="open-debug-panel" class="btn">Debug 面板</button>
+      <button type="button" id="open-config-dir" class="btn">打開設定資料夾</button>
+    </section>
+
+    <footer class="settings-footer" id="env-info">—</footer>
+  </main>
+
+  <script src="settings-window.js"></script>
+</body>
+</html>

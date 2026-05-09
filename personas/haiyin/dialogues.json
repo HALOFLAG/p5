@@ -1,7 +1,8 @@
 {
   "$schema": "v2",
   "persona_id": "haiyin",
-  "_comment": "M3 範本：每個分類 2 句測試樣本。M4 會擴充至 200-300 句 fallback。",
+  "_design_note": "M3 範本：每分類 3 句，含 1 句中度病嬌（佔有/嫉妒）+ 1 句一般甜美 + 1 句變化。共保留 1 條『嗶~』屏蔽風格訓記。M4 階段擴充至 200-300 句。",
+
   "categories": {
     "click_too_much": {
       "sequences": [
@@ -9,63 +10,96 @@
           "sequenceId": "haiyin_ctm_001",
           "type": "speech",
           "lines": [
-            { "text": "點得這麼急⋯⋯怎麼啦？", "expression": "annoyed" }
+            { "text": "呐⋯⋯點得這麼急做什麼？", "expression": "pout" }
           ]
         },
         {
           "sequenceId": "haiyin_ctm_002",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 5000,
+          "lines": [
+            { "text": "（手指在點別人嗎⋯⋯不是的吧⋯⋯）" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_ctm_003",
           "type": "speech",
           "lines": [
-            { "text": "不要太用力，滑鼠會壞掉的", "expression": "pout" }
+            { "text": "別點那麼多～看看我這邊嘛", "expression": "happy" }
           ]
         }
       ]
     },
+
     "long_idle": {
       "sequences": [
         {
           "sequenceId": "haiyin_idle_001",
-          "type": "thought",
-          "interaction": "display",
-          "auto_close_ms": 6000,
+          "type": "speech",
           "lines": [
-            { "text": "（怎麼不見了，去休息了嗎？）" }
+            { "text": "你⋯⋯去哪了？", "expression": "annoyed" },
+            { "text": "我等了你好久呢", "expression": "pout" }
           ]
         },
         {
           "sequenceId": "haiyin_idle_002",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 6000,
+          "lines": [
+            { "text": "（不會是跟別人在一起吧⋯⋯不會的不會的⋯⋯）" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_idle_003",
           "type": "speech",
           "lines": [
-            { "text": "歡迎回來～有好好休息嗎？", "expression": "happy" }
+            { "text": "歡迎回來呢❤", "expression": "happy" },
+            { "text": "下次⋯⋯不要讓我等太久喔", "expression": "annoyed" }
           ]
         }
       ]
     },
+
     "continuous_use": {
       "sequences": [
         {
           "sequenceId": "haiyin_cont_001",
           "type": "speech",
           "lines": [
-            { "text": "已經 {usage_hours} 小時了，喝口水吧", "expression": "idle" }
+            { "text": "已經 {usage_hours} 小時了⋯⋯", "expression": "pout" },
+            { "text": "再這樣下去我會吃醋的喔", "expression": "annoyed" }
           ]
         },
         {
           "sequenceId": "haiyin_cont_002",
           "type": "speech",
           "lines": [
-            { "text": "{weekday} 工作得這麼認真，要不要起來伸個懶腰？", "expression": "happy" }
+            { "text": "{weekday}也工作這麼認真⋯⋯", "expression": "idle" },
+            { "text": "偶爾也看看我嘛～", "expression": "embarrassed" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_cont_003",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 6000,
+          "lines": [
+            { "text": "（這個人到底在忙什麼⋯⋯比我還重要嗎⋯⋯）" }
           ]
         }
       ]
     },
+
     "deep_night": {
       "sequences": [
         {
           "sequenceId": "haiyin_night_001",
           "type": "speech",
           "lines": [
-            { "text": "都 {time} 了⋯⋯該睡了喔", "expression": "sleepy" }
+            { "text": "{time}了⋯⋯還醒著？", "expression": "sleepy" },
+            { "text": "是想我嗎❤", "expression": "happy" }
           ]
         },
         {
@@ -74,11 +108,20 @@
           "interaction": "display",
           "auto_close_ms": 6000,
           "lines": [
-            { "text": "（這人怎麼又熬夜⋯⋯）" }
+            { "text": "（這個時間⋯⋯我才不會「嗶嗶~~」呢～只是想跟你多待一會兒⋯⋯）" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_night_003",
+          "type": "speech",
+          "lines": [
+            { "text": "都這個時候了⋯⋯", "expression": "pout" },
+            { "text": "我陪你到睡著吧？", "expression": "embarrassed" }
           ]
         }
       ]
     },
+
     "drag": {
       "sequences": [
         {
@@ -86,7 +129,7 @@
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
-            { "text": "誒誒～慢一點", "expression": "surprised" }
+            { "text": "誒誒～要帶我去哪？", "expression": "happy" }
           ]
         },
         {
@@ -94,7 +137,15 @@
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
-            { "text": "好啦好啦，要去哪裡？", "expression": "happy" }
+            { "text": "嗯⋯⋯只要是你拉我都可以喔～", "expression": "embarrassed" }
+          ]
+        },
+        {
+          "sequenceId": "haiyin_drag_003",
+          "type": "speech",
+          "auto_close_ms": 4000,
+          "lines": [
+            { "text": "別碰得這麼用力啦", "expression": "pout" }
           ]
         }
       ]

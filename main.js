@@ -2,7 +2,7 @@ const { app, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 
-const { createMainWindow } = require('./src/main/window-mgr');
+const { createMainWindow, createSettingsWindow, createDebugPanelWindow } = require('./src/main/window-mgr');
 const { createTray } = require('./src/main/tray');
 const { ConfigStore } = require('./src/main/config-store');
 const { WindowState } = require('./src/main/window-state');
@@ -31,6 +31,8 @@ const argv = process.argv.slice(1);
 const IS_DEV = argv.includes('--dev');
 
 let mainWindow = null;
+let settingsWindow = null;
+let debugPanelWindow = null;
 let tray = null;
 let config = null;
 let windowState = null;
@@ -178,6 +180,7 @@ async function bootstrap() {
       }
     },
     eventLogger,
+    monitorRegistry,
     logger: console,
   });
   await dialogueDirector.load();
@@ -236,11 +239,82 @@ function setupIpc() {
     const before = config.getAll();
     config.update(partial);
     const after = config.getAll();
-    // 切人格時清快取
+    // 切人格時清快取 + dismiss 舊氣泡（避免顯示前任人格的對話殘留）
     if (before.active_persona !== after.active_persona) {
       dialogueDirector?.invalidatePersonaCache();
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('dialogue:dismiss', { reason: 'persona-changed' });
+      }
     }
     return after;
+  });
+
+  // ── M4 Phase 2：Settings 視窗 ─────────────────────────
+  ipcMain.handle('settings:open', () => {
+    if (settingsWindow && !settingsWindow.isDestroyed()) {
+      if (settingsWindow.isMinimized()) settingsWindow.restore();
+      settingsWindow.show();
+      settingsWindow.focus();
+      return true;
+    }
+    settingsWindow = createSettingsWindow();
+    settingsWindow.on('closed', () => {
+      settingsWindow = null;
+    });
+    return true;
+  });
+
+  ipcMain.on('settings-window:close', () => {
+    if (settingsWindow && !settingsWindow.isDestroyed()) {
+      settingsWindow.close();
+    }
+  });
+
+  ipcMain.handle('personas:list', async () => {
+    try {
+      const entries = await fs.readdir(PERSONAS_DIR, { withFileTypes: true });
+      const result = [];
+      for (const ent of entries) {
+        if (!ent.isDirectory()) continue;
+        const id = ent.name;
+        const personaPath = path.join(PERSONAS_DIR, id, 'persona.json');
+        let display_name = id;
+        try {
+          const text = await fs.readFile(personaPath, 'utf-8');
+          const parsed = JSON.parse(text);
+          if (parsed && typeof parsed.display_name === 'string' && parsed.display_name.trim()) {
+            display_name = parsed.display_name;
+          }
+        } catch (_e) {
+          // 缺 persona.json 或 JSON 壞掉 → 用 id 當 display_name
+        }
+        result.push({ id, display_name });
+      }
+      return result;
+    } catch (err) {
+      console.warn('[main] personas:list failed:', err.message);
+      return [];
+    }
+  });
+
+  // ── M4 Phase 3：Debug 面板視窗 ────────────────────────
+  ipcMain.on('debug-panel:open', () => {
+    if (debugPanelWindow && !debugPanelWindow.isDestroyed()) {
+      if (debugPanelWindow.isMinimized()) debugPanelWindow.restore();
+      debugPanelWindow.show();
+      debugPanelWindow.focus();
+      return;
+    }
+    debugPanelWindow = createDebugPanelWindow();
+    debugPanelWindow.on('closed', () => {
+      debugPanelWindow = null;
+    });
+  });
+
+  ipcMain.on('debug-panel-window:close', () => {
+    if (debugPanelWindow && !debugPanelWindow.isDestroyed()) {
+      debugPanelWindow.close();
+    }
   });
 
   // ── 視窗狀態（角色位置）─────────────────────────────
@@ -343,6 +417,101 @@ function setupIpc() {
     const events = await eventLogger.readRange(now - 7 * 24 * 3600 * 1000, now);
     return events.filter((e) => e.type === 'trigger:fired').slice(-limit).reverse();
   });
+
+  // ── M4 Phase 3：rollup 聚合（給 Debug 面板熱力 / 應用 Top-10） ─
+  ipcMain.handle('debug:heatmap', async (_e, opts = {}) => {
+    const days = Math.max(1, Math.min(opts.days || 7, 90));
+    const rollups = await loadRollupsForRecentDays(days);
+    // matrix[weekday 0=Sun..6=Sat][hour 0..23] = activity weight
+    const matrix = Array.from({ length: 7 }, () => Array(24).fill(0));
+    let maxValue = 0;
+    for (const r of rollups) {
+      const d = new Date(r.hour_start);
+      const wd = d.getDay();
+      const hr = d.getHours();
+      const triggers = sumValues(r.trigger_count);
+      const weight = (r.click_count || 0) + (r.key_count || 0) + 5 * triggers;
+      matrix[wd][hr] += weight;
+      if (matrix[wd][hr] > maxValue) maxValue = matrix[wd][hr];
+    }
+    return { matrix, max_value: maxValue, total_days: days, rollup_count: rollups.length };
+  });
+
+  ipcMain.handle('debug:app-usage', async (_e, opts = {}) => {
+    const days = Math.max(1, Math.min(opts.days || 7, 90));
+    const rollups = await loadRollupsForRecentDays(days);
+    const totals = {};
+    let totalMs = 0;
+    for (const r of rollups) {
+      const fg = r.fg_app_ms || {};
+      for (const [exe, ms] of Object.entries(fg)) {
+        if (!exe) continue;
+        const v = Number(ms) || 0;
+        totals[exe] = (totals[exe] || 0) + v;
+        totalMs += v;
+      }
+    }
+    const sorted = Object.entries(totals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([exe, total_ms]) => ({
+        exe,
+        total_ms,
+        percent: totalMs > 0 ? Math.round((total_ms / totalMs) * 1000) / 10 : 0,
+      }));
+    return { apps: sorted, total_ms: totalMs, total_days: days, rollup_count: rollups.length };
+  });
+}
+
+// ── rollup 讀取 helper ─────────────────────────────────────
+// 讀過去 N 天的 rollup JSONL，回傳已 parse 的物件陣列。檔不存在或單行壞掉跳過。
+async function loadRollupsForRecentDays(days) {
+  const rollups = [];
+  let entries;
+  try {
+    entries = await fs.readdir(ROLLUPS_DIR);
+  } catch (_e) {
+    return rollups;
+  }
+  // 計算允許的日期區間（以本地日期 YYYY-MM-DD 為界）
+  const now = new Date();
+  const cutoff = new Date(now);
+  cutoff.setHours(0, 0, 0, 0);
+  cutoff.setDate(cutoff.getDate() - (days - 1));
+  const cutoffStr = formatLocalDate(cutoff);
+  const todayStr = formatLocalDate(now);
+
+  for (const name of entries) {
+    if (!name.endsWith('.jsonl')) continue;
+    const dateStr = name.slice(0, -6); // strip .jsonl
+    if (dateStr < cutoffStr || dateStr > todayStr) continue;
+    try {
+      const text = await fs.readFile(path.join(ROLLUPS_DIR, name), 'utf-8');
+      for (const line of text.split('\n')) {
+        const t = line.trim();
+        if (!t) continue;
+        try {
+          const obj = JSON.parse(t);
+          if (obj && obj.type === 'hourly-rollup') rollups.push(obj);
+        } catch (_e) { /* skip bad line */ }
+      }
+    } catch (_e) { /* skip unreadable file */ }
+  }
+  return rollups;
+}
+
+function formatLocalDate(d) {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function sumValues(obj) {
+  if (!obj) return 0;
+  let s = 0;
+  for (const v of Object.values(obj)) s += Number(v) || 0;
+  return s;
 }
 
 // ── DEV 模式測試用 demo 序列（保留 M2.5 全 11 種變體）─────
