@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('settingsApi', {
   settingsSet: (partial) => ipcRenderer.invoke('settings:set', partial),
   personasList: () => ipcRenderer.invoke('personas:list'),
   debugPanelOpen: () => ipcRenderer.send('debug-panel:open'),
+  dialoguesManagerOpen: () => ipcRenderer.invoke('dialogues-manager:open'),
   openConfigDir: () => ipcRenderer.invoke('shell:open-config-dir'),
   envInfo: () => ipcRenderer.invoke('env:info'),
   close: () => ipcRenderer.send('settings-window:close'),

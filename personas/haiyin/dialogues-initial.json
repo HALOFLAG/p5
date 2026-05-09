@@ -1,21 +1,17 @@
 {
   "$schema": "v2",
-  "persona_id": "liss",
-  "_design_note": "M3 範本：每分類 3 句，多數帶『最愛的主人♡』結尾或顏文字。M4 階段擴充至 200-300 句。",
+  "persona_id": "haiyin",
+  "_design_note": "M3 範本：每分類 3 句，含 1 句中度病嬌（佔有/嫉妒）+ 1 句一般甜美 + 1 句變化。共保留 1 條『嗶~』屏蔽風格訓記。M4 階段擴充至 200-300 句。",
   "categories": {
     "click_too_much": {
       "sequences": [
         {
-          "sequenceId": "liss_ctm_001",
+          "sequenceId": "haiyin_ctm_001",
           "type": "speech",
           "lines": [
             {
-              "text": "請慢一點點，主人～",
-              "expression": "worried"
-            },
-            {
-              "text": "莉絲擔心您手累了，最愛的主人♡",
-              "expression": "shy"
+              "text": "呐⋯⋯點得這麼急做什麼？",
+              "expression": "pout"
             }
           ],
           "_meta": {
@@ -27,34 +23,30 @@
           }
         },
         {
-          "sequenceId": "liss_ctm_002",
-          "type": "speech",
-          "lines": [
-            {
-              "text": "(*ˊᗜˋ*) 主人怎麼點得這麼急呢？",
-              "expression": "wink"
-            },
-            {
-              "text": "需要莉絲幫您嗎？最愛的主人♡",
-              "expression": "happy"
-            }
-          ],
-          "_meta": {
-            "created_at": "2026-05-09T15:12:35.362Z",
-            "source_batch": "initial",
-            "weight": 1,
-            "edited_at": null,
-            "fire_count_lifetime": 0
-          }
-        },
-        {
-          "sequenceId": "liss_ctm_003",
+          "sequenceId": "haiyin_ctm_002",
           "type": "thought",
           "interaction": "display",
           "auto_close_ms": 5000,
           "lines": [
             {
-              "text": "（主人今天好像有點趕⋯⋯莉絲要不要泡杯茶呢？）"
+              "text": "（手指在點別人嗎⋯⋯不是的吧⋯⋯）"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_003",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "別點那麼多～看看我這邊嘛",
+              "expression": "happy"
             }
           ],
           "_meta": {
@@ -70,16 +62,16 @@
     "long_idle": {
       "sequences": [
         {
-          "sequenceId": "liss_idle_001",
+          "sequenceId": "haiyin_idle_001",
           "type": "speech",
           "lines": [
             {
-              "text": "主人您回來了！(*ˊᗜˋ*)",
-              "expression": "happy"
+              "text": "你⋯⋯去哪了？",
+              "expression": "annoyed"
             },
             {
-              "text": "莉絲一直在等您呢～最愛的主人♡",
-              "expression": "shy"
+              "text": "我等了你好久呢",
+              "expression": "pout"
             }
           ],
           "_meta": {
@@ -91,34 +83,34 @@
           }
         },
         {
-          "sequenceId": "liss_idle_002",
-          "type": "speech",
-          "lines": [
-            {
-              "text": "歡迎回來，主人。",
-              "expression": "idle"
-            },
-            {
-              "text": "有好好休息嗎？♡",
-              "expression": "worried"
-            }
-          ],
-          "_meta": {
-            "created_at": "2026-05-09T15:12:35.362Z",
-            "source_batch": "initial",
-            "weight": 1,
-            "edited_at": null,
-            "fire_count_lifetime": 0
-          }
-        },
-        {
-          "sequenceId": "liss_idle_003",
+          "sequenceId": "haiyin_idle_002",
           "type": "thought",
           "interaction": "display",
           "auto_close_ms": 6000,
           "lines": [
             {
-              "text": "（主人離開好一陣子了，希望沒發生什麼事⋯⋯）"
+              "text": "（不會是跟別人在一起吧⋯⋯不會的不會的⋯⋯）"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_003",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "歡迎回來呢❤",
+              "expression": "happy"
+            },
+            {
+              "text": "下次⋯⋯不要讓我等太久喔",
+              "expression": "annoyed"
             }
           ],
           "_meta": {
@@ -134,16 +126,16 @@
     "continuous_use": {
       "sequences": [
         {
-          "sequenceId": "liss_cont_001",
+          "sequenceId": "haiyin_cont_001",
           "type": "speech",
           "lines": [
             {
-              "text": "已經 {usage_hours} 小時沒休息了喔，主人。",
-              "expression": "worried"
+              "text": "已經 {usage_hours} 小時了⋯⋯",
+              "expression": "pout"
             },
             {
-              "text": "要先喝口水嗎？♡",
-              "expression": "happy"
+              "text": "再這樣下去我會吃醋的喔",
+              "expression": "annoyed"
             }
           ],
           "_meta": {
@@ -155,16 +147,16 @@
           }
         },
         {
-          "sequenceId": "liss_cont_002",
+          "sequenceId": "haiyin_cont_002",
           "type": "speech",
           "lines": [
             {
-              "text": "{weekday}也辛苦了～",
+              "text": "{weekday}也工作這麼認真⋯⋯",
               "expression": "idle"
             },
             {
-              "text": "莉絲幫您按摩一下肩膀？最愛的主人♡",
-              "expression": "shy"
+              "text": "偶爾也看看我嘛～",
+              "expression": "embarrassed"
             }
           ],
           "_meta": {
@@ -176,16 +168,13 @@
           }
         },
         {
-          "sequenceId": "liss_cont_003",
-          "type": "speech",
+          "sequenceId": "haiyin_cont_003",
+          "type": "thought",
+          "interaction": "display",
+          "auto_close_ms": 6000,
           "lines": [
             {
-              "text": "主人，可以站起來伸個懶腰嗎？",
-              "expression": "wink"
-            },
-            {
-              "text": "(´。• ᵕ •。`) 莉絲擔心您的腰呢～",
-              "expression": "worried"
+              "text": "（這個人到底在忙什麼⋯⋯比我還重要嗎⋯⋯）"
             }
           ],
           "_meta": {
@@ -201,16 +190,16 @@
     "deep_night": {
       "sequences": [
         {
-          "sequenceId": "liss_night_001",
+          "sequenceId": "haiyin_night_001",
           "type": "speech",
           "lines": [
             {
-              "text": "都 {time} 了⋯⋯",
+              "text": "{time}了⋯⋯還醒著？",
               "expression": "sleepy"
             },
             {
-              "text": "莉絲幫您鋪好被子了，要去睡了嗎？最愛的主人♡",
-              "expression": "worried"
+              "text": "是想我嗎❤",
+              "expression": "happy"
             }
           ],
           "_meta": {
@@ -222,13 +211,13 @@
           }
         },
         {
-          "sequenceId": "liss_night_002",
+          "sequenceId": "haiyin_night_002",
           "type": "thought",
           "interaction": "display",
           "auto_close_ms": 6000,
           "lines": [
             {
-              "text": "（主人凌晨還在工作⋯⋯莉絲也陪到底吧⋯⋯）"
+              "text": "（這個時間⋯⋯我才不會「嗶嗶~~」呢～只是想跟你多待一會兒⋯⋯）"
             }
           ],
           "_meta": {
@@ -240,16 +229,16 @@
           }
         },
         {
-          "sequenceId": "liss_night_003",
+          "sequenceId": "haiyin_night_003",
           "type": "speech",
           "lines": [
             {
-              "text": "主人，要不要先洗個熱水澡呢？",
-              "expression": "shy"
+              "text": "都這個時候了⋯⋯",
+              "expression": "pout"
             },
             {
-              "text": "莉絲都幫您準備好了喔～♡",
-              "expression": "happy"
+              "text": "我陪你到睡著吧？",
+              "expression": "embarrassed"
             }
           ],
           "_meta": {
@@ -265,12 +254,12 @@
     "drag": {
       "sequences": [
         {
-          "sequenceId": "liss_drag_001",
+          "sequenceId": "haiyin_drag_001",
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
             {
-              "text": "啊～主人要帶莉絲去哪呢？(´。• ᵕ •。`)",
+              "text": "誒誒～要帶我去哪？",
               "expression": "happy"
             }
           ],
@@ -283,13 +272,13 @@
           }
         },
         {
-          "sequenceId": "liss_drag_002",
+          "sequenceId": "haiyin_drag_002",
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
             {
-              "text": "好的好的，莉絲跟您走～♡",
-              "expression": "wink"
+              "text": "嗯⋯⋯只要是你拉我都可以喔～",
+              "expression": "embarrassed"
             }
           ],
           "_meta": {
@@ -301,13 +290,13 @@
           }
         },
         {
-          "sequenceId": "liss_drag_003",
+          "sequenceId": "haiyin_drag_003",
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
             {
-              "text": "誒誒，主人慢一點啦，最愛的主人♡",
-              "expression": "shy"
+              "text": "別碰得這麼用力啦",
+              "expression": "pout"
             }
           ],
           "_meta": {

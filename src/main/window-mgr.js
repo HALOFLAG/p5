@@ -60,6 +60,7 @@ function createSettingsWindow() {
     x,
     y,
     title: 'p5 設定',
+    show: false,
     frame: true,
     transparent: false,
     alwaysOnTop: false,
@@ -82,6 +83,7 @@ function createSettingsWindow() {
 
   win.removeMenu();
   win.loadFile(path.join(__dirname, '..', 'renderer', 'settings-window.html'));
+  win.once('ready-to-show', () => win.show());
 
   return win;
 }
@@ -108,6 +110,7 @@ function createDebugPanelWindow() {
     x,
     y,
     title: 'p5 Debug 面板',
+    show: false,
     frame: true,
     transparent: false,
     alwaysOnTop: false,
@@ -130,8 +133,64 @@ function createDebugPanelWindow() {
 
   win.removeMenu();
   win.loadFile(path.join(__dirname, '..', 'renderer', 'debug-panel.html'));
+  win.once('ready-to-show', () => win.show());
 
   return win;
 }
 
-module.exports = { createMainWindow, createSettingsWindow, createDebugPanelWindow };
+/**
+ * 對話庫管理視窗：M4.5 新增。
+ *
+ * 比 debug 面板更大（資料量多，要列 sequences 表格 + 編輯區）：1200×780。
+ * 屬性與其他工具視窗一致：普通邊框、可縮放、不穿透、不置頂。
+ * 獨立 preload (dialogues-manager-preload.js) 只暴露 dialogues:* 相關 IPC。
+ */
+function createDialoguesManagerWindow() {
+  const primary = screen.getPrimaryDisplay();
+  const winWidth = 1200;
+  const winHeight = 780;
+  const x = Math.round(primary.bounds.x + (primary.size.width - winWidth) / 2);
+  const y = Math.round(primary.bounds.y + (primary.size.height - winHeight) / 2);
+
+  const win = new BrowserWindow({
+    width: winWidth,
+    height: winHeight,
+    minWidth: 880,
+    minHeight: 600,
+    x,
+    y,
+    title: 'p5 對話庫管理',
+    show: false,
+    frame: true,
+    transparent: false,
+    alwaysOnTop: false,
+    resizable: true,
+    movable: true,
+    skipTaskbar: false,
+    hasShadow: true,
+    fullscreenable: false,
+    minimizable: true,
+    maximizable: true,
+    focusable: true,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, '..', 'renderer', 'dialogues-manager-preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false,
+    },
+  });
+
+  win.removeMenu();
+  win.loadFile(path.join(__dirname, '..', 'renderer', 'dialogues-manager-window.html'));
+  win.once('ready-to-show', () => win.show());
+
+  return win;
+}
+
+module.exports = {
+  createMainWindow,
+  createSettingsWindow,
+  createDebugPanelWindow,
+  createDialoguesManagerWindow,
+};

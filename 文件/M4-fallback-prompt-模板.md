@@ -4,6 +4,13 @@
 > 路線：**LLM 生草稿 + 使用者篩**（同時也是 M7 prompt 工程的演練場）。
 >
 > 本文件提供 10 份完整 prompt（兩人格 × 五分類），複製到任意 LLM 即可生草稿。
+>
+> **M4.5 更新**：
+> - 「風格樣本」section 已改從 `personas/<id>/dialogues-initial.json` 該 category 抽
+>   （比舊版 `voice_samples` 更貼合該分類語境，且格式跟 LLM 產出一致）
+> - **本文件中的 10 份 prompt 是 snapshot**。如要拿最新版（包含 dialogues-initial.json
+>   範例），直接跑 `node scripts/llm-fallback-builder.js` 重新生成
+> - 合併草稿可改用「對話庫管理視窗」的批次匯入 tab（見 §4），UI 內就能完成預覽 → 套用
 
 ---
 
@@ -61,12 +68,21 @@ LLM 輸出 (10 份 prompt × 3 輪)
   ↓
 人工篩選 / 改寫 (§4 三標：保留 / 改寫 / 丟棄)
   ↓
-整理成 CSV (見 §4 格式)
+整理成 .txt（[type] text | expression: xxx）或 .csv
   ↓
-[未來] csv-to-dialogues.js 自動補 sequenceId / 預設欄位
+合併路徑（兩條都行，選順手的）：
+  A) CLI: node scripts/csv-to-dialogues.js --persona X --category Y \
+                --input drafts/x.txt --batch-tag m4-llm-batch-N
+  B) UI: 對話庫管理視窗 → Tab「批次匯入」→ 貼草稿 → 預覽 → 套用
   ↓
 合併進 personas/<id>/dialogues.json (v2 schema)
+  - 自動續編 sequenceId
+  - 每筆新加帶 _meta（source_batch / created_at / fire_count_lifetime=0）
+  - 寫前自動 backup .bak.<timestamp>
 ```
+
+**M4.5 後的推薦流程**：CLI 跑 prompt → LLM 產草稿 → 對話庫管理視窗匯入（UI 預覽 +
+fire 統計都在同一處），最後在 Tab「統計」看哪些句冷門考慮淘汰、哪些熱門可以做為下批次參考。
 
 ---
 

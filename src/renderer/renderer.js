@@ -134,6 +134,10 @@
         window.api.settings.open().catch((err) =>
           console.warn('[M4] open settings failed:', err)
         );
+      } else if (btn.dataset.action === 'open-dialogues') {
+        window.api.dialogues.openManager().catch((err) =>
+          console.warn('[M4.5] open dialogues manager failed:', err)
+        );
       }
     });
   });

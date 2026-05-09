@@ -2,7 +2,14 @@ const { app, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 
-const { createMainWindow, createSettingsWindow, createDebugPanelWindow } = require('./src/main/window-mgr');
+const {
+  createMainWindow,
+  createSettingsWindow,
+  createDebugPanelWindow,
+  createDialoguesManagerWindow,
+} = require('./src/main/window-mgr');
+const dialoguesMerger = require('./src/main/dialogues-merger');
+const { buildPrompt: buildLLMPrompt } = require('./src/main/llm-prompt-builder');
 const { createTray } = require('./src/main/tray');
 const { ConfigStore } = require('./src/main/config-store');
 const { WindowState } = require('./src/main/window-state');
@@ -33,6 +40,7 @@ const IS_DEV = argv.includes('--dev');
 let mainWindow = null;
 let settingsWindow = null;
 let debugPanelWindow = null;
+let dialoguesManagerWindow = null;
 let tray = null;
 let config = null;
 let windowState = null;
@@ -75,6 +83,7 @@ if (!gotLock) {
       if (config) await config.save();
 
       try { await rollupAggregator?.stop(); } catch (e) { console.warn('[main] rollup stop:', e.message); }
+      try { await dialogueDirector?.flushPendingSaves(); } catch (e) { console.warn('[main] director flush:', e.message); }
       try { triggerEngine?.stop(); } catch (e) { console.warn('[main] trigger stop:', e.message); }
       try { contextStateTracker?.stop(); } catch (e) { console.warn('[main] context stop:', e.message); }
       try { inputMonitor?.stop(); } catch (e) { console.warn('[main] input stop:', e.message); }
@@ -315,6 +324,128 @@ function setupIpc() {
     if (debugPanelWindow && !debugPanelWindow.isDestroyed()) {
       debugPanelWindow.close();
     }
+  });
+
+  // ── M4.5：對話庫管理視窗 ────────────────────────────
+  ipcMain.handle('dialogues-manager:open', () => {
+    if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+      if (dialoguesManagerWindow.isMinimized()) dialoguesManagerWindow.restore();
+      dialoguesManagerWindow.show();
+      dialoguesManagerWindow.focus();
+      return true;
+    }
+    dialoguesManagerWindow = createDialoguesManagerWindow();
+    dialoguesManagerWindow.on('closed', () => {
+      dialoguesManagerWindow = null;
+    });
+    return true;
+  });
+
+  ipcMain.on('dialogues-manager-window:close', () => {
+    if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+      dialoguesManagerWindow.close();
+    }
+  });
+
+  ipcMain.handle('dialogues:read', async (_e, { persona }) => {
+    if (!persona) throw new Error('persona required');
+    const dialoguesPath = path.join(PERSONAS_DIR, persona, 'dialogues.json');
+    const data = await dialoguesMerger.loadDialogues(dialoguesPath);
+    return data;
+  });
+
+  ipcMain.handle('dialogues:read-initial', async (_e, { persona }) => {
+    if (!persona) throw new Error('persona required');
+    const initialPath = path.join(PERSONAS_DIR, persona, 'dialogues-initial.json');
+    const data = await dialoguesMerger.loadDialogues(initialPath);
+    return data;
+  });
+
+  ipcMain.handle('dialogues:save', async (_e, { persona, data }) => {
+    if (!persona || !data) throw new Error('persona and data required');
+    const dialoguesPath = path.join(PERSONAS_DIR, persona, 'dialogues.json');
+    // 先 flush director 的 pending count save，避免覆蓋 UI 編輯
+    try { await dialogueDirector?.flushPendingSaves(); } catch (_e) {}
+    await dialoguesMerger.saveDialogues(dialoguesPath, data, { backup: true });
+    // 立刻清 director cache，下次 fire 才看到新內容
+    try { dialogueDirector?.invalidatePersonaCache(); } catch (_e) {}
+    return { ok: true };
+  });
+
+  ipcMain.handle('dialogues:batch-import', async (_e, payload) => {
+    const { persona, category, batch_tag, raw_text, mode, format } = payload || {};
+    if (!persona || !category || !raw_text) {
+      throw new Error('persona / category / raw_text required');
+    }
+    const dialoguesPath = path.join(PERSONAS_DIR, persona, 'dialogues.json');
+    const data = await dialoguesMerger.loadDialogues(dialoguesPath);
+    if (!data) throw new Error(`${persona}/dialogues.json 不存在`);
+
+    const warnings = [];
+    let parsed;
+    if (format === 'csv') {
+      parsed = dialoguesMerger.parseCSV(raw_text);
+    } else {
+      parsed = dialoguesMerger.parseTxtLines(raw_text, persona, category, {
+        onWarn: (msg) => warnings.push(msg),
+      });
+    }
+
+    const summary = dialoguesMerger.mergeIntoDialogues({
+      data,
+      persona,
+      entries: parsed.entries,
+      replace: mode === 'replace',
+      batchTag: batch_tag || `manual-${new Date().toISOString().slice(0, 10)}`,
+    });
+
+    // dry-run 模式：不寫檔，只返回預覽
+    if (payload.dryRun) {
+      return { ok: true, dryRun: true, summary, warnings, parsed: { valid: parsed.valid, skipped: parsed.skipped } };
+    }
+
+    try { await dialogueDirector?.flushPendingSaves(); } catch (_e) {}
+    await dialoguesMerger.saveDialogues(dialoguesPath, data, { backup: true });
+    try { dialogueDirector?.invalidatePersonaCache(); } catch (_e) {}
+    return { ok: true, summary, warnings, parsed: { valid: parsed.valid, skipped: parsed.skipped } };
+  });
+
+  ipcMain.handle('dialogues:gen-prompt', async (_e, { persona, category, count }) => {
+    if (!persona || !category) throw new Error('persona / category required');
+    const personaPath = path.join(PERSONAS_DIR, persona, 'persona.json');
+    const initialPath = path.join(PERSONAS_DIR, persona, 'dialogues-initial.json');
+    const personaText = await fs.readFile(personaPath, 'utf-8');
+    const personaData = JSON.parse(personaText);
+    let initialData = null;
+    try {
+      const initialText = await fs.readFile(initialPath, 'utf-8');
+      initialData = JSON.parse(initialText);
+    } catch (_e) {
+      // 沒 initial 檔，buildPrompt fallback voice_samples
+    }
+    const prompt = buildLLMPrompt({
+      persona: personaData,
+      category,
+      count: count || 30,
+      dialoguesInitial: initialData,
+    });
+    return { prompt };
+  });
+
+  ipcMain.handle('dialogues:fire-stats', async (_e, { persona, days }) => {
+    if (!persona) throw new Error('persona required');
+    const since = Number.isFinite(days) && days > 0
+      ? Date.now() - days * 86400000
+      : 0;  // 0 = 全部
+    const events = await eventLogger.readRange(since, Date.now());
+    const counts = {};
+    for (const e of events) {
+      if (e.type !== 'trigger:fired') continue;
+      if (e.persona && e.persona !== persona) continue;
+      if (!e.sequence_id) continue;
+      counts[e.sequence_id] = (counts[e.sequence_id] || 0) + 1;
+    }
+    return { counts, since, until: Date.now() };
   });
 
   // ── 視窗狀態（角色位置）─────────────────────────────

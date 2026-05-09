@@ -21,6 +21,7 @@ const { redactSensitive } = require('./redact');
 const RING_SIZE = 50;
 const VAR_SCAN_RE = /\{(\w+)\}/g;
 const ALLOWED_VAR_SET = new Set(ALLOWED_VARS);
+const DIALOGUES_SAVE_DEBOUNCE_MS = 5000;
 
 class DialogueDirector {
   constructor({
@@ -43,6 +44,8 @@ class DialogueDirector {
     this._cache = new Map();
     this._recent = { ring_size: RING_SIZE, entries: [] };
     this._loaded = false;
+    this._dirtyPersonas = new Set();
+    this._saveTimer = null;
   }
 
   async load() {
@@ -86,6 +89,16 @@ class DialogueDirector {
     const pool = fresh.length > 0 ? fresh : sequences;
     const chosen = pool[Math.floor(Math.random() * pool.length)];
 
+    chosen._meta = chosen._meta || {
+      created_at: new Date().toISOString(),
+      source_batch: 'unknown',
+      weight: 1,
+      edited_at: null,
+      fire_count_lifetime: 0,
+    };
+    chosen._meta.fire_count_lifetime = (chosen._meta.fire_count_lifetime || 0) + 1;
+    this._scheduleDialoguesSave(personaId);
+
     let fgTitle = '';
     try {
       const fgPlugin = this._registry?.getPluginByCapability?.('foreground_window');
@@ -123,6 +136,22 @@ class DialogueDirector {
   async _loadPersona(personaId) {
     if (this._cache.has(personaId)) return this._cache.get(personaId);
     const file = path.join(this._personasDir, personaId, 'dialogues.json');
+    const initialFile = path.join(this._personasDir, personaId, 'dialogues-initial.json');
+
+    // 若 dialogues.json 不存在，從 dialogues-initial.json 複製（首次安裝場景）
+    try {
+      await fs.promises.access(file);
+    } catch (_e) {
+      try {
+        await fs.promises.access(initialFile);
+        await fs.promises.copyFile(initialFile, file);
+        this._log.info?.(`[director] 從 dialogues-initial.json 初始化 ${personaId}/dialogues.json`);
+      } catch (initErr) {
+        this._log.warn?.(`[director] ${personaId}: 找不到 dialogues.json 也沒 initial`, initErr.message);
+        return null;
+      }
+    }
+
     try {
       const text = await fs.promises.readFile(file, 'utf-8');
       const data = JSON.parse(text);
@@ -166,6 +195,48 @@ class DialogueDirector {
     await fs.promises.mkdir(path.dirname(this._recentPath), { recursive: true });
     await fs.promises.writeFile(tmp, JSON.stringify(this._recent, null, 2));
     await fs.promises.rename(tmp, this._recentPath);
+  }
+
+  _scheduleDialoguesSave(personaId) {
+    this._dirtyPersonas.add(personaId);
+    if (this._saveTimer) return;
+    this._saveTimer = setTimeout(() => {
+      this._saveTimer = null;
+      const ids = Array.from(this._dirtyPersonas);
+      this._dirtyPersonas.clear();
+      for (const id of ids) {
+        this._saveDialogues(id).catch((err) =>
+          this._log.warn?.(`[director] save dialogues ${id}:`, err.message || err)
+        );
+      }
+    }, DIALOGUES_SAVE_DEBOUNCE_MS);
+    if (typeof this._saveTimer.unref === 'function') this._saveTimer.unref();
+  }
+
+  async flushPendingSaves() {
+    if (this._saveTimer) {
+      clearTimeout(this._saveTimer);
+      this._saveTimer = null;
+    }
+    const ids = Array.from(this._dirtyPersonas);
+    this._dirtyPersonas.clear();
+    for (const id of ids) {
+      try {
+        await this._saveDialogues(id);
+      } catch (err) {
+        this._log.warn?.(`[director] flush dialogues ${id}:`, err.message || err);
+      }
+    }
+  }
+
+  async _saveDialogues(personaId) {
+    const data = this._cache.get(personaId);
+    if (!data) return;
+    const file = path.join(this._personasDir, personaId, 'dialogues.json');
+    const tmp = `${file}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}.tmp`;
+    await fs.promises.mkdir(path.dirname(file), { recursive: true });
+    await fs.promises.writeFile(tmp, JSON.stringify(data, null, 2));
+    await fs.promises.rename(tmp, file);
   }
 }
 

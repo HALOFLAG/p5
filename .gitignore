@@ -17,6 +17,8 @@ data/
 config/*.bak
 config/*.bak.*
 config/*.local.json
+personas/*/*.bak.*
+personas/*/*.bak
 
 # ─── 使用者個人內容 ──────────────────────────────────────────
 # personas 與 models 內可能含個人化素材；視情況決定

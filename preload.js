@@ -34,6 +34,9 @@ contextBridge.exposeInMainWorld('api', {
     dismissAck: (payload) => ipcRenderer.send('dialogue:dismiss-ack', payload),
     choiceSelected: (payload) => ipcRenderer.send('dialogue:choice-selected', payload),
   },
+  dialogues: {
+    openManager: () => ipcRenderer.invoke('dialogues-manager:open'),
+  },
   character: {
     dragStart: () => ipcRenderer.send('character:drag-start'),
   },

@@ -183,7 +183,7 @@ M4 階段把 dialogues.json 從 15 句擴至 200-300 句的工具文件。10 份
 | M3-驗收測試手冊.md | v1.0 | 2026-05-09 | M3 完成同期 |
 | analyze-rollup-設計.md | v1.0 | 2026-05-09 | 設計討論，未實作 |
 | gemma4_api_guide.md | — | 2026-05-08 | 第三方資源 |
-| M4-fallback-prompt-模板.md | v1.0 | 2026-05-09 | M4 Phase 4.1 |
+| M4-fallback-prompt-模板.md | v1.1 | 2026-05-09 | M4.5 標註：風格樣本改用 dialogues-initial.json |
 
 ---
 
@@ -211,3 +211,4 @@ M4 階段把 dialogues.json 從 15 句擴至 200-300 句的工具文件。10 份
 | 版本 | 日期 | 主要變更 |
 |---|---|---|
 | v1.0 | 2026-05-09 | 文件目錄初版（M3 完成階段） |
+| v1.1 | 2026-05-09 | M4.5 — persona package 重整（dialogues-initial.json + 對話庫管理視窗）|

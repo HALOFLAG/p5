@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>p5 對話庫管理</title>
+  <link rel="stylesheet" href="dialogues-manager-window.css" />
+</head>
+<body>
+  <main class="dm-root">
+    <header class="dm-header">
+      <h1>p5 對話庫管理</h1>
+      <span class="dm-env" id="env-info">—</span>
+    </header>
+
+    <nav class="tab-nav" role="tablist">
+      <button type="button" class="tab-btn active" data-tab="browse" role="tab">📚 瀏覽 / 管理</button>
+      <button type="button" class="tab-btn" data-tab="import" role="tab">📋 批次匯入</button>
+      <button type="button" class="tab-btn" data-tab="stats" role="tab">📊 統計</button>
+      <button type="button" class="tab-btn" data-tab="prompt" role="tab">📝 LLM Prompt</button>
+    </nav>
+
+    <!-- ── Tab 1: 瀏覽 / 管理 ────────────────────────── -->
+    <section class="tab-content active" data-tab="browse">
+      <div class="toolbar">
+        <label>人格
+          <select id="browse-persona"></select>
+        </label>
+        <label>類別
+          <select id="browse-category">
+            <option value="">全部</option>
+            <option value="click_too_much">click_too_much</option>
+            <option value="long_idle">long_idle</option>
+            <option value="continuous_use">continuous_use</option>
+            <option value="deep_night">deep_night</option>
+            <option value="drag">drag</option>
+          </select>
+        </label>
+        <label>來源
+          <select id="browse-source">
+            <option value="">全部</option>
+            <option value="initial">initial（鎖定）</option>
+            <option value="non-initial">非 initial</option>
+          </select>
+        </label>
+        <label>排序
+          <select id="browse-sort">
+            <option value="id">sequenceId</option>
+            <option value="count-desc">使用次數（多→少）</option>
+            <option value="count-asc">使用次數（少→多）</option>
+            <option value="created-desc">加入時間（新→舊）</option>
+          </select>
+        </label>
+        <input type="search" id="browse-search" placeholder="搜尋文字 / 表情 / id..." />
+        <button type="button" class="btn btn-secondary" id="browse-refresh">重新整理</button>
+        <span class="hint" id="browse-meta">—</span>
+      </div>
+
+      <div class="browse-layout">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="col-id">sequenceId</th>
+                <th class="col-type">type</th>
+                <th class="col-expr">表情</th>
+                <th>文字（首句）</th>
+                <th class="col-count">次數</th>
+              </tr>
+            </thead>
+            <tbody id="browse-tbody">
+              <tr><td colspan="5" class="empty">載入中…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="edit-panel" id="edit-panel">
+          <div class="edit-empty" id="edit-empty">在左側點選一條 sequence 編輯</div>
+          <div class="edit-form" id="edit-form" hidden>
+            <div class="edit-title">
+              <span id="edit-id">—</span>
+              <span class="lock-badge" id="edit-lock-badge" hidden>🔒 initial 鎖定</span>
+            </div>
+            <label>type
+              <select id="edit-type">
+                <option value="speech">speech</option>
+                <option value="thought">thought</option>
+              </select>
+            </label>
+            <label>expression
+              <input type="text" id="edit-expression" placeholder="happy / shy / pout..." />
+            </label>
+            <label>text
+              <textarea id="edit-text" rows="4"></textarea>
+            </label>
+            <div class="edit-extra">
+              <label>interaction
+                <select id="edit-interaction">
+                  <option value="">（無）</option>
+                  <option value="display">display</option>
+                  <option value="dismissable">dismissable</option>
+                </select>
+              </label>
+              <label>auto_close_ms
+                <input type="number" id="edit-auto-close" placeholder="例 5000" min="0" />
+              </label>
+            </div>
+            <dl class="edit-meta">
+              <div><dt>來源</dt><dd id="meta-source">—</dd></div>
+              <div><dt>加入時間</dt><dd id="meta-created">—</dd></div>
+              <div><dt>編輯時間</dt><dd id="meta-edited">—</dd></div>
+              <div><dt>累計 fire</dt><dd id="meta-fire-count">—</dd></div>
+            </dl>
+            <div class="edit-actions">
+              <button type="button" class="btn btn-primary" id="btn-save">儲存</button>
+              <button type="button" class="btn btn-secondary" id="btn-duplicate">複製為新句</button>
+              <button type="button" class="btn btn-danger" id="btn-delete">刪除</button>
+              <button type="button" class="btn btn-secondary" id="btn-unlock" hidden>解鎖編輯</button>
+            </div>
+            <p class="hint">💡 儲存後切人格 / 重啟才會看到新內容（director 有 cache）。</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── Tab 2: 批次匯入 ────────────────────────── -->
+    <section class="tab-content" data-tab="import">
+      <div class="form-row">
+        <label>人格
+          <select id="import-persona"></select>
+        </label>
+        <label>類別
+          <select id="import-category">
+            <option value="click_too_much">click_too_much</option>
+            <option value="long_idle">long_idle</option>
+            <option value="continuous_use">continuous_use</option>
+            <option value="deep_night">deep_night</option>
+            <option value="drag">drag</option>
+          </select>
+        </label>
+        <label>批次標籤
+          <input type="text" id="import-batch-tag" placeholder="haiyin-long_idle-2026-05-09" />
+        </label>
+        <label>格式
+          <select id="import-format">
+            <option value="txt">txt（LLM 原始）</option>
+            <option value="csv">csv</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="full-width">貼 LLM 草稿
+        <textarea id="import-text" rows="14" placeholder="[speech] 你回來了～等你等到... | expression: happy
+[thought] （……是不是有人...） | expression: idle
+..."></textarea>
+      </label>
+
+      <div class="form-row">
+        <fieldset>
+          <legend>模式</legend>
+          <label class="inline"><input type="radio" name="import-mode" value="append" checked /> Append</label>
+          <label class="inline"><input type="radio" name="import-mode" value="replace" /> Replace（不影響 initial 鎖定）</label>
+        </fieldset>
+        <button type="button" class="btn btn-secondary" id="btn-preview">預覽</button>
+        <button type="button" class="btn btn-primary" id="btn-apply" disabled>套用</button>
+      </div>
+
+      <pre class="preview-box" id="import-preview">（按「預覽」看合併計畫）</pre>
+    </section>
+
+    <!-- ── Tab 3: 統計 ────────────────────────── -->
+    <section class="tab-content" data-tab="stats">
+      <div class="toolbar">
+        <label>人格
+          <select id="stats-persona"></select>
+        </label>
+        <fieldset class="range-group">
+          <legend>時間範圍</legend>
+          <label class="inline"><input type="radio" name="stats-range" value="1" /> 24h</label>
+          <label class="inline"><input type="radio" name="stats-range" value="7" checked /> 7 天</label>
+          <label class="inline"><input type="radio" name="stats-range" value="30" /> 30 天</label>
+          <label class="inline"><input type="radio" name="stats-range" value="0" /> 全部</label>
+        </fieldset>
+        <button type="button" class="btn btn-secondary" id="stats-refresh">重新整理</button>
+        <span class="hint" id="stats-meta">—</span>
+      </div>
+
+      <div class="stats-cards">
+        <div class="card">
+          <div class="card-title">總覽</div>
+          <div id="stats-overview"><div class="kv-empty">載入中…</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔥 熱門（範圍內 fire 多）</div>
+          <ol class="rank-list" id="stats-hot"><li class="empty">—</li></ol>
+        </div>
+        <div class="card">
+          <div class="card-title">❄ 冷門（範圍內 0 fire）</div>
+          <ol class="rank-list" id="stats-cold"><li class="empty">—</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tab 4: LLM Prompt ────────────────────────── -->
+    <section class="tab-content" data-tab="prompt">
+      <div class="toolbar">
+        <label>人格
+          <select id="prompt-persona"></select>
+        </label>
+        <label>類別
+          <select id="prompt-category">
+            <option value="click_too_much">click_too_much</option>
+            <option value="long_idle">long_idle</option>
+            <option value="continuous_use">continuous_use</option>
+            <option value="deep_night">deep_night</option>
+            <option value="drag">drag</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn-secondary" id="btn-gen-prompt">產生 prompt</button>
+        <button type="button" class="btn btn-primary" id="btn-copy-prompt" disabled>📋 複製到剪貼簿</button>
+        <span class="hint" id="prompt-meta">—</span>
+      </div>
+
+      <textarea id="prompt-output" class="prompt-output" readonly
+        placeholder="選人格 + 類別 → 按「產生 prompt」"></textarea>
+
+      <div class="prompt-help">
+        <p>💡 用法：</p>
+        <ol>
+          <li>選 <strong>人格 + 類別</strong> → 按「產生 prompt」</li>
+          <li>按「📋 複製到剪貼簿」→ 貼到任意 LLM（Claude / GPT / Gemini / Gemma 都行）</li>
+          <li>每輪 LLM 約輸出 30 句草稿，跑 2-3 輪累積一個批次</li>
+          <li>篩選 / 整理後切到 <strong>Tab 「📋 批次匯入」</strong> 貼回 → 預覽 → 套用</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer class="dm-footer">
+      <span id="footer-status">就緒</span>
+      <button type="button" class="btn-link" id="close-btn">關閉視窗 (ESC)</button>
+    </footer>
+  </main>
+
+  <script src="dialogues-manager-window.js"></script>
+</body>
+</html>

@@ -18,6 +18,7 @@
   const elScheduleList = $('schedule-list');
   const elAddSchedule = $('add-schedule');
   const elOpenDebugPanel = $('open-debug-panel');
+  const elOpenDialoguesManager = $('open-dialogues-manager');
   const elOpenConfigDir = $('open-config-dir');
   const elEnvInfo = $('env-info');
 
@@ -177,6 +178,12 @@
 
   elOpenDebugPanel.addEventListener('click', () => {
     window.settingsApi.debugPanelOpen();
+  });
+
+  elOpenDialoguesManager.addEventListener('click', () => {
+    window.settingsApi.dialoguesManagerOpen().catch((err) => {
+      console.warn('[settings] dialoguesManagerOpen failed:', err);
+    });
   });
 
   elOpenConfigDir.addEventListener('click', () => {

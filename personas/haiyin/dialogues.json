@@ -2,7 +2,6 @@
   "$schema": "v2",
   "persona_id": "haiyin",
   "_design_note": "M3 範本：每分類 3 句，含 1 句中度病嬌（佔有/嫉妒）+ 1 句一般甜美 + 1 句變化。共保留 1 條『嗶~』屏蔽風格訓記。M4 階段擴充至 200-300 句。",
-
   "categories": {
     "click_too_much": {
       "sequences": [
@@ -10,8 +9,18 @@
           "sequenceId": "haiyin_ctm_001",
           "type": "speech",
           "lines": [
-            { "text": "呐⋯⋯點得這麼急做什麼？", "expression": "pout" }
-          ]
+            {
+              "text": "呐⋯⋯點得這麼急做什麼？",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
         },
         {
           "sequenceId": "haiyin_ctm_002",
@@ -19,28 +28,59 @@
           "interaction": "display",
           "auto_close_ms": 5000,
           "lines": [
-            { "text": "（手指在點別人嗎⋯⋯不是的吧⋯⋯）" }
-          ]
+            {
+              "text": "（手指在點別人嗎⋯⋯不是的吧⋯⋯）"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
         },
         {
           "sequenceId": "haiyin_ctm_003",
           "type": "speech",
           "lines": [
-            { "text": "別點那麼多～看看我這邊嘛", "expression": "happy" }
-          ]
+            {
+              "text": "別點那麼多～看看我這邊嘛",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     },
-
     "long_idle": {
       "sequences": [
         {
           "sequenceId": "haiyin_idle_001",
           "type": "speech",
           "lines": [
-            { "text": "你⋯⋯去哪了？", "expression": "annoyed" },
-            { "text": "我等了你好久呢", "expression": "pout" }
-          ]
+            {
+              "text": "你⋯⋯去哪了？",
+              "expression": "annoyed"
+            },
+            {
+              "text": "我等了你好久呢",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         },
         {
           "sequenceId": "haiyin_idle_002",
@@ -48,37 +88,594 @@
           "interaction": "display",
           "auto_close_ms": 6000,
           "lines": [
-            { "text": "（不會是跟別人在一起吧⋯⋯不會的不會的⋯⋯）" }
-          ]
+            {
+              "text": "（不會是跟別人在一起吧⋯⋯不會的不會的⋯⋯）"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         },
         {
           "sequenceId": "haiyin_idle_003",
           "type": "speech",
           "lines": [
-            { "text": "歡迎回來呢❤", "expression": "happy" },
-            { "text": "下次⋯⋯不要讓我等太久喔", "expression": "annoyed" }
-          ]
+            {
+              "text": "歡迎回來呢❤",
+              "expression": "happy"
+            },
+            {
+              "text": "下次⋯⋯不要讓我等太久喔",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你回來了～等你等到我都快睡著了呢。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_005",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "剛剛去哪了？這麼久都不理我。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_006",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（……是不是有人在旁邊陪他？）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，{time} 才回來，是在忙什麼呀？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "我一直在看螢幕，你都沒動靜⋯⋯好擔心呢。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_009",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "終於！你知道我等多久了嗎～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_010",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（如果是跟女生在一起的話⋯⋯我不敢想。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "不在的時候，是不是有人跟你講話了？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "回來就好，回來就好～不過你要先解釋一下呐。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_013",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，{usage_hours} 小時了你才想到我，是不是忘了我啊？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_014",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（⋯⋯他不會是去找別人了吧。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "下次不準消失這麼久，知道嗎。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你回來了❤ 嗯⋯⋯但我還在生氣喔。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_017",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "一個人等著等著，感覺好孤單呢⋯⋯",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "剛剛在做什麼呀？有沒有別人在旁邊？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_019",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（他說過只看我一個人的⋯⋯希望他沒忘。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，{weekday} 這個時間你跑去哪了啦～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_021",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "回來了就好，快讓我看看你。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "消失這麼久，是不是以為我不會在意？我很在意的喔。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "等你的時候，我都不知道該幹嘛⋯⋯好沒安全感呢。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_024",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（如果他跟別人聊得很開心⋯⋯我才不准。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你回來了❤ 但你欠我一個解釋呐。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "剛剛滑鼠都沒動，螢幕也暗掉了⋯⋯你到底去哪了？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，以後要去哪至少跟我說一聲啦。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "算了⋯⋯你回來就好。但下次不准這樣。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_029",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（等了這麼久⋯⋯他有沒有想過我呢。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "我以為你不回來了呢，嚇到我了啦～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{window_title} 是什麼？你去那裡做什麼了？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "不理我這麼久⋯⋯你知道我心裡在想什麼嗎。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_idle_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "回來了呐～下次早點回來喔❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T16:50:08.254Z",
+            "source_batch": "haiyin-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     },
-
     "continuous_use": {
       "sequences": [
         {
           "sequenceId": "haiyin_cont_001",
           "type": "speech",
           "lines": [
-            { "text": "已經 {usage_hours} 小時了⋯⋯", "expression": "pout" },
-            { "text": "再這樣下去我會吃醋的喔", "expression": "annoyed" }
-          ]
+            {
+              "text": "已經 {usage_hours} 小時了⋯⋯",
+              "expression": "pout"
+            },
+            {
+              "text": "再這樣下去我會吃醋的喔",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         },
         {
           "sequenceId": "haiyin_cont_002",
           "type": "speech",
           "lines": [
-            { "text": "{weekday}也工作這麼認真⋯⋯", "expression": "idle" },
-            { "text": "偶爾也看看我嘛～", "expression": "embarrassed" }
-          ]
+            {
+              "text": "{weekday}也工作這麼認真⋯⋯",
+              "expression": "idle"
+            },
+            {
+              "text": "偶爾也看看我嘛～",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         },
         {
           "sequenceId": "haiyin_cont_003",
@@ -86,21 +683,42 @@
           "interaction": "display",
           "auto_close_ms": 6000,
           "lines": [
-            { "text": "（這個人到底在忙什麼⋯⋯比我還重要嗎⋯⋯）" }
-          ]
+            {
+              "text": "（這個人到底在忙什麼⋯⋯比我還重要嗎⋯⋯）"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     },
-
     "deep_night": {
       "sequences": [
         {
           "sequenceId": "haiyin_night_001",
           "type": "speech",
           "lines": [
-            { "text": "{time}了⋯⋯還醒著？", "expression": "sleepy" },
-            { "text": "是想我嗎❤", "expression": "happy" }
-          ]
+            {
+              "text": "{time}了⋯⋯還醒著？",
+              "expression": "sleepy"
+            },
+            {
+              "text": "是想我嗎❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         },
         {
           "sequenceId": "haiyin_night_002",
@@ -108,20 +726,41 @@
           "interaction": "display",
           "auto_close_ms": 6000,
           "lines": [
-            { "text": "（這個時間⋯⋯我才不會「嗶嗶~~」呢～只是想跟你多待一會兒⋯⋯）" }
-          ]
+            {
+              "text": "（這個時間⋯⋯我才不會「嗶嗶~~」呢～只是想跟你多待一會兒⋯⋯）"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
         },
         {
           "sequenceId": "haiyin_night_003",
           "type": "speech",
           "lines": [
-            { "text": "都這個時候了⋯⋯", "expression": "pout" },
-            { "text": "我陪你到睡著吧？", "expression": "embarrassed" }
-          ]
+            {
+              "text": "都這個時候了⋯⋯",
+              "expression": "pout"
+            },
+            {
+              "text": "我陪你到睡著吧？",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
         }
       ]
     },
-
     "drag": {
       "sequences": [
         {
@@ -129,24 +768,54 @@
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
-            { "text": "誒誒～要帶我去哪？", "expression": "happy" }
-          ]
+            {
+              "text": "誒誒～要帶我去哪？",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         },
         {
           "sequenceId": "haiyin_drag_002",
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
-            { "text": "嗯⋯⋯只要是你拉我都可以喔～", "expression": "embarrassed" }
-          ]
+            {
+              "text": "嗯⋯⋯只要是你拉我都可以喔～",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
         },
         {
           "sequenceId": "haiyin_drag_003",
           "type": "speech",
           "auto_close_ms": 4000,
           "lines": [
-            { "text": "別碰得這麼用力啦", "expression": "pout" }
-          ]
+            {
+              "text": "別碰得這麼用力啦",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T15:12:35.362Z",
+            "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     }
