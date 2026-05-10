@@ -10,6 +10,9 @@ const {
 } = require('./src/main/window-mgr');
 const dialoguesMerger = require('./src/main/dialogues-merger');
 const { buildPrompt: buildLLMPrompt } = require('./src/main/llm-prompt-builder');
+const { GPTSoVITSEngine } = require('./src/main/voice-pipeline/gpt-sovits-engine');
+const { VoiceManifest } = require('./src/main/voice-pipeline/voice-manifest');
+const { BatchRunner } = require('./src/main/voice-pipeline/batch-runner');
 const { createTray } = require('./src/main/tray');
 const { ConfigStore } = require('./src/main/config-store');
 const { WindowState } = require('./src/main/window-state');
@@ -33,6 +36,8 @@ const DATA_DIR = path.join(PROJECT_ROOT, 'data');
 const RECENT_DIALOGUES_PATH = path.join(DATA_DIR, 'recent-dialogues.json');
 const ROLLUPS_DIR = path.join(DATA_DIR, 'rollups');
 const PERSONAS_DIR = path.join(PROJECT_ROOT, 'personas');
+const VOICE_CONFIG_PATH = path.join(PROJECT_ROOT, 'config', 'voice-config.json');
+const VOICE_REFS_DIR = path.join(PROJECT_ROOT, 'voice-refs');
 
 const argv = process.argv.slice(1);
 const IS_DEV = argv.includes('--dev');
@@ -41,6 +46,10 @@ let mainWindow = null;
 let settingsWindow = null;
 let debugPanelWindow = null;
 let dialoguesManagerWindow = null;
+
+// M6 voice
+let voiceBatchRunner = null;       // 當前進行中的 batch（同時只能一個）
+let voiceEngineInstance = null;    // 共用的 GPT-SoVITS engine 實例
 let tray = null;
 let config = null;
 let windowState = null;
@@ -191,6 +200,7 @@ async function bootstrap() {
     eventLogger,
     monitorRegistry,
     logger: console,
+    voiceLookup: voiceLookupForDirector,
   });
   await dialogueDirector.load();
 
@@ -241,21 +251,123 @@ async function loadJsonOr(filePath, defaultData) {
   }
 }
 
+// ── M6 voice helpers ─────────────────────────────────
+function getVoiceEngine() {
+  if (!voiceEngineInstance) {
+    voiceEngineInstance = new GPTSoVITSEngine();
+  }
+  return voiceEngineInstance;
+}
+
+const DEFAULT_VOICE_CONFIG = {
+  engine: 'gpt-sovits',
+  base_url: 'http://127.0.0.1:9880',
+  // 共用 sampling params；單 persona 內也可覆寫
+  sampling: {
+    temperature: 0.8,    // 桌寵情境推薦：低於預設 1.0 提升跨句穩定度
+    top_k: 15,
+    top_p: 1.0,
+  },
+  voices: {
+    // persona_id: {
+    //   ref_audio: 'voice-refs/xxx.mp3',
+    //   ref_text: '...',
+    //   lang: 'zh',
+    //   additional_refs: ['voice-refs/yyy.mp3', 'voice-refs/zzz.mp3'],   // 平均融合（同性別）
+    //   sampling: { temperature: 0.7 },                                  // 可選覆寫
+    // }
+  },
+};
+
+async function loadVoiceConfig() {
+  return await loadJsonOr(VOICE_CONFIG_PATH, DEFAULT_VOICE_CONFIG);
+}
+
+async function saveVoiceConfig(cfg) {
+  await fs.mkdir(path.dirname(VOICE_CONFIG_PATH), { recursive: true });
+  const tmp = `${VOICE_CONFIG_PATH}.${process.pid}.${Date.now()}.tmp`;
+  await fs.writeFile(tmp, JSON.stringify(cfg, null, 2));
+  await fs.rename(tmp, VOICE_CONFIG_PATH);
+}
+
+// director 用：handleFire 時查 voice manifest 是否有對應 wav 檔
+const _voiceManifestCache = new Map();   // key=`${personaId}:${lang}` → VoiceManifest
+async function voiceLookupForDirector(personaId, sequenceId, lineIdx) {
+  if (!personaId) return null;
+  const cfg = await loadVoiceConfig();
+  const lang = cfg.voices?.[personaId]?.lang || 'zh';
+  const key = `${personaId}:${lang}`;
+  let manifest = _voiceManifestCache.get(key);
+  if (!manifest) {
+    manifest = new VoiceManifest({ personaPath: path.join(PERSONAS_DIR, personaId), lang });
+    await manifest.load();
+    _voiceManifestCache.set(key, manifest);
+  }
+  return await manifest.lookup(sequenceId, lineIdx);
+}
+
+// 批次完成 / 設定變動時清掉，下次 fire 重讀新 manifest
+function invalidateVoiceManifestCache() { _voiceManifestCache.clear(); }
+
+// ref audio 相對路徑解析成絕對（GPT-SoVITS server 跑在自己目錄、相對路徑會找不到）
+function resolveRefAudioPath(refPath) {
+  if (!refPath) return refPath;
+  if (path.isAbsolute(refPath)) return refPath;
+  return path.resolve(PROJECT_ROOT, refPath);
+}
+
 function setupIpc() {
   // ── 設定 ──────────────────────────────────────────────
   ipcMain.handle('settings:get', () => config.getAll());
-  ipcMain.handle('settings:set', (_e, partial) => {
+  ipcMain.handle('settings:set', async (_e, partial) => {
     const before = config.getAll();
     config.update(partial);
     const after = config.getAll();
-    // 切人格時清快取 + dismiss 舊氣泡（避免顯示前任人格的對話殘留）
+    // 切人格時清快取 + dismiss 舊氣泡 + 通知 renderer 換 stage 表現
     if (before.active_persona !== after.active_persona) {
       dialogueDirector?.invalidatePersonaCache();
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('dialogue:dismiss', { reason: 'persona-changed' });
+        mainWindow.webContents.send('persona:changed', { id: after.active_persona });
       }
     }
+    // 立刻寫硬碟（之前只在 before-quit 才寫，異常退出會丟設定）
+    try {
+      await config.save();
+    } catch (err) {
+      console.warn('[settings:set] save failed:', err.message || err);
+    }
     return after;
+  });
+
+  ipcMain.handle('personas:get', async (_e, payload) => {
+    const id = payload?.id;
+    if (!id) throw new Error('id required');
+    const file = path.join(PERSONAS_DIR, id, 'persona.json');
+    try {
+      const text = await fs.readFile(file, 'utf-8');
+      const persona = JSON.parse(text);
+
+      // M5a-real: 解析 appearance.image 為絕對 file:// URL（renderer 用）
+      // appearance.image 的路徑相對於 persona.json 所在目錄
+      if (persona?.appearance?.image) {
+        const imageRel = persona.appearance.image;
+        const imageAbs = path.resolve(path.dirname(file), imageRel);
+        try {
+          await fs.access(imageAbs);
+          // file:// URL on Windows 要用正斜線
+          persona.appearance._image_url = 'file:///' + imageAbs.replace(/\\/g, '/');
+        } catch (_e) {
+          // 圖檔不存在 → 不加 _image_url，renderer 會 fallback color-block
+          console.warn(`[personas:get] image not found: ${imageAbs}`);
+        }
+      }
+
+      return persona;
+    } catch (err) {
+      if (err.code === 'ENOENT') return null;
+      throw err;
+    }
   });
 
   // ── M4 Phase 2：Settings 視窗 ─────────────────────────
@@ -448,6 +560,179 @@ function setupIpc() {
     return { counts, since, until: Date.now() };
   });
 
+  // ── M6 Voice：GPT-SoVITS 整合 ──────────────────────
+  ipcMain.handle('voice:check-engine', async () => {
+    const engine = getVoiceEngine();
+    const online = await engine.healthCheck();
+    return { online, base_url: engine._baseUrl };
+  });
+
+  ipcMain.handle('voice:get-config', async () => {
+    return await loadVoiceConfig();
+  });
+
+  ipcMain.handle('voice:set-config', async (_e, cfg) => {
+    if (!cfg || typeof cfg !== 'object') throw new Error('config required');
+    await saveVoiceConfig(cfg);
+    invalidateVoiceManifestCache();
+    return { ok: true };
+  });
+
+  ipcMain.handle('voice:test-tts', async (_e, { persona, text, lang }) => {
+    if (!persona || !text) throw new Error('persona and text required');
+    const cfg = await loadVoiceConfig();
+    const voice = cfg.voices?.[persona];
+    if (!voice?.ref_audio || !voice?.ref_text) {
+      throw new Error(`persona "${persona}" 還沒設 ref audio / ref text（先到 Tab 5 設定）`);
+    }
+    const inpRefs = (voice.additional_refs || [])
+      .filter((p) => typeof p === 'string' && p.trim())
+      .map(resolveRefAudioPath);
+    const sampling = { ...(cfg.sampling || {}), ...(voice.sampling || {}) };
+
+    const engine = getVoiceEngine();
+    const result = await engine.synthesize({
+      text,
+      ref_audio_path: resolveRefAudioPath(voice.ref_audio),
+      ref_text: voice.ref_text,
+      ref_lang: voice.lang || 'zh',
+      target_lang: lang || voice.lang || 'zh',
+      inp_refs: inpRefs,
+      temperature: sampling.temperature,
+      top_k: sampling.top_k,
+      top_p: sampling.top_p,
+    });
+    // 寫到暫存檔，回傳 file path 給 renderer 試聽
+    const tmpDir = path.join(DATA_DIR, '_voice_test');
+    await fs.mkdir(tmpDir, { recursive: true });
+    const tmpFile = path.join(tmpDir, `${persona}_${Date.now()}.wav`);
+    await fs.writeFile(tmpFile, result.audio);
+    return { file_path: tmpFile, ms: result.meta.ms, bytes: result.meta.bytes };
+  });
+
+  ipcMain.handle('voice:list-stats', async (_e, { persona, lang = 'zh' }) => {
+    if (!persona) throw new Error('persona required');
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const dialogues = await dialoguesMerger.loadDialogues(path.join(personaPath, 'dialogues.json'));
+    if (!dialogues) return { total_lines: 0, generated: 0, missing: 0 };
+
+    let totalLines = 0;
+    for (const cat of Object.values(dialogues.categories || {})) {
+      for (const seq of cat.sequences || []) {
+        totalLines += (seq.lines || []).length;
+      }
+    }
+
+    const manifest = new VoiceManifest({ personaPath, lang });
+    await manifest.load();
+    const stats = await manifest.stats();
+    return {
+      total_lines: totalLines,
+      generated: stats.total,
+      missing: Math.max(0, totalLines - stats.total),
+    };
+  });
+
+  ipcMain.handle('voice:generate-batch', async (_e, { persona, mode = 'missing', lang = 'zh' }) => {
+    if (!persona) throw new Error('persona required');
+    if (voiceBatchRunner?.isRunning()) {
+      throw new Error('已有批次在跑，請先取消或等完成');
+    }
+
+    const cfg = await loadVoiceConfig();
+    const voice = cfg.voices?.[persona];
+    if (!voice?.ref_audio || !voice?.ref_text) {
+      throw new Error(`persona "${persona}" 還沒設 ref audio / ref text`);
+    }
+
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const dialogues = await dialoguesMerger.loadDialogues(path.join(personaPath, 'dialogues.json'));
+    if (!dialogues) throw new Error(`${persona}/dialogues.json 不存在`);
+
+    const refAudioAbs = resolveRefAudioPath(voice.ref_audio);
+    const inpRefsAbs = (voice.additional_refs || [])
+      .filter((p) => typeof p === 'string' && p.trim())
+      .map(resolveRefAudioPath);
+    const sampling = { ...(cfg.sampling || {}), ...(voice.sampling || {}) };
+
+    // 蒐集所有候選（每個 line 一筆）
+    const candidates = [];
+    for (const cat of Object.values(dialogues.categories || {})) {
+      for (const seq of cat.sequences || []) {
+        const lines = seq.lines || [];
+        for (let i = 0; i < lines.length; i++) {
+          if (typeof lines[i].text !== 'string') continue;
+          candidates.push({
+            sequence_id: seq.sequenceId,
+            line_idx: i,
+            text: lines[i].text,
+            // batch-runner 把 ref_audio 透傳給 engine.synthesize，所以這裡就要絕對路徑
+            ref_audio: refAudioAbs,
+            ref_text: voice.ref_text,
+            ref_lang: voice.lang || 'zh',
+            lang,
+            inp_refs: inpRefsAbs,
+            temperature: sampling.temperature,
+            top_k: sampling.top_k,
+            top_p: sampling.top_p,
+          });
+        }
+      }
+    }
+
+    const manifest = new VoiceManifest({ personaPath, lang });
+    await manifest.load();
+
+    // mode='all' 時清空 manifest 強制全部重生
+    if (mode === 'all') {
+      manifest._data.entries = {};
+      await manifest._save();
+    }
+
+    const engine = getVoiceEngine();
+    voiceBatchRunner = new BatchRunner({
+      engine,
+      manifest,
+      concurrency: 2,
+      onProgress: (state) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('voice:progress', { persona, lang, ...state });
+        }
+        if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+          dialoguesManagerWindow.webContents.send('voice:progress', { persona, lang, ...state });
+        }
+      },
+      onError: ({ item, error }) => {
+        console.warn('[voice] batch item error:', item.sequence_id, item.line_idx, error?.message);
+      },
+    });
+
+    // 不阻塞 IPC 回傳；後續進度透過 voice:progress 推送
+    voiceBatchRunner.run(candidates).then((summary) => {
+      invalidateVoiceManifestCache();
+      if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+        dialoguesManagerWindow.webContents.send('voice:batch-done', { persona, lang, summary });
+      }
+    }).catch((err) => {
+      console.warn('[voice] batch failed:', err.message);
+      if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+        dialoguesManagerWindow.webContents.send('voice:batch-done', {
+          persona, lang, error: err.message,
+        });
+      }
+    });
+
+    return { ok: true, total_candidates: candidates.length };
+  });
+
+  ipcMain.handle('voice:cancel', () => {
+    if (voiceBatchRunner?.isRunning()) {
+      voiceBatchRunner.cancel();
+      return { ok: true, cancelled: true };
+    }
+    return { ok: true, cancelled: false };
+  });
+
   // ── 視窗狀態（角色位置）─────────────────────────────
   ipcMain.handle('window-state:get', () => windowState.get());
   ipcMain.handle('window-state:set', (_e, partial) => {
@@ -532,6 +817,17 @@ function setupIpc() {
   ipcMain.on('debug:reset-cooldowns', () => {
     triggerEngine?.resetCooldowns();
     if (IS_DEV) console.log('[debug] cooldowns reset');
+  });
+  // M5a-real：dev panel 隨機觸發按鈕（不走 trigger engine 規則限制，直接挑 category 餵 director）
+  ipcMain.on('debug:random-fire', () => {
+    const cats = ['click_too_much', 'long_idle', 'continuous_use', 'deep_night', 'drag'];
+    const cat = cats[Math.floor(Math.random() * cats.length)];
+    dialogueDirector?.handleFire({
+      rule_name: cat,
+      category: cat,
+      context: { input: { session_sec: 0 }, contextState: {} },
+    }).catch((err) => console.warn('[debug:random-fire]', err.message || err));
+    if (IS_DEV) console.log(`[debug:random-fire] → ${cat}`);
   });
   ipcMain.handle('debug:flush-events', async () => {
     await eventLogger?.flushNow();

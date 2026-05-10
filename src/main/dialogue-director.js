@@ -32,6 +32,7 @@ class DialogueDirector {
     eventLogger = null,
     monitorRegistry = null,
     logger = console,
+    voiceLookup = null,   // M6: async (personaId, sequenceId, lineIdx) => { file_path } | null
   } = {}) {
     this._personasDir = personasDir;
     this._recentPath = recentDialoguesPath;
@@ -40,6 +41,7 @@ class DialogueDirector {
     this._eventLogger = eventLogger;
     this._registry = monitorRegistry;
     this._log = logger;
+    this._voiceLookup = voiceLookup;
 
     this._cache = new Map();
     this._recent = { ring_size: RING_SIZE, entries: [] };
@@ -114,6 +116,13 @@ class DialogueDirector {
       try { this._sender('dialogue:show', sequence); } catch (err) {
         this._log.warn?.('[director] sender failed:', err);
       }
+    }
+
+    // M6 voice：查 manifest 看有沒有對應 wav，有就推 voice:play
+    if (this._voiceLookup && this._sender && Array.isArray(sequence.lines)) {
+      this._dispatchVoice(personaId, sequence).catch((err) => {
+        this._log.warn?.('[director] voice dispatch failed:', err.message || err);
+      });
     }
 
     const now = fired_at || Date.now();
@@ -195,6 +204,25 @@ class DialogueDirector {
     await fs.promises.mkdir(path.dirname(this._recentPath), { recursive: true });
     await fs.promises.writeFile(tmp, JSON.stringify(this._recent, null, 2));
     await fs.promises.rename(tmp, this._recentPath);
+  }
+
+  /**
+   * M6: 抽 sequence 第一行的 voice 檔（如果有）→ 推 voice:play 給 renderer。
+   * 多行 sequence 暫時只播第一行（M2.5 advance 機制下其他行使用者點下一句才出來，
+   * 之後可在 advance 時補播）。
+   */
+  async _dispatchVoice(personaId, sequence) {
+    if (!sequence?.sequenceId || !Array.isArray(sequence.lines) || sequence.lines.length === 0) return;
+    try {
+      const found = await this._voiceLookup(personaId, sequence.sequenceId, 0);
+      if (found?.file_path) {
+        try { this._sender('voice:play', { file_path: found.file_path, sequence_id: sequence.sequenceId, line_idx: 0 }); }
+        catch (err) { this._log.warn?.('[director] voice:play send failed:', err); }
+      }
+    } catch (err) {
+      // lookup 失敗不阻斷對話顯示，只是 log 一下
+      this._log.warn?.('[director] voice lookup failed:', err.message || err);
+    }
   }
 
   _scheduleDialoguesSave(personaId) {

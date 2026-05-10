@@ -3,62 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data:; media-src 'self' file: data:;" />
   <title>p5</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="character-stage.css" />
   <link rel="stylesheet" href="speech-bubble.css" />
 </head>
 <body>
-  <!-- M1 dev box：用來驗證滑鼠穿透切換、拖曳、位置記憶。M5a 起會被 character-stage 取代。 -->
-  <div id="dev-box" class="dev-box" role="region" aria-label="p5 dev panel">
-    <div class="dev-box-title">p5</div>
-    <div class="dev-box-info" id="dev-info">M2 對話氣泡</div>
-    <div class="dev-box-hint">拖曳測試 / 點桌面測穿透</div>
+  <!-- M5a：角色舞台（色塊 placeholder；換真圖時 character-stage.js 內部換 renderer 即可） -->
+  <div id="character-stage" role="img" aria-label="p5 角色舞台"></div>
 
-    <!-- M2 範例 -->
-    <div class="dev-buttons">
-      <button class="dev-btn" data-variant="short">短</button>
-      <button class="dev-btn" data-variant="medium">中</button>
-      <button class="dev-btn" data-variant="long">長</button>
-      <button class="dev-btn" data-variant="interrupt">打斷</button>
-    </div>
+  <!-- Dev tools：固定右上摺疊區。預設收合只顯示 ⚙ 按鈕。 -->
+  <div id="dev-panel" class="dev-panel collapsed" role="region" aria-label="p5 dev tools">
+    <button type="button" id="dev-panel-toggle" class="dev-panel-toggle" aria-label="展開/收合 dev tools">⚙</button>
+    <div class="dev-panel-content">
+      <div class="dev-box-title">p5 dev tools</div>
+      <div class="dev-box-info" id="dev-info">M5a 色塊 placeholder</div>
 
-    <!-- M2.5 型態範例 -->
-    <div class="dev-buttons-label">型態</div>
-    <div class="dev-buttons">
-      <button class="dev-btn" data-variant="thought">想法</button>
-      <button class="dev-btn" data-variant="narration">旁白</button>
-      <button class="dev-btn" data-variant="system">系統</button>
-      <button class="dev-btn" data-variant="whisper">低語</button>
-    </div>
-    <div class="dev-buttons">
-      <button class="dev-btn" data-variant="persistent">持續</button>
-      <button class="dev-btn" data-variant="pinned">釘選</button>
-      <button class="dev-btn" data-variant="choice">選項</button>
-      <button class="dev-btn" data-variant="binary">二元</button>
-    </div>
+      <!-- M2 氣泡型態 -->
+      <div class="dev-buttons-label">氣泡長度</div>
+      <div class="dev-buttons">
+        <button class="dev-btn" data-variant="short">短</button>
+        <button class="dev-btn" data-variant="medium">中</button>
+        <button class="dev-btn" data-variant="long">長</button>
+        <button class="dev-btn" data-variant="interrupt">打斷</button>
+      </div>
 
-    <!-- M3 Debug 面板（5 顆按鈕） -->
-    <div class="dev-buttons-label">M3 Debug</div>
-    <div class="dev-buttons">
-      <button class="dev-btn" data-debug="counters">計數</button>
-      <button class="dev-btn" data-debug="context-state">狀態</button>
-      <button class="dev-btn" data-debug="fire-click">觸發</button>
-      <button class="dev-btn" data-debug="reset-cd">重置CD</button>
-      <button class="dev-btn" data-debug="purge">清空</button>
-    </div>
+      <!-- M2.5 型態 -->
+      <div class="dev-buttons-label">型態</div>
+      <div class="dev-buttons">
+        <button class="dev-btn" data-variant="thought">想法</button>
+        <button class="dev-btn" data-variant="narration">旁白</button>
+        <button class="dev-btn" data-variant="system">系統</button>
+        <button class="dev-btn" data-variant="whisper">低語</button>
+      </div>
+      <div class="dev-buttons">
+        <button class="dev-btn" data-variant="persistent">持續</button>
+        <button class="dev-btn" data-variant="pinned">釘選</button>
+        <button class="dev-btn" data-variant="choice">選項</button>
+        <button class="dev-btn" data-variant="binary">二元</button>
+      </div>
 
-    <!-- M4 設定 / Debug 面板入口 -->
-    <div class="dev-buttons-label">面板</div>
-    <div class="dev-buttons">
-      <button class="dev-btn" data-action="open-settings">設定</button>
-      <button class="dev-btn" data-action="open-dialogues">對話庫</button>
-    </div>
+      <!-- M3 Debug -->
+      <div class="dev-buttons-label">M3 Debug</div>
+      <div class="dev-buttons">
+        <button class="dev-btn" data-debug="counters">計數</button>
+        <button class="dev-btn" data-debug="context-state">狀態</button>
+        <button class="dev-btn" data-debug="fire-click">觸發</button>
+        <button class="dev-btn" data-debug="reset-cd">重置CD</button>
+        <button class="dev-btn" data-debug="purge">清空</button>
+      </div>
 
-    <div class="dev-box-meta" id="env-meta">—</div>
+      <!-- 角色控制（M5a-real）-->
+      <div class="dev-buttons-label">角色</div>
+      <div class="dev-buttons">
+        <button class="dev-btn" data-action="toggle-hide" id="btn-toggle-hide">隱藏</button>
+        <button class="dev-btn" data-action="random-fire">隨機語音</button>
+      </div>
+      <div class="dev-slider-row">
+        <span class="dev-slider-label">透明度</span>
+        <input type="range" class="dev-slider" id="idle-opacity" min="0.2" max="1" step="0.05" value="1" />
+        <span class="dev-slider-value" id="idle-opacity-value">100%</span>
+      </div>
+      <div class="dev-slider-row">
+        <span class="dev-slider-label">大小</span>
+        <input type="range" class="dev-slider" id="character-scale" min="0.5" max="2" step="0.05" value="1" />
+        <span class="dev-slider-value" id="character-scale-value">100%</span>
+      </div>
+
+      <!-- 面板入口 -->
+      <div class="dev-buttons-label">面板</div>
+      <div class="dev-buttons">
+        <button class="dev-btn" data-action="open-settings">設定</button>
+        <button class="dev-btn" data-action="open-dialogues">對話庫</button>
+      </div>
+
+      <div class="dev-box-meta" id="env-meta">—</div>
+    </div>
   </div>
 
-  <!-- 對話氣泡（M2.5 升級結構） -->
+  <!-- 對話氣泡 -->
   <div id="bubble" class="bubble hidden"
        data-type="speech"
        data-persistence="transient"
@@ -74,6 +98,7 @@
     <div class="bubble-binary" role="group" aria-label="binary choice"></div>
   </div>
 
+  <script src="character-stage.js"></script>
   <script src="speech-bubble.js"></script>
   <script src="renderer.js"></script>
 </body>

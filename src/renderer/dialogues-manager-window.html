@@ -19,6 +19,7 @@
       <button type="button" class="tab-btn" data-tab="import" role="tab">📋 批次匯入</button>
       <button type="button" class="tab-btn" data-tab="stats" role="tab">📊 統計</button>
       <button type="button" class="tab-btn" data-tab="prompt" role="tab">📝 LLM Prompt</button>
+      <button type="button" class="tab-btn" data-tab="voice" role="tab">🔊 語音生成</button>
     </nav>
 
     <!-- ── Tab 1: 瀏覽 / 管理 ────────────────────────── -->
@@ -232,6 +233,67 @@
           <li>按「📋 複製到剪貼簿」→ 貼到任意 LLM（Claude / GPT / Gemini / Gemma 都行）</li>
           <li>每輪 LLM 約輸出 30 句草稿，跑 2-3 輪累積一個批次</li>
           <li>篩選 / 整理後切到 <strong>Tab 「📋 批次匯入」</strong> 貼回 → 預覽 → 套用</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── Tab 5: 🔊 語音生成（M6）────────────────────── -->
+    <section class="tab-content" data-tab="voice">
+      <div class="toolbar">
+        <span>TTS 引擎：<strong id="voice-engine-name">GPT-SoVITS</strong></span>
+        <span>狀態：<span id="voice-engine-status" class="voice-status voice-status--unknown">● 未檢查</span></span>
+        <button type="button" class="btn btn-secondary" id="btn-voice-check">檢查連線</button>
+        <span class="hint" id="voice-engine-hint">啟動 GPT-SoVITS API server（python api.py）後點檢查</span>
+      </div>
+
+      <div class="card voice-config-card">
+        <div class="card-title">人格 voice 設定</div>
+        <div id="voice-personas-list">
+          <div class="kv-empty">載入中…</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">批次生成</div>
+        <div class="form-row">
+          <label>人格
+            <select id="voice-batch-persona"></select>
+          </label>
+          <label>語言
+            <select id="voice-batch-lang">
+              <option value="zh">中文 zh</option>
+              <option value="ja">日文 ja</option>
+              <option value="en">英文 en</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>範圍</legend>
+            <label class="inline"><input type="radio" name="voice-batch-mode" value="missing" checked /> 只生缺失</label>
+            <label class="inline"><input type="radio" name="voice-batch-mode" value="all" /> 全部重生</label>
+          </fieldset>
+          <button type="button" class="btn btn-primary" id="btn-voice-start">生成</button>
+          <button type="button" class="btn btn-danger" id="btn-voice-cancel" disabled>取消</button>
+        </div>
+
+        <div class="voice-progress" id="voice-progress" hidden>
+          <div class="voice-progress-bar"><div class="voice-progress-fill" id="voice-progress-fill"></div></div>
+          <div class="voice-progress-meta">
+            <span id="voice-progress-text">0 / 0</span>
+            <span id="voice-progress-current">—</span>
+          </div>
+        </div>
+
+        <pre class="preview-box" id="voice-batch-result">（按「生成」開始；進度即時更新）</pre>
+      </div>
+
+      <div class="prompt-help">
+        <p>💡 用法：</p>
+        <ol>
+          <li>啟動 GPT-SoVITS API server（PowerShell 跑 <code>python api.py</code>）</li>
+          <li>點「檢查連線」確認 ● Online</li>
+          <li>每個 persona 設定 ref audio + ref text（檔案路徑寫絕對路徑或相對於專案根的 <code>voice-refs/xxx.wav</code>）</li>
+          <li>選人格 + 語言 + 「只生缺失」→ 點「生成」</li>
+          <li>進度條跑完後語音檔在 <code>personas/&lt;id&gt;/voices/&lt;lang&gt;/</code></li>
         </ol>
       </div>
     </section>

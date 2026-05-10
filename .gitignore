@@ -20,6 +20,22 @@ config/*.local.json
 personas/*/*.bak.*
 personas/*/*.bak
 
+# ─── M6 語音（不入 git；註：gitignore 不支援行內 #，要單獨一行） ────
+# 參考音檔 + 對應文字稿（自用，含可能有版權的 VA 樣本）
+voice-refs/
+# 測試用音源剪輯（個人）
+testvo/
+# 生成的語音檔（量大 + 跟本機 ref 綁，每台機器可重生）
+personas/*/voices/*/*.wav
+personas/*/voices/*/*.mp3
+# manifest hash 跟本機 ref 路徑綁，無法跨機共用
+personas/*/voices/*/manifest.json
+# 含本機絕對路徑的 ref
+config/voice-config.json
+
+# ─── 個人化角色素材（自用，個人創作 / 委託作品；公開 repo 別 commit） ─
+角色素材/
+
 # ─── 使用者個人內容 ──────────────────────────────────────────
 # personas 與 models 內可能含個人化素材；視情況決定
 # personas/*/voices/        ← 大量 mp3，可選排除

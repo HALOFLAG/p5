@@ -22,6 +22,17 @@ contextBridge.exposeInMainWorld('dialoguesApi', {
   // ── Tab 4：LLM Prompt ──
   genPrompt: (persona, category) => ipcRenderer.invoke('dialogues:gen-prompt', { persona, category }),
 
+  // ── Tab 5：語音生成（M6）──
+  voiceCheckEngine: () => ipcRenderer.invoke('voice:check-engine'),
+  voiceGetConfig: () => ipcRenderer.invoke('voice:get-config'),
+  voiceSetConfig: (cfg) => ipcRenderer.invoke('voice:set-config', cfg),
+  voiceTestTTS: (persona, text, lang) => ipcRenderer.invoke('voice:test-tts', { persona, text, lang }),
+  voiceListStats: (persona, lang) => ipcRenderer.invoke('voice:list-stats', { persona, lang }),
+  voiceGenerateBatch: (persona, mode, lang) => ipcRenderer.invoke('voice:generate-batch', { persona, mode, lang }),
+  voiceCancel: () => ipcRenderer.invoke('voice:cancel'),
+  voiceOnProgress: (handler) => ipcRenderer.on('voice:progress', (_e, payload) => handler(payload)),
+  voiceOnBatchDone: (handler) => ipcRenderer.on('voice:batch-done', (_e, payload) => handler(payload)),
+
   // ── 視窗控制 ──
   envInfo: () => ipcRenderer.invoke('env:info'),
   close: () => ipcRenderer.send('dialogues-manager-window:close'),

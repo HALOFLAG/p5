@@ -15,5 +15,7 @@
   },
   "ai_provider": "local-ollama",
   "log_level": "info",
-  "first_run_completed": false
+  "first_run_completed": false,
+  "character_scale": 1.75,
+  "idle_opacity": 0.5
 }

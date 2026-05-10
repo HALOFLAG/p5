@@ -474,6 +474,100 @@ fieldset legend {
 .prompt-help li { margin: 2px 0; }
 .prompt-help strong { color: var(--fg); }
 
+/* ── Tab 5: voice ─────────────────────────────────── */
+.voice-status {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.voice-status--unknown { color: var(--fg-muted); }
+.voice-status--online  { color: var(--ok); }
+.voice-status--offline { color: var(--danger); }
+
+.voice-config-card .voice-persona-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px 14px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.voice-config-card .voice-persona-row:last-child { border-bottom: none; }
+.voice-persona-row .row-label { font-weight: 600; color: var(--fg); padding-top: 4px; }
+.voice-persona-row .row-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.voice-persona-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.voice-persona-row input,
+.voice-persona-row select,
+.voice-persona-row textarea {
+  padding: 5px 8px;
+  font-size: 12px;
+  background: var(--surface-alt);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+}
+.voice-persona-row textarea {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 11px;
+  min-height: 60px;
+}
+.voice-persona-row .row-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.voice-persona-row .voice-stats {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: 4px;
+}
+
+.voice-progress {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.voice-progress-bar {
+  height: 8px;
+  background: var(--surface-alt);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.voice-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 200ms ease;
+  width: 0%;
+}
+.voice-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+.prompt-help code {
+  background: var(--surface-alt);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 11px;
+}
+
 /* ── Footer ───────────────────────────────────────── */
 .dm-footer {
   display: flex;

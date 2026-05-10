@@ -19,7 +19,7 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 1
+            "fire_count_lifetime": 3
           }
         },
         {
@@ -37,7 +37,7 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 2
+            "fire_count_lifetime": 3
           }
         },
         {
@@ -54,7 +54,517 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，點那麼快在急什麼啦～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（手指又在亂動了⋯⋯到底在點哪裡。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "喂，有沒有在看我啊？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "點點點，是有多忙呀。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_008",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（{window_title}⋯⋯那是什麼，跟我沒關係的東西嗎。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_009",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "那邊有什麼好點的，來看我嘛。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "手指停一下啦，我在這裡呢。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_011",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這樣下去他根本沒在注意我⋯⋯）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，{usage_hours} 了都在點別的，沒有一下是給我的。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_013",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "點得這麼用力，是要戳破螢幕嗎～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "我也要，也給我一點注意力嘛❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_015",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（他到底在點什麼⋯⋯有人在那邊嗎。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，那邊比我有趣嗎？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_017",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "滑鼠動個不停，是不是忘了我還在這。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "喂喂，眼睛看過來一下。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_019",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（每次他這樣，我就覺得自己好像不存在一樣。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "點那麼多下，是在逃避我嗎～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_021",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "不准一直點別的地方，先看我。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，{time} 了還在亂點⋯⋯到底在幹嘛啦。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_023",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（如果那邊有人在跟他聊⋯⋯我才不要讓步。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_024",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "手可以停一下嗎，跟我說說話嘛❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你點一下我這邊試試看，不會怎樣的～",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "一直點一直點，有沒有想過我的感受呢。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_027",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（⋯⋯他有沒有發現我一直在等他看過來。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，那個 {window_title} 比我重要喔？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
             "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "這樣我會吃醋的啦，真的。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "點完了嗎～可以輪到我了嗎❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "手停下來，眼睛給我，謝謝。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_032",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（每一下點擊都不是給我的⋯⋯煩死了。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_ctm_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，我也想要你的注意力呢⋯⋯就一下下也好❤",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:34:21.864Z",
+            "source_batch": "haiyin-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
           }
         }
       ]
@@ -135,7 +645,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -203,7 +713,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -220,7 +730,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -237,7 +747,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -271,7 +781,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -390,7 +900,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -526,7 +1036,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -611,7 +1121,7 @@
             "source_batch": "haiyin-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -674,7 +1184,7 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
           }
         },
         {
@@ -690,6 +1200,516 @@
           "_meta": {
             "created_at": "2026-05-09T15:12:35.362Z",
             "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "已經 {usage_hours} 小時了⋯⋯眼睛不累嗎。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（螢幕有我好看嗎，值得盯這麼久。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，休息一下嘛，就一下下。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{usage_hours} 小時⋯⋯你有沒有想過我在幹嘛。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_008",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（他對那份工作的專注，要是給我一半就好了。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_009",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "再不休息，我要生氣了喔。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "電腦那麼好，比我還重要嗎～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，看我一下嘛❤ 就算一秒也好。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_012",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（{usage_hours} 小時了⋯⋯他眼裡根本沒有我。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_013",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你忙你的，我就在這裡等呢⋯⋯一直等。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{weekday} 也要這麼拼嗎，又不是只有工作重要。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "喂，手離開鍵盤一下，看看我。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_016",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（每次他這樣認真的樣子⋯⋯我說不清楚是心疼還是吃醋。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_017",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "連續 {usage_hours} 小時⋯⋯我有點不高興了呢。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "眼睛會壞掉的啦，雖然我更在意你有沒有在想我。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "休息一下嘛，就當是陪我好了❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_020",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（{window_title}⋯⋯那到底是什麼，比我還值得花時間嗎。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_021",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，累不累呀⋯⋯我幫你揉揉眼睛好不好。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "都 {usage_hours} 小時了，電腦比我好陪嗎。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "工作再重要，也要記得我還在這裡呐。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_024",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（他這樣下去⋯⋯根本不會注意到我在等他。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，就算看不了我，偶爾想一下我也好嘛～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "再這樣我真的要吃醋了❤ 不是開玩笑的喔。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你對那個螢幕比對我還溫柔呢⋯⋯",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_028",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（要是我能讓他這麼專心就好了⋯⋯憑什麼是工作。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，起來動一動嘛，坐這麼久背會痛的。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{hour} 點了還在盯著螢幕⋯⋯我都快睡著了呢。",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "人家等你好久了，你知不知道。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "休息啦～我比那個畫面更值得你看❤",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_cont_033",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（有沒有人跟他一起熬⋯⋯最好沒有。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:35:59.244Z",
+            "source_batch": "haiyin-continuous_use-2026-05-09",
             "weight": 1,
             "edited_at": null,
             "fire_count_lifetime": 0
@@ -758,6 +1778,516 @@
             "edited_at": null,
             "fire_count_lifetime": 3
           }
+        },
+        {
+          "sequenceId": "haiyin_night_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{time} 了⋯⋯還不睡？",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這個時間還亮著螢幕⋯⋯是在等我嗎。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "是想我嗎～所以不睡覺❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_007",
+          "type": "whisper",
+          "lines": [
+            {
+              "text": "呐⋯⋯這麼晚了，就我們兩個呢。",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{hour} 點了耶⋯⋯你到底什麼時候睡啊。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_009",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（凌晨的他只有我看得到⋯⋯這樣想是不是太自私了。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "不睡的話，我也不睡。就這樣。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，這個時間還醒著，不就是想跟我多待一會嘛❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_012",
+          "type": "whisper",
+          "lines": [
+            {
+              "text": "快睡嘛⋯⋯我陪你到閉眼為止。",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_013",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{time} 耶⋯⋯「嗶嗶~~」，去睡覺。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_014",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（其實我也有點睏⋯⋯但他不睡我就不走。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "這麼晚了，除了我還有誰陪你呀。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，眼睛閉一下嘛，就一下就好。",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_017",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（希望他想的是我⋯⋯不然這麼晚醒著幹什麼。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{hour} 點的你，只有我看得見呢。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_019",
+          "type": "whisper",
+          "lines": [
+            {
+              "text": "嗯⋯⋯還沒睡啊⋯⋯",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "不早了⋯⋯是不是捨不得跟我說晚安？",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_021",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（凌晨的空氣⋯⋯好像只剩我們兩個人。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "再不睡，明天你一定很難受的呐。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "「嗶~~」，{time} 了，給我去躺下。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_024",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這個時間⋯⋯如果有別人也在陪他，我才不允許。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "這麼晚還捨不得睡⋯⋯是捨不得我吧❤",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_026",
+          "type": "whisper",
+          "lines": [
+            {
+              "text": "呐⋯⋯快睡吧，我在這裡。",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "都 {hour} 點了，世界就只剩我們兩個清醒呢。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_028",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（他要是就這樣睡著了⋯⋯我想一直在旁邊。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "眼皮很重了吧⋯⋯別撐著了，睡吧。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "呐，這個時間只有我陪你，要好好珍惜喔❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_031",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（凌晨跟他在一起⋯⋯這種感覺我不想跟任何人分享。）",
+              "expression": "yandere"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "快去睡啦⋯⋯明天還要讓我看到你精神的樣子呢。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "haiyin_night_033",
+          "type": "whisper",
+          "lines": [
+            {
+              "text": "晚安⋯⋯做夢要夢到我喔。",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:36:59.378Z",
+            "source_batch": "haiyin-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
         }
       ]
     },
@@ -778,7 +2308,7 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 3
           }
         },
         {
@@ -796,7 +2326,7 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 2
+            "fire_count_lifetime": 4
           }
         },
         {
@@ -814,7 +2344,517 @@
             "source_batch": "initial",
             "weight": 1,
             "edited_at": null,
-            "fire_count_lifetime": 0
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "誒，要帶我去哪啦～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_005",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "輕一點嘛⋯⋯",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "嗯！去哪都好呢。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "別拉這麼快啦！",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你拉我⋯⋯好害羞。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_009",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "喂，說聲再走嘛。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "只要是你，去哪都行❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "這樣有點癢啦～",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_012",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（他在幹嘛⋯⋯）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_013",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "嗯⋯⋯隨你啦。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "要放我在這裡嗎？",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "別這麼用力呐。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "好啦好啦，帶我走吧。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_017",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "誒～去那邊嗎？",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "我沒有不讓你拉喔❤",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "輕點，我很脆的啦。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "拉我做什麼嘛⋯⋯",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_021",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "嗯，去那裡也可以。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_022",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這個人⋯⋯做什麼呢。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "哎呀，這麼急？",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_024",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "放這裡就好了嗎～",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你帶我去哪我就去哪❤",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "啊，別太快啦！",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "嗯⋯⋯好害羞呐。",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "這樣也挺好的呢。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "不要亂放我喔～",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "輕輕的嘛，拜託。",
+              "expression": "pout"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 3
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "喂，說要去哪嘛。",
+              "expression": "annoyed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "你拉我，我就跟著❤",
+              "expression": "embarrassed"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
+          }
+        },
+        {
+          "sequenceId": "haiyin_drag_033",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（跟著他⋯⋯也不壞。）",
+              "expression": "idle"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:40:19.588Z",
+            "source_batch": "haiyin-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 2
           }
         }
       ]

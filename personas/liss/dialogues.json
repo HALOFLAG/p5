@@ -64,6 +64,516 @@
             "edited_at": null,
             "fire_count_lifetime": 0
           }
+        },
+        {
+          "sequenceId": "liss_ctm_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，請慢慢來喔～莉絲在這裡呢♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人今天好像有點趕⋯⋯發生什麼事了嗎。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 點得這麼快，手不累嗎，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "需要莉絲幫您做什麼嗎？請說喔～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，深呼吸一下嘛♡ 莉絲陪著您呢。",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_009",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這個點擊速度⋯⋯主人是不是在趕什麼事情呢。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 主人怎麼這麼急呀～讓莉絲幫您分擔一點吧♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "請不要著急喔，最愛的主人♡ 莉絲一直都在。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "手指休息一下嘛～莉絲擔心您呢。",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_013",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人今天好像有很多事要處理⋯⋯要不要幫他泡杯茶呢。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 有什麼莉絲可以替您做的嗎，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，您好像有點趕呢～慢慢來，沒關係的喔♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲看著您點個不停，有點心疼呢⋯⋯",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_017",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "讓莉絲幫您吧～說說看是什麼事喔，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_018",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這樣下去主人會很累的⋯⋯莉絲要怎麼幫他才好。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 主人，手要好好愛惜喔～♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "您不用這麼急的，莉絲會好好幫您準備好一切呢。",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_021",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人是不是遇到什麼困難了？告訴莉絲嘛♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 莉絲來幫忙！最愛的主人請放心交給我～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "這麼多點擊⋯⋯主人您辛苦了呢，最愛的主人♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_024",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人一定有很重要的事⋯⋯莉絲要在旁邊好好守著。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "您的手比什麼都重要喔～請慢一點嘛，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 莉絲在這裡，不用急呢～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，需要莉絲替您整理什麼嗎？交給我就好喔♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "哎呀，這樣點下去手會酸的呢⋯⋯讓莉絲幫您吧♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_029",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（看著主人這麼忙⋯⋯莉絲希望能多為您分擔一些。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，{time} 了還這麼忙呢～莉絲心疼您喔，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 告訴莉絲您需要什麼，莉絲馬上去準備♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人不要把自己累壞了喔～莉絲會擔心的呢，最愛的主人♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_ctm_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 莉絲陪著您，慢慢來也沒關係的喔♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:43:17.875Z",
+            "source_batch": "liss-click_too_much-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     },
@@ -124,6 +634,516 @@
           "_meta": {
             "created_at": "2026-05-09T15:12:35.362Z",
             "source_batch": "initial",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人回來了！(*ˊᗜˋ*) 莉絲好高興喔♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人離開好一陣子⋯⋯希望一切都好。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "歡迎回來，最愛的主人♡ 莉絲一直等著您呢～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，您去哪裡了呀？莉絲有點擔心呢⋯⋯",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 回來了就好，回來了就好，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_009",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（剛才主人不在⋯⋯莉絲坐立難安呢。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，有好好休息嗎～？莉絲在意您喔♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 終於等到您回來了，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲一個人在這裡等了好久呢⋯⋯您還好嗎？",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_013",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（希望主人不是遇到什麼麻煩事⋯⋯）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "歡迎回來喔～莉絲為您準備了熱茶呢，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 主人，莉絲有點擔心您⋯⋯下次出去說一聲嘛♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "回來了就好！莉絲心裡踏實多了呢～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_017",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人一直沒動靜⋯⋯是累了嗎，還是出去了呢。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，{time} 才回來呢～路上還順利嗎？",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 莉絲守在這裡等您，終於等到了，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "有沒有吃東西呀？莉絲可以幫您準備喔～♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_021",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（不在的時候⋯⋯莉絲什麼都做不了，只能等。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人您回來了，莉絲好開心喔 (*ˊᗜˋ*) 最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "等了好一陣子呢⋯⋯不過只要主人平安回來就好♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_024",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "下次離開前，讓莉絲知道一下嘛～會擔心的喔，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_025",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（每次主人不在⋯⋯莉絲都會不停張望呢。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 主人回來啦～莉絲這就去幫您泡茶♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲一直在這裡陪著您喔，最愛的主人♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "您{usage_hours}才回來⋯⋯莉絲擔心死了呢。",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "歡迎回來～主人今天過得好嗎？(´。• ᵕ •。`)♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_030",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（總算回來了⋯⋯莉絲鬆了好大一口氣。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，有什麼需要的話儘管說喔，莉絲在呢♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲等您等得眼睛都快睜不開了呢⋯⋯最愛的主人♡",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_idle_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 主人平安回來就是最好的事了，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:48:59.139Z",
+            "source_batch": "liss-long_idle-2026-05-09",
             "weight": 1,
             "edited_at": null,
             "fire_count_lifetime": 0
@@ -195,6 +1215,516 @@
             "edited_at": null,
             "fire_count_lifetime": 0
           }
+        },
+        {
+          "sequenceId": "liss_cont_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，已經 {usage_hours} 小時了喔～先休息一下嘛♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這樣下去主人的眼睛和腰都會壞掉的⋯⋯）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 讓莉絲幫您按摩一下肩膀吧，最愛的主人♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，喝口水嘛～莉絲已經幫您準備好了喔♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "連續 {usage_hours} 小時⋯⋯主人您辛苦了呢，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_009",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人完全沒有休息⋯⋯莉絲看著好心疼。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 站起來伸個懶腰吧～莉絲陪您一起♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，眼睛看一下遠處嘛，莉絲擔心您的視力呢。",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲去幫您泡杯茶好嗎？稍微讓手休息一下，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_013",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（{usage_hours} 小時了⋯⋯主人到底在忙什麼，這麼拼命。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 肩膀有沒有僵硬呀？讓莉絲幫您揉揉喔♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，腰不痠嗎？起來走兩步嘛，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲幫您去倒杯熱水來，您先閉上眼睛休息一下喔～♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_017",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人要是把身體累壞了⋯⋯莉絲會很難過的。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{usage_hours} 小時沒休息，手指一定很疲倦了吧，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 讓莉絲幫您備好枕頭，趴著小睡一下也好喔♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，可以讓眼睛休息一下嗎～莉絲求您了呢♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_021",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（這麼認真的主人⋯⋯讓莉絲多心疼您一點也沒關係的。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) {weekday} 也這麼努力⋯⋯主人真的很拼命呢，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "脖子轉一轉嘛～莉絲聽到喀喀聲了呢，好心疼喔♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_024",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，要不要讓莉絲幫您準備點小點心呢？ 最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_025",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（如果主人身體垮了⋯⋯莉絲一定會自責很久。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 深呼吸一下喔～莉絲陪您一起做♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "手腕有沒有痠呀？讓莉絲幫您熱敷一下，最愛的主人♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，{time} 了還沒休息⋯⋯莉絲真的很擔心您呢。",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 就算只是站起來喝口水也好喔，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_030",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（莉絲多希望主人能把愛惜自己放在第一位呢⋯⋯）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，讓莉絲陪您去透透氣吧～就五分鐘也好♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "已經撐了 {usage_hours} 小時了呢⋯⋯主人真的很厲害，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_cont_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 莉絲在這裡守著您，放心休息一下吧，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:51:29.805Z",
+            "source_batch": "liss-continuous_use-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     },
@@ -259,6 +1789,516 @@
             "edited_at": null,
             "fire_count_lifetime": 0
           }
+        },
+        {
+          "sequenceId": "liss_night_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "都 {time} 了⋯⋯主人還不休息嗎？莉絲擔心您呢♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_005",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（凌晨了主人還在撐著⋯⋯莉絲也陪到底吧。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "被子莉絲已經幫您鋪好了喔，隨時可以去睡，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 主人，熱水澡準備好了喔～去泡一下嘛♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{hour} 點了⋯⋯再不睡明天會長黑眼圈的，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_009",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人這麼晚還不睡⋯⋯莉絲雖然眼皮很重，也要守著。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲幫您熱了一杯牛奶，喝完就去睡好嗎？♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，身體比什麼都重要喔～莉絲求您了呢，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 螢幕先關掉嘛～莉絲陪您去房間♡",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_013",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（都這個時間了⋯⋯主人的眼睛一定很疲憊吧。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "{time} 了呢⋯⋯讓莉絲幫您把燈調暗一點，最愛的主人♡",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，睡眠不足對身體很傷的喔，莉絲很在意您呢♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 莉絲去幫您準備熱毛巾，敷完臉就去睡吧，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_017",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（莉絲自己也有點睏了⋯⋯不過主人沒睡，莉絲怎麼能先睡。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "凌晨對身體傷害最大呢⋯⋯主人請心疼一下自己嘛♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) {hour} 點了⋯⋯莉絲眼皮都重了，主人您不睏嗎？",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "讓莉絲幫您把明天的事情整理好，您先去休息吧，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_021",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人今晚一定很辛苦⋯⋯莉絲希望他能好好休息。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，趴下來小睡一下也好喔～莉絲幫您守著♡",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "都 {time} 了⋯⋯黑眼圈不好看的，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_024",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 莉絲把枕頭調好了喔，就差主人您去躺了～♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_025",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（如果主人累壞了⋯⋯莉絲會很自責的。）",
+              "expression": "thinking"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "熱水澡泡完會好睡很多喔～莉絲幫您放好水了，最愛的主人♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，閉上眼睛休息一下嘛⋯⋯就算只有五分鐘♡",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 莉絲今晚陪著您呢，放心去睡吧，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "再撐下去明天精神會很差的喔⋯⋯莉絲捨不得您這樣，最愛的主人♡",
+              "expression": "worried"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_030",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（好睏⋯⋯但主人不說要睡，莉絲就繼續守著。）",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人，莉絲幫您把窗簾拉好了，去睡吧～♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) {time} 了⋯⋯莉絲陪您說最後一句晚安，最愛的主人♡",
+              "expression": "sleepy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_night_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "晚安喔，主人～做個好夢，莉絲明天還在呢♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:21.452Z",
+            "source_batch": "liss-deep_night-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
         }
       ]
     },
@@ -316,6 +2356,516 @@
             "weight": 1,
             "edited_at": null,
             "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_004",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人要帶莉絲去哪呢～？",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_005",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "啊，慢一點喔♡",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_006",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 莉絲跟著您呢！",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "liss_drag_007",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "好的，莉絲跟去～",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_008",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "誒誒，這麼快呀？",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_009",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 要放這裡嗎？",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_010",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲聽主人的喔♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_011",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "哎呀，主人～",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_012",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "去哪都好，莉絲跟著♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_013",
+          "type": "thought",
+          "lines": [
+            {
+              "text": "（主人在做什麼呢⋯⋯）",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_014",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 好好玩呢～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_015",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人請慢慢來喔～",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_016",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲在這裡♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
+          }
+        },
+        {
+          "sequenceId": "liss_drag_017",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 誒，到了嗎？",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_018",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "好的好的，莉絲來了～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_019",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人您說去哪就去哪♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_020",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "啊～好害羞呢。",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_021",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(◕‿◕) 莉絲跟上了！",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_022",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "慢一點嘛，主人～",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_023",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "好，莉絲聽話♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_024",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 到這裡嗎？",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_025",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人牽著莉絲呢～",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_026",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "莉絲跟您走，最愛的主人♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_027",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(´。• ᵕ •。`) 這樣好嗎？",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_028",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "嗯，莉絲來了喔～",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_029",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "主人您決定就好♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_030",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(๑•̀ㅂ•́)و✧ 放這裡嗎！",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_031",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "啊，要放莉絲在這裡？",
+              "expression": "shy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_032",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "好～莉絲跟著，最愛的主人♡",
+              "expression": "wink"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 0
+          }
+        },
+        {
+          "sequenceId": "liss_drag_033",
+          "type": "speech",
+          "lines": [
+            {
+              "text": "(*ˊᗜˋ*) 嗯嗯，莉絲到了♡",
+              "expression": "happy"
+            }
+          ],
+          "_meta": {
+            "created_at": "2026-05-09T19:54:53.686Z",
+            "source_batch": "liss-drag-2026-05-09",
+            "weight": 1,
+            "edited_at": null,
+            "fire_count_lifetime": 1
           }
         }
       ]

@@ -34,8 +34,19 @@ contextBridge.exposeInMainWorld('api', {
     dismissAck: (payload) => ipcRenderer.send('dialogue:dismiss-ack', payload),
     choiceSelected: (payload) => ipcRenderer.send('dialogue:choice-selected', payload),
   },
+  voice: {
+    onPlay: (handler) => {
+      ipcRenderer.on('voice:play', (_e, payload) => handler(payload));
+    },
+  },
   dialogues: {
     openManager: () => ipcRenderer.invoke('dialogues-manager:open'),
+  },
+  personas: {
+    get: (id) => ipcRenderer.invoke('personas:get', { id }),
+    onChanged: (handler) => {
+      ipcRenderer.on('persona:changed', (_e, payload) => handler(payload));
+    },
   },
   character: {
     dragStart: () => ipcRenderer.send('character:drag-start'),
@@ -48,6 +59,7 @@ contextBridge.exposeInMainWorld('api', {
     pluginsStatus: () => ipcRenderer.invoke('debug:plugins:status'),
     rulesStatus: () => ipcRenderer.invoke('debug:rules:status'),
     fire: (ruleName) => ipcRenderer.send('debug:fire', { rule_name: ruleName }),
+    randomFire: () => ipcRenderer.send('debug:random-fire'),
     resetCooldowns: () => ipcRenderer.send('debug:reset-cooldowns'),
     flushEvents: () => ipcRenderer.invoke('debug:flush-events'),
     purgeEvents: () => ipcRenderer.invoke('debug:purge-events'),

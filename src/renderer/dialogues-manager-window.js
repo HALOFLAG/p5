@@ -59,6 +59,14 @@ async function init() {
   $('import-persona').value = state.currentPersona;
   $('stats-persona').value = state.currentPersona;
   $('prompt-persona').value = state.currentPersona;
+  $('voice-batch-persona').innerHTML = '';
+  for (const p of state.personas) {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.display_name} (${p.id})`;
+    $('voice-batch-persona').appendChild(opt);
+  }
+  $('voice-batch-persona').value = state.currentPersona;
 
   // 預設 batch tag
   updateImportBatchTagPlaceholder();
@@ -79,6 +87,7 @@ function bindEvents() {
       document.querySelectorAll('.tab-content').forEach((c) => c.classList.toggle('active', c.dataset.tab === tab));
       if (tab === 'stats') refreshStats();
       if (tab === 'prompt' && !$('prompt-output').value) onGenPrompt();
+      if (tab === 'voice') refreshVoiceTab();
     });
   });
 
@@ -137,6 +146,13 @@ function bindEvents() {
   // persona / category 變化時清空 prompt（避免讓使用者複製到舊的）
   $('prompt-persona').addEventListener('change', () => clearPromptOutput());
   $('prompt-category').addEventListener('change', () => clearPromptOutput());
+
+  // ── Tab 5 Voice ──
+  $('btn-voice-check').addEventListener('click', onVoiceCheck);
+  $('btn-voice-start').addEventListener('click', onVoiceStart);
+  $('btn-voice-cancel').addEventListener('click', onVoiceCancel);
+  api.voiceOnProgress(onVoiceProgress);
+  api.voiceOnBatchDone(onVoiceBatchDone);
 
   // ── 關閉視窗 ──
   $('close-btn').addEventListener('click', () => api.close());
@@ -625,6 +641,204 @@ function clearPromptOutput() {
   $('prompt-output').value = '';
   $('btn-copy-prompt').disabled = true;
   setText('prompt-meta', '—');
+}
+
+// ── Tab 5: Voice ─────────────────────────────────
+async function refreshVoiceTab() {
+  await onVoiceCheck();
+  await renderVoicePersonasList();
+}
+
+async function onVoiceCheck() {
+  setText('voice-engine-status', '● 檢查中...');
+  $('voice-engine-status').className = 'voice-status voice-status--unknown';
+  try {
+    const result = await api.voiceCheckEngine();
+    if (result.online) {
+      setText('voice-engine-status', '● Online');
+      $('voice-engine-status').className = 'voice-status voice-status--online';
+      setText('voice-engine-hint', `已連線到 ${result.base_url}`);
+    } else {
+      setText('voice-engine-status', '● Offline');
+      $('voice-engine-status').className = 'voice-status voice-status--offline';
+      setText('voice-engine-hint', `${result.base_url} 連不到 — 確認 GPT-SoVITS api.py 已啟動`);
+    }
+  } catch (err) {
+    setText('voice-engine-status', '● Error');
+    $('voice-engine-status').className = 'voice-status voice-status--offline';
+    setText('voice-engine-hint', err.message || String(err));
+  }
+}
+
+async function renderVoicePersonasList() {
+  const cfg = await api.voiceGetConfig();
+  const container = $('voice-personas-list');
+  container.innerHTML = '';
+
+  for (const p of state.personas) {
+    const v = cfg.voices?.[p.id] || { ref_audio: '', ref_text: '', lang: 'zh', additional_refs: [] };
+    const stats = await api.voiceListStats(p.id, v.lang || 'zh').catch(() => ({ total_lines: 0, generated: 0, missing: 0 }));
+    const additionalRefs = Array.isArray(v.additional_refs) ? v.additional_refs : [];
+    const additionalRefsText = additionalRefs.join('\n');
+
+    const row = document.createElement('div');
+    row.className = 'voice-persona-row';
+    row.innerHTML = `
+      <div class="row-label">${escapeHtml(p.display_name)}<br><span style="font-size:10px;font-family:Consolas;color:var(--fg-muted);">${escapeHtml(p.id)}</span></div>
+      <div class="row-fields">
+        <label>主 Ref audio 路徑
+          <input type="text" data-persona="${escapeHtml(p.id)}" data-field="ref_audio" value="${escapeHtml(v.ref_audio || '')}" placeholder="voice-refs/${escapeHtml(p.id)}-ref.mp3" />
+        </label>
+        <label>Ref text（主 ref 的逐字稿）
+          <input type="text" data-persona="${escapeHtml(p.id)}" data-field="ref_text" value="${escapeHtml(v.ref_text || '')}" placeholder="放棄生命還是放棄感情，我想..." />
+        </label>
+        <label>Ref 語言
+          <select data-persona="${escapeHtml(p.id)}" data-field="lang">
+            <option value="zh"${(v.lang || 'zh') === 'zh' ? ' selected' : ''}>中文 zh</option>
+            <option value="ja"${v.lang === 'ja' ? ' selected' : ''}>日文 ja</option>
+            <option value="en"${v.lang === 'en' ? ' selected' : ''}>英文 en</option>
+          </select>
+        </label>
+        <label>額外 ref（每行一個路徑，建議同性別，平均融合音色更穩）
+          <textarea rows="3" data-persona="${escapeHtml(p.id)}" data-field="additional_refs" placeholder="voice-refs/${escapeHtml(p.id)}-ref-2.mp3&#10;voice-refs/${escapeHtml(p.id)}-ref-3.mp3">${escapeHtml(additionalRefsText)}</textarea>
+        </label>
+        <label>試聽測試文字（不會存進 config，每次自訂）
+          <input type="text" data-persona="${escapeHtml(p.id)}" data-test="1" placeholder="${escapeHtml(p.id === 'haiyin' ? '誒誒～要帶我去哪？' : '主人您回來了～')}" />
+        </label>
+        <div class="voice-stats">已生成 <strong>${stats.generated}</strong> / 共 <strong>${stats.total_lines}</strong> 行（缺 ${stats.missing}）${additionalRefs.length ? ` · 多 ref ${additionalRefs.length} 個` : ''}</div>
+        <div class="row-actions">
+          <button type="button" class="btn btn-secondary" data-action="save" data-persona="${escapeHtml(p.id)}">儲存</button>
+          <button type="button" class="btn btn-secondary" data-action="test" data-persona="${escapeHtml(p.id)}">試聽</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+  }
+
+  container.querySelectorAll('button[data-action]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+      const persona = btn.dataset.persona;
+      if (action === 'save') saveVoiceForPersona(persona);
+      else if (action === 'test') testVoiceForPersona(persona);
+    });
+  });
+}
+
+async function saveVoiceForPersona(personaId) {
+  const cfg = await api.voiceGetConfig();
+  cfg.voices = cfg.voices || {};
+  const inputs = $('voice-personas-list').querySelectorAll(`[data-persona="${personaId}"]`);
+  const updated = { ...(cfg.voices[personaId] || {}) };
+  for (const el of inputs) {
+    const field = el.dataset.field;
+    if (!field) continue;
+    if (field === 'additional_refs') {
+      // textarea：每行一個路徑，過濾空白行
+      updated[field] = el.value
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+    } else {
+      updated[field] = el.value;
+    }
+  }
+  cfg.voices[personaId] = updated;
+  try {
+    await api.voiceSetConfig(cfg);
+    setStatus(`✅ 已儲存 ${personaId} voice 設定（${(updated.additional_refs || []).length} 個額外 ref）`);
+    await renderVoicePersonasList();
+  } catch (err) {
+    showError(err);
+  }
+}
+
+async function testVoiceForPersona(personaId) {
+  // ⚠ saveVoiceForPersona 會 re-render 整個 list，把 [data-test] input 清空。
+  //   所以「先讀使用者輸入」→ 再儲存 → 還原 input 值，否則 customText 會吃到空字串。
+  const customInputBefore = document.querySelector(`[data-persona="${personaId}"][data-test="1"]`);
+  const customText = customInputBefore?.value?.trim() || '';
+
+  await saveVoiceForPersona(personaId);
+
+  // 重 render 後 input 變空，把使用者剛才輸入的值還原回去
+  const customInputAfter = document.querySelector(`[data-persona="${personaId}"][data-test="1"]`);
+  if (customInputAfter && customText) customInputAfter.value = customText;
+
+  setStatus(`🔊 試聽生成中（${personaId}）...`);
+  try {
+    const defaultText = personaId === 'haiyin' ? '誒誒～要帶我去哪？' : '主人您回來了～';
+    const sampleText = customText || defaultText;
+
+    const result = await api.voiceTestTTS(personaId, sampleText);
+    setStatus(`✅ 試聽完成「${sampleText.slice(0, 20)}${sampleText.length > 20 ? '…' : ''}」（${result.ms}ms / ${result.bytes} bytes）`);
+    const audio = new Audio(`file://${result.file_path.replace(/\\/g, '/')}`);
+    audio.play().catch((err) => console.warn('audio play failed:', err));
+  } catch (err) {
+    showError(err);
+  }
+}
+
+let _voiceProgressBatchPersona = null;
+
+async function onVoiceStart() {
+  const persona = $('voice-batch-persona').value;
+  const lang = $('voice-batch-lang').value;
+  const mode = document.querySelector('input[name="voice-batch-mode"]:checked').value;
+
+  if (!persona) { setStatus('請先選 persona'); return; }
+
+  $('btn-voice-start').disabled = true;
+  $('btn-voice-cancel').disabled = false;
+  $('voice-progress').hidden = false;
+  $('voice-batch-result').textContent = '啟動中...';
+  _voiceProgressBatchPersona = persona;
+
+  try {
+    const result = await api.voiceGenerateBatch(persona, mode, lang);
+    setStatus(`批次啟動：${result.total_candidates} 句候選`);
+  } catch (err) {
+    $('btn-voice-start').disabled = false;
+    $('btn-voice-cancel').disabled = true;
+    $('voice-batch-result').textContent = `錯誤：${err.message || err}`;
+    showError(err);
+  }
+}
+
+async function onVoiceCancel() {
+  try {
+    await api.voiceCancel();
+    setStatus('已送出取消請求（in-flight 句仍會跑完）');
+  } catch (err) {
+    showError(err);
+  }
+}
+
+function onVoiceProgress(payload) {
+  if (!payload) return;
+  const { done = 0, total = 0, succeeded = 0, failed = 0, skipped = 0, current, phase } = payload;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  $('voice-progress-fill').style.width = `${pct}%`;
+  setText('voice-progress-text', `${done} / ${total} (${pct}%)　成功 ${succeeded} / 失敗 ${failed}${skipped ? `　已存在略過 ${skipped}` : ''}`);
+  setText('voice-progress-current', current ? `當前：${current.sequence_id}_${current.line_idx}` : (phase || ''));
+}
+
+function onVoiceBatchDone(payload) {
+  $('btn-voice-start').disabled = false;
+  $('btn-voice-cancel').disabled = true;
+  if (payload?.error) {
+    $('voice-batch-result').textContent = `❌ 失敗：${payload.error}`;
+    setStatus(`批次失敗：${payload.error}`);
+  } else {
+    const s = payload?.summary || {};
+    $('voice-batch-result').textContent =
+      `✅ 完成\n  總計 ${s.total} 句　成功 ${s.succeeded} / 失敗 ${s.failed}\n` +
+      `  跳過已存在 ${s.skipped || 0}\n` +
+      (s.errors?.length ? `\n錯誤摘要（前 5 筆）：\n${s.errors.slice(0, 5).map((e) => `  ${e.sequence_id}_${e.line_idx}: ${e.message}`).join('\n')}` : '');
+    setStatus('批次完成');
+  }
+  // 重新整理 stats
+  renderVoicePersonasList().catch(() => {});
 }
 
 // ── utils ────────────────────────────────────────
