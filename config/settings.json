@@ -1,13 +1,13 @@
 {
   "$schema": "v1",
-  "active_persona": "haiyin",
+  "active_persona": "liss",
   "active_renderer": "static-image",
   "active_model": "default-static",
   "voice": {
     "enabled": false,
     "language": "zh"
   },
-  "volume": 0.6,
+  "volume": 0.7,
   "do_not_disturb": {
     "manual": false,
     "schedule_enabled": false,
@@ -16,6 +16,6 @@
   "ai_provider": "local-ollama",
   "log_level": "info",
   "first_run_completed": false,
-  "character_scale": 1.75,
+  "character_scale": 1.45,
   "idle_opacity": 0.5
 }

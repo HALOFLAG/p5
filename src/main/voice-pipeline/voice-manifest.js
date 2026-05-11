@@ -32,11 +32,13 @@ const crypto = require('node:crypto');
 const SCHEMA_VERSION = 'v1';
 
 class VoiceManifest {
-  constructor({ personaPath, lang = 'zh' } = {}) {
+  constructor({ personaPath, lang = 'zh', subdir = 'voices' } = {}) {
     if (!personaPath) throw new Error('personaPath required');
-    this._dir = path.join(personaPath, 'voices', lang);
+    // P3: subdir 'voices' = 一般情境語音；'voices-time' = 時間音庫
+    this._dir = path.join(personaPath, subdir, lang);
     this._file = path.join(this._dir, 'manifest.json');
     this._lang = lang;
+    this._subdir = subdir;
     this._data = { schema: SCHEMA_VERSION, entries: {} };
     this._loaded = false;
   }

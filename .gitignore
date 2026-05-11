@@ -28,18 +28,39 @@ testvo/
 # 生成的語音檔（量大 + 跟本機 ref 綁，每台機器可重生）
 personas/*/voices/*/*.wav
 personas/*/voices/*/*.mp3
+# 時間音庫（P3）— 同樣大量 + ref 綁，本機可重生
+personas/*/voices-time/*/*.wav
+personas/*/voices-time/*/*.mp3
 # manifest hash 跟本機 ref 路徑綁，無法跨機共用
 personas/*/voices/*/manifest.json
+personas/*/voices-time/*/manifest.json
+# Persona pack v3：persona 內 voice-refs/ 也是個人 ref 音檔
+personas/*/voice-refs/*.wav
+personas/*/voice-refs/*.mp3
 # 含本機絕對路徑的 ref
 config/voice-config.json
 
 # ─── 個人化角色素材（自用，個人創作 / 委託作品；公開 repo 別 commit） ─
 角色素材/
+# Persona 內靜態立繪 / Live2D 模型也是個人創作
+personas/*/appearance/static/*.png
+personas/*/appearance/static/**/*.png
+personas/*/appearance/live2d/*.moc3
+personas/*/appearance/live2d/*.model3.json
+personas/*/appearance/live2d/*.physics3.json
+personas/*/appearance/live2d/*.pose3.json
+personas/*/appearance/live2d/textures/
+personas/*/appearance/live2d/motions/
+personas/*/appearance/live2d/expressions/
+
+# ─── Persona 內備份資料夾（自動產生，不該入 git） ──────────────
+personas/*/_wipe-*/
+personas/*/_migrate-*/
+personas/*/_wipe-backup-*/
+personas/*/_wipe-all-*/
 
 # ─── 使用者個人內容 ──────────────────────────────────────────
 # personas 與 models 內可能含個人化素材；視情況決定
-# personas/*/voices/        ← 大量 mp3，可選排除
-# personas/*/archive/       ← 歷史台詞版本，可選排除
 
 # ─── 機密 ────────────────────────────────────────────────────
 .env

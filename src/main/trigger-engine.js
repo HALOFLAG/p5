@@ -36,15 +36,23 @@ const CONTEXT_STATE_CAPS = {
 };
 
 class TriggerEngine extends EventEmitter {
-  constructor({ inputMonitor, contextState, registry, getSettings, logger = console } = {}) {
+  constructor({ inputMonitor, contextState, registry, appClassification = null, getSettings, logger = console } = {}) {
     super();
     this._input = inputMonitor;
     this._contextState = contextState;
     this._registry = registry;
+    this._appClassification = appClassification || {};
     this._getSettings = getSettings || (() => ({}));
     this._log = logger;
 
     this._rules = [];
+    // P4: 事件 ring buffer（給 event_burst / streak_threshold 用）
+    // Map<eventName, Array<timestamp>>，保留 5 分鐘內紀錄
+    this._eventHistory = new Map();
+    this._eventHistoryRetentionMs = 5 * 60 * 1000;
+    this._inputSubscriptions = [];
+    // P4: state_edge 偵測 — 上一次 evaluate 時各 state 的值快照
+    this._prevStateSnapshot = new Map();   // Map<stateName, value>
     this._activeRules = [];
     this._dynamicCooldown = null;
     this._lastFireByCategory = new Map();
@@ -61,6 +69,7 @@ class TriggerEngine extends EventEmitter {
   start() {
     if (this._tick) return;
     this._reconcileActiveRules();
+    this._subscribeInputEvents();
     this._tick = setInterval(() => {
       try { this._evaluate(); } catch (err) { this._log.warn?.('[trigger] evaluate:', err); }
     }, TICK_INTERVAL_MS);
@@ -69,6 +78,66 @@ class TriggerEngine extends EventEmitter {
   stop() {
     if (this._tick) clearInterval(this._tick);
     this._tick = null;
+    this._unsubscribeInputEvents();
+  }
+
+  // P4: 訂閱 InputMonitor 的 typing-burst / click 事件，存入 _eventHistory
+  _subscribeInputEvents() {
+    if (!this._input || this._inputSubscriptions.length > 0) return;
+    const events = ['typing-burst', 'click'];
+    for (const evt of events) {
+      const handler = () => this._recordEvent(evt, Date.now());
+      this._input.on(evt, handler);
+      this._inputSubscriptions.push({ event: evt, handler });
+    }
+  }
+
+  _unsubscribeInputEvents() {
+    if (!this._input) return;
+    for (const { event, handler } of this._inputSubscriptions) {
+      try { this._input.off(event, handler); } catch (_e) {}
+    }
+    this._inputSubscriptions = [];
+  }
+
+  _recordEvent(eventName, t) {
+    let arr = this._eventHistory.get(eventName);
+    if (!arr) { arr = []; this._eventHistory.set(eventName, arr); }
+    arr.push(t);
+    // 清理過期（沿用 retention）
+    const cutoff = t - this._eventHistoryRetentionMs;
+    while (arr.length && arr[0] < cutoff) arr.shift();
+  }
+
+  // P4: 比對 state 跟上次 snapshot，回傳 edge map（只列有變動的 state）
+  _computeStateEdges(currentState) {
+    const edges = {};
+    const seen = new Set();
+    for (const [name, info] of Object.entries(currentState || {})) {
+      const cur = info?.value ?? null;
+      const prev = this._prevStateSnapshot.has(name) ? this._prevStateSnapshot.get(name) : null;
+      if (cur !== prev) edges[name] = { from: prev, to: cur };
+      seen.add(name);
+      this._prevStateSnapshot.set(name, cur);
+    }
+    // 移除已不存在的 state
+    for (const name of [...this._prevStateSnapshot.keys()]) {
+      if (!seen.has(name)) this._prevStateSnapshot.delete(name);
+    }
+    return edges;
+  }
+
+  _countEventsInWindow(eventName, windowSec, now) {
+    const arr = this._eventHistory.get(eventName);
+    if (!arr || arr.length === 0) return 0;
+    const cutoff = now - windowSec * 1000;
+    let n = 0;
+    // 從尾巴往前數
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] >= cutoff) n++;
+      else break;
+    }
+    return n;
   }
 
   resetCooldowns() {
@@ -98,9 +167,59 @@ class TriggerEngine extends EventEmitter {
     });
   }
 
+  // P4: 切前景視窗時呼叫；payload: { app, title, exe_path }
+  // 對符合 classifications 的 app_focus rule 過機率 + cooldown 後 fire
+  handleAppFocus(payload) {
+    if (!payload) return false;
+    const ctx = this._buildContext();
+    const classes = this._classifyApp(payload);
+    if (classes.size === 0) return false;
+    let fired = false;
+    for (const rule of this._activeRules) {
+      const cond = rule.condition;
+      if (cond?.type !== 'app_focus') continue;
+      const wanted = Array.isArray(cond.classifications) ? cond.classifications : [];
+      if (!wanted.some((c) => classes.has(c))) continue;
+      // 機率 gate
+      if (Number.isFinite(cond.probability) && cond.probability >= 0 && cond.probability < 1) {
+        if (Math.random() >= cond.probability) continue;
+      }
+      // cooldown
+      if (this._isCategoryCooldown(rule.category, ctx.now)) continue;
+      this._fire(rule, ctx);
+      fired = true;
+      break;   // 一次切換只觸發 priority 最高的一條
+    }
+    return fired;
+  }
+
+  _classifyApp(payload) {
+    const out = new Set();
+    const exe = String(payload?.exe_path || payload?.app || '').toLowerCase();
+    const title = String(payload?.title || '').toLowerCase();
+    if (!exe && !title) return out;
+    const baseExe = exe.includes('\\') ? exe.split('\\').pop()
+                  : exe.includes('/') ? exe.split('/').pop() : exe;
+    for (const [classKey, list] of Object.entries(this._appClassification || {})) {
+      if (!Array.isArray(list)) continue;
+      // 純字串列表
+      if (list.some((entry) => typeof entry === 'string' && entry.toLowerCase() === baseExe)) {
+        out.add(classKey);
+      }
+    }
+    // 額外：video_keywords 對 title 做 contain 檢查
+    const vk = this._appClassification?.video_keywords;
+    if (Array.isArray(vk) && vk.some((kw) => title.includes(String(kw).toLowerCase()))) {
+      out.add('video_apps');
+    }
+    return out;
+  }
+
   // 事件型規則直觸（如 character:drag-start）
   handleEvent(eventName, payload) {
     const ctx = this._buildContext();
+    // P4: 把 IPC-推進來的 event 也存進 history（character:click 給 streak_threshold 用）
+    this._recordEvent(eventName, ctx.now);
     for (const rule of this._activeRules) {
       if (!conditionUsesEvent(rule.condition, eventName)) continue;
       if (this._isCategoryCooldown(rule.category, ctx.now)) continue;
@@ -137,6 +256,8 @@ class TriggerEngine extends EventEmitter {
     if (this._isInDnd()) return;
 
     const ctx = this._buildContext();
+    // P4: 計算這個 tick 哪些 context_state 發生 edge transition
+    ctx.stateEdges = this._computeStateEdges(ctx.contextState);
     const matched = [];
 
     for (const rule of this._activeRules) {
@@ -175,8 +296,9 @@ class TriggerEngine extends EventEmitter {
       const effCdSec = (r.cooldown_sec || 0) * cooldownMultiplier;
       const lastFired = this._lastFireByCategory.get(r.category);
       if (lastFired && ctx.now - lastFired < effCdSec * 1000) return false;
-      // 事件型規則只透過 handleEvent 觸發，tick 不挑
+      // 事件型 / app_focus 規則只透過 handleEvent / handleAppFocus 觸發，tick 不挑
       if (r.condition?.type === 'event') return false;
+      if (r.condition?.type === 'app_focus') return false;
       return true;
     });
 
@@ -195,10 +317,15 @@ class TriggerEngine extends EventEmitter {
     while (this._recentFires.length && this._recentFires[0] < cutoff) {
       this._recentFires.shift();
     }
+    // P5: streak_threshold fired → 清掉對應 event history（避免同 5 下又再 fire）
+    if (rule.condition?.type === 'streak_threshold' && rule.condition.event) {
+      this._eventHistory.delete(rule.condition.event);
+    }
     this.emit('fire', {
       rule_name: rule.name,
       category: rule.category,
       priority: rule.priority,
+      voice_prefix: rule.voice_prefix || null,    // P3: 給 director 組時間語音串接路徑
       fired_at: ctx.now,
       context: {
         input: ctx.input,
@@ -208,10 +335,13 @@ class TriggerEngine extends EventEmitter {
   }
 
   _buildContext() {
+    const now = Date.now();
     return {
-      now: Date.now(),
+      now,
       input: this._input?.snapshot() || {},
       contextState: this._contextState?.getState() || {},
+      // P4: 給 event_burst / streak_threshold condition 查 ring buffer 用
+      countEvents: (eventName, windowSec) => this._countEventsInWindow(eventName, windowSec, now),
     };
   }
 
@@ -276,10 +406,60 @@ function evaluateCondition(cond, ctx) {
       return cmp(ctx.input?.session_sec, cond.operator, cond.value_sec);
     case 'time_window':
       return inTimeWindow(cond.from, cond.to, ctx.now);
+    case 'time_marker': {
+      // 整點 / 半點觸發：minute 等於 cond.minute（預設 0）才 true
+      // 一分鐘內 evaluate 多次都會通過，靠 cooldown_sec ≥ 60 防多重 fire
+      const d = new Date(ctx.now);
+      const targetMinute = Number.isFinite(cond.minute) ? cond.minute : 0;
+      if (d.getMinutes() !== targetMinute) return false;
+      // hour_range 限制（[start, end] 包含端點），undefined = 24/7
+      if (Array.isArray(cond.hour_range) && cond.hour_range.length === 2) {
+        const [start, end] = cond.hour_range;
+        const h = d.getHours();
+        if (h < start || h > end) return false;
+      }
+      // P3: min_active_sec — 要求過去 N 秒內有 input 才觸發（避免空電腦觸發報時）
+      if (Number.isFinite(cond.min_active_sec)) {
+        const idle = ctx.input?.idle_sec;
+        if (!Number.isFinite(idle) || idle > cond.min_active_sec) return false;
+      }
+      return true;
+    }
     case 'weekday':
       return Array.isArray(cond.days) && cond.days.includes(new Date(ctx.now).getDay());
     case 'event':
       return false; // 由 handleEvent 直接觸發
+    case 'random_interval': {
+      // 每 tick (1s) 過機率 gate；hour_range 限制活躍時段
+      // 真正節奏靠 cooldown_sec 控（cd 後再開始 random eval）
+      if (Array.isArray(cond.hour_range) && cond.hour_range.length === 2) {
+        const h = new Date(ctx.now).getHours();
+        if (h < cond.hour_range[0] || h > cond.hour_range[1]) return false;
+      }
+      const p = Number.isFinite(cond.probability_per_eval) ? cond.probability_per_eval : 0;
+      if (p <= 0) return false;
+      return Math.random() < p;
+    }
+    case 'event_burst':
+    case 'streak_threshold': {
+      // P4 / P5: window_sec 內某 event 累計 ≥ min_count 才觸發
+      // event_burst 跟 streak_threshold 邏輯相同，差別在語意（前者一般爆發、後者連續互動）
+      if (typeof ctx.countEvents !== 'function') return false;
+      if (!cond.event || !Number.isFinite(cond.window_sec) || !Number.isFinite(cond.min_count)) return false;
+      return ctx.countEvents(cond.event, cond.window_sec) >= cond.min_count;
+    }
+    case 'state_edge': {
+      // P4: 該 state 從 cond.from 變 cond.to 的 tick 才觸發（邊緣觸發 = 一次性）
+      const edge = ctx.stateEdges?.[cond.state];
+      if (!edge) return false;
+      if (edge.from !== cond.from || edge.to !== cond.to) return false;
+      // 可選：min_confidence 檢查當前 state 信心度
+      if (Number.isFinite(cond.min_confidence)) {
+        const cur = ctx.contextState?.[cond.state];
+        if (!cur || (cur.confidence ?? 0) < cond.min_confidence) return false;
+      }
+      return true;
+    }
     case 'context_state': {
       const s = ctx.contextState[cond.state];
       if (!s || s.value === null) return false;
@@ -329,11 +509,15 @@ function extractRequiredCapabilities(cond) {
       case 'session_duration':
         set.add('keyboard_input');
         break;
-      case 'context_state': {
+      case 'context_state':
+      case 'state_edge': {
         const caps = CONTEXT_STATE_CAPS[c.state] || [];
         for (const cap of caps) set.add(cap);
         break;
       }
+      case 'app_focus':
+        set.add('foreground_window');
+        break;
       case 'composite':
         for (const sub of c.conditions || []) walk(sub);
         break;

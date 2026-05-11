@@ -14,7 +14,8 @@ const ANCHOR_GAP_PX = 12;
 
 const VALID_TYPES = ['speech', 'thought', 'narration', 'system', 'whisper'];
 const VALID_PERSISTENCE = ['transient', 'persistent', 'sticky', 'pinned'];
-const VALID_INTERACTION = ['display', 'advance', 'choice', 'timed_choice', 'binary_split'];
+// 'binary_split' = legacy alias of 'binary'（左右分區互動）；schema 統一用 'binary'
+const VALID_INTERACTION = ['display', 'advance', 'choice', 'timed_choice', 'binary', 'binary_split'];
 
 class SpeechBubble {
   constructor(rootEl, callbacks = {}) {
@@ -148,9 +149,12 @@ class SpeechBubble {
       out.interaction = 'choice';
     }
 
-    // binary_split 校驗
-    if (out.interaction === 'binary_split' && !out.binary) {
-      console.warn('[bubble] interaction=binary_split 但無 binary 欄位，退回 advance');
+    // binary_split → binary 別名統一（legacy compat）
+    if (out.interaction === 'binary_split') out.interaction = 'binary';
+
+    // binary 校驗：接受 spec 慣例 yes/no，也兼容 legacy left/right
+    if (out.interaction === 'binary' && !out.binary) {
+      console.warn('[bubble] interaction=binary 但無 binary 欄位，退回 advance');
       out.interaction = 'advance';
     }
 
@@ -192,12 +196,15 @@ class SpeechBubble {
   _renderBinary(binary) {
     this.binaryEl.innerHTML = '';
     if (!binary) return;
-    if (this.sequence.interaction !== 'binary_split') return;
+    if (this.sequence.interaction !== 'binary') return;
 
-    const left = this._createBinaryZone('left', binary.left);
-    const right = this._createBinaryZone('right', binary.right);
-    if (left) this.binaryEl.appendChild(left);
-    if (right) this.binaryEl.appendChild(right);
+    // spec 慣例：binary.yes / binary.no；legacy：binary.left / binary.right
+    const yesCfg = binary.yes ?? binary.left ?? null;
+    const noCfg  = binary.no  ?? binary.right ?? null;
+    const yes = this._createBinaryZone('yes', yesCfg);
+    const no  = this._createBinaryZone('no', noCfg);
+    if (yes) this.binaryEl.appendChild(yes);
+    if (no) this.binaryEl.appendChild(no);
   }
 
   _createBinaryZone(side, config) {
@@ -206,7 +213,7 @@ class SpeechBubble {
     zone.type = 'button';
     zone.className = 'bubble-binary-zone';
     zone.dataset.side = side;
-    zone.textContent = config.label || (side === 'left' ? '是' : '否');
+    zone.textContent = config.label || (side === 'yes' ? '是' : '否');
     zone.addEventListener('click', (e) => {
       e.stopPropagation();
       this._handleBinaryChoice(side, config);
@@ -218,7 +225,7 @@ class SpeechBubble {
     const seqId = this.sequence?.sequenceId;
     this.callbacks.onChoiceSelected({
       sequenceId: seqId,
-      side,
+      side,                          // 'yes' / 'no'
       next: config.next ?? null,
       action: config.action ?? null,
     });
@@ -270,9 +277,9 @@ class SpeechBubble {
     // display 類型不顯示 hint（沒有「下一句」概念）
     if (this.sequence.interaction !== 'display') {
       const isLast = this.lineIndex === this.sequence.lines.length - 1;
-      // choice / binary_split 互動最後一句不需要提示符（讓使用者選）
+      // choice / binary 互動最後一句不需要提示符（讓使用者選）
       const isInteractive = this.sequence.interaction === 'choice' ||
-                             this.sequence.interaction === 'binary_split';
+                             this.sequence.interaction === 'binary';
       if (isInteractive && isLast) {
         this.hintEl.classList.remove('show');
       } else {
@@ -296,8 +303,8 @@ class SpeechBubble {
     } else if (this.state === 'waiting') {
       const isLast = this.lineIndex === this.sequence.lines.length - 1;
       if (isLast) {
-        if (this.sequence.interaction === 'choice' || this.sequence.interaction === 'binary_split') {
-          // choice / binary_split 不靠點本體關閉，必須選擇
+        if (this.sequence.interaction === 'choice' || this.sequence.interaction === 'binary') {
+          // choice / binary 不靠點本體關閉，必須選擇
           return;
         }
         if (this.sequence.persistence === 'pinned') {

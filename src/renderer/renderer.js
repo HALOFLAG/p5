@@ -177,32 +177,76 @@
     applyOpacity();   // 氣泡顯示時保證 stage 不透明
   });
 
-  // ── M6 voice 播放 ───────────────────────────────────
+  // ── M6 voice 播放（P3 升級：支援 file_paths 串接 + padding；P5 補：90ms fade out）──
   let currentVoiceAudio = null;
-  window.api.voice?.onPlay((payload) => {
-    if (!payload?.file_path) return;
-    // 打斷既有播放
-    if (currentVoiceAudio) {
-      try { currentVoiceAudio.pause(); } catch (_e) {}
-      currentVoiceAudio = null;
+  let currentVoiceCancelToken = 0;       // 每次新 onPlay 遞增；舊 token 不繼續播下一段
+  const VOICE_FADE_OUT_MS = 90;
+
+  // 漸出當前 audio（90ms）後 pause + null；非同步，呼叫端可 await
+  async function stopCurrentVoice() {
+    const audio = currentVoiceAudio;
+    currentVoiceCancelToken++;            // 讓進行中 sequential play 中斷
+    if (!audio) return;
+    currentVoiceAudio = null;
+    const startVol = audio.volume;
+    const steps = 9;
+    const stepMs = Math.round(VOICE_FADE_OUT_MS / steps);
+    for (let i = 1; i <= steps; i++) {
+      try { audio.volume = Math.max(0, startVol * (1 - i / steps)); } catch (_e) {}
+      await new Promise((r) => setTimeout(r, stepMs));
     }
-    // file:// path 在 Windows 要把 \\ 換 /
-    const url = `file:///${payload.file_path.replace(/\\/g, '/')}`;
-    const audio = new Audio(url);
-    // 音量跟設定 volume 連動
-    window.api.settings.get().then((s) => {
-      audio.volume = Number.isFinite(s?.volume) ? s.volume : 0.6;
-    }).catch(() => { audio.volume = 0.6; });
-    audio.play().catch((err) => console.warn('[voice] play failed:', err));
-    currentVoiceAudio = audio;
+    try { audio.pause(); } catch (_e) {}
+  }
+
+  async function playSequence(filePaths, volume, padMs) {
+    const myToken = currentVoiceCancelToken;
+    for (let i = 0; i < filePaths.length; i++) {
+      if (myToken !== currentVoiceCancelToken) return;        // 被打斷
+      const url = `file:///${String(filePaths[i]).replace(/\\/g, '/')}`;
+      const audio = new Audio(url);
+      audio.volume = volume;
+      currentVoiceAudio = audio;
+      try {
+        await new Promise((resolve, reject) => {
+          audio.addEventListener('ended', resolve, { once: true });
+          audio.addEventListener('error', () => reject(new Error('audio error')), { once: true });
+          audio.play().catch(reject);
+        });
+      } catch (err) {
+        console.warn('[voice] play segment failed:', filePaths[i], err.message || err);
+        return;
+      }
+      if (myToken !== currentVoiceCancelToken) return;
+      // 段間 padding（最後一段不 pad）
+      if (i < filePaths.length - 1 && padMs > 0) {
+        await new Promise((r) => setTimeout(r, padMs));
+      }
+    }
+  }
+
+  window.api.voice?.onPlay(async (payload) => {
+    if (!payload) return;
+    // 兼容舊 schema：file_path 單檔；新 schema：file_paths 陣列
+    const paths = Array.isArray(payload.file_paths) && payload.file_paths.length > 0
+      ? payload.file_paths
+      : (payload.file_path ? [payload.file_path] : []);
+    if (paths.length === 0) return;
+
+    await stopCurrentVoice();   // 等 fade out 完才繼續（90ms）
+    let volume = 0.6;
+    try {
+      const s = await window.api.settings.get();
+      if (Number.isFinite(s?.volume)) volume = s.volume;
+    } catch (_e) {}
+    const padMs = Number.isFinite(payload.pad_ms) ? payload.pad_ms : 150;
+    playSequence(paths, volume, padMs).catch((err) =>
+      console.warn('[voice] playSequence failed:', err)
+    );
   });
 
   // 切人格 / dismiss 時也應該停止語音播放
   window.api.dialogue.onDismiss(() => {
-    if (currentVoiceAudio) {
-      try { currentVoiceAudio.pause(); } catch (_e) {}
-      currentVoiceAudio = null;
-    }
+    stopCurrentVoice();
     applyOpacity();   // 氣泡關閉，恢復閒置透明度
   });
 
@@ -335,33 +379,46 @@
     }
   }
 
-  // ── 拖曳 character-stage ───────────────────────────────
+  // ── 拖曳 / 點擊 character-stage ───────────────────────
+  // 點擊 = 短時間（<300ms）+ 移動 < 5px → 推 character:click event
+  // 拖曳 = 移動超過 5px → 推 character:drag-start（保留既有觸發）
+  const CLICK_THRESHOLD_PX = 5;
+  const CLICK_DURATION_MS = 300;
   let dragging = false;
-  let dragOrigin = { mouseX: 0, mouseY: 0, boxX: 0, boxY: 0 };
+  let dragOrigin = { mouseX: 0, mouseY: 0, boxX: 0, boxY: 0, t: 0 };
+  let dragSent = false;
 
   stageEl.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     dragging = true;
+    dragSent = false;
     stageEl.classList.add('dragging');
     dragOrigin = {
       mouseX: e.screenX,
       mouseY: e.screenY,
       boxX: pos.character_x,
       boxY: pos.character_y,
+      t: Date.now(),
     };
-    try { window.api.character.dragStart(); } catch (_e) { /* M2 fallback */ }
     e.preventDefault();
   });
 
   window.addEventListener('mousemove', (e) => {
     if (!dragging) return;
+    const dx = e.screenX - dragOrigin.mouseX;
+    const dy = e.screenY - dragOrigin.mouseY;
+    // 移動超過閾值 → 視為拖曳（首次推 dragStart event）
+    if (!dragSent && Math.hypot(dx, dy) > CLICK_THRESHOLD_PX) {
+      dragSent = true;
+      try { window.api.character.dragStart(); } catch (_e) { /* M2 fallback */ }
+    }
     pos.character_x = clamp(
-      dragOrigin.boxX + (e.screenX - dragOrigin.mouseX),
+      dragOrigin.boxX + dx,
       EDGE_MARGIN - STAGE_W,                     // 允許大半部分推到螢幕外，留 EDGE_MARGIN 在內
       window.innerWidth - EDGE_MARGIN
     );
     pos.character_y = clamp(
-      dragOrigin.boxY + (e.screenY - dragOrigin.mouseY),
+      dragOrigin.boxY + dy,
       0,                                          // y 上限：不能拖到螢幕上方外
       window.innerHeight - EDGE_MARGIN
     );
@@ -372,10 +429,17 @@
     if (!dragging) return;
     dragging = false;
     stageEl.classList.remove('dragging');
+    // 如果整段沒推 dragStart 且時間 < 300ms → 視為 click
+    const duration = Date.now() - dragOrigin.t;
+    if (!dragSent && duration < CLICK_DURATION_MS) {
+      try { window.api.character.click(); } catch (_e) { /* preload 沒接 */ }
+    }
     applyOpacity();   // 拖曳結束 → 恢復閒置透明度
-    window.api.windowState
-      .set({ character_x: pos.character_x, character_y: pos.character_y })
-      .catch((err) => console.warn('windowState.set failed:', err));
+    if (dragSent) {
+      window.api.windowState
+        .set({ character_x: pos.character_x, character_y: pos.character_y })
+        .catch((err) => console.warn('windowState.set failed:', err));
+    }
   });
 
   // 視窗縮放時 dev-panel + bubble anchor 都要重算

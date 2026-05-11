@@ -141,6 +141,10 @@ class BatchRunner {
           temperature: item.temperature,
           top_k: item.top_k,
           top_p: item.top_p,
+          speed: item.speed,
+          fragment_interval: item.fragment_interval,
+          seed: item.seed,
+          repetition_penalty: item.repetition_penalty,
         });
         await this._manifest.record({
           sequence_id: item.sequence_id,

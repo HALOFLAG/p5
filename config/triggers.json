@@ -56,6 +56,133 @@
     },
 
     {
+      "_comment": "P5: 連點 5 次（10 秒內）→ click_streak。share category cd 3s 跟 click_character；fire 時 consume event 不會重複",
+      "name": "click_streak",
+      "category": "click_character",
+      "priority": 105,
+      "cooldown_sec": 3,
+      "condition": {
+        "type": "streak_threshold",
+        "event": "character:click",
+        "window_sec": 10,
+        "min_count": 5
+      }
+    },
+
+    {
+      "_comment": "P1: 點擊角色立繪 → 主動互動入口（含 choice 選項，schema 預留 P1.2 啟用）",
+      "name": "click_character",
+      "category": "click_character",
+      "priority": 100,
+      "cooldown_sec": 3,
+      "condition": { "type": "event", "event": "character:click" }
+    },
+
+    {
+      "_comment": "P2: 開機問候，啟動後僅一次（重啟才能再 fire）",
+      "name": "boot_greet",
+      "category": "boot_greet",
+      "priority": 90,
+      "cooldown_sec": 0,
+      "condition": { "type": "event", "event": "app:ready" }
+    },
+
+    {
+      "_comment": "P2: 隨機閒談；cd 後每秒 0.5% 機率 → 平均 ~13 分鐘冒一次（含 cd 600s）",
+      "name": "random_chatter",
+      "category": "chatter",
+      "priority": 40,
+      "cooldown_sec": 600,
+      "condition": {
+        "type": "random_interval",
+        "probability_per_eval": 0.005,
+        "hour_range": [8, 22]
+      }
+    },
+
+    {
+      "_comment": "P4: 60 秒內 ≥ 3 次 typing-burst → 拼了一段，內心戲關心",
+      "name": "typing_burst_milestone",
+      "category": "typing_burst",
+      "priority": 25,
+      "cooldown_sec": 300,
+      "condition": {
+        "type": "event_burst",
+        "event": "typing-burst",
+        "window_sec": 60,
+        "min_count": 3
+      }
+    },
+
+    {
+      "_comment": "P4: 30 秒內 ≥ 50 次 click → 急著操作什麼，吐槽一下",
+      "name": "click_burst",
+      "category": "click_burst",
+      "priority": 20,
+      "cooldown_sec": 180,
+      "condition": {
+        "type": "event_burst",
+        "event": "click",
+        "window_sec": 30,
+        "min_count": 50
+      }
+    },
+
+    {
+      "_comment": "P4: 進遊戲 state edge — priority 100 高過 game_silence(999) 的 exempt 線（皆超過 100 → 邊緣觸發那一秒仍可 fire）",
+      "name": "game_enter",
+      "category": "game_enter",
+      "priority": 100,
+      "cooldown_sec": 3600,
+      "condition": {
+        "type": "state_edge",
+        "state": "in_game",
+        "from": false,
+        "to": true,
+        "min_confidence": 0.6
+      }
+    },
+
+    {
+      "_comment": "P4: 切到瀏覽器 30% 機率冒一句評論",
+      "name": "app_focus_browser",
+      "category": "app_switch",
+      "priority": 15,
+      "cooldown_sec": 1800,
+      "condition": {
+        "type": "app_focus",
+        "classifications": ["browsers"],
+        "probability": 0.3
+      }
+    },
+
+    {
+      "_comment": "P4: 切到聊天工具 30% 機率（用 thought 內心戲）",
+      "name": "app_focus_chat",
+      "category": "app_switch",
+      "priority": 15,
+      "cooldown_sec": 1800,
+      "condition": {
+        "type": "app_focus",
+        "classifications": ["meeting_apps"],
+        "probability": 0.3
+      }
+    },
+
+    {
+      "_comment": "P4: 切到影片 app 30% 機率",
+      "name": "app_focus_video",
+      "category": "app_switch",
+      "priority": 15,
+      "cooldown_sec": 1800,
+      "condition": {
+        "type": "app_focus",
+        "classifications": ["video_apps"],
+        "probability": 0.3
+      }
+    },
+
+    {
       "name": "deep_night",
       "category": "deep_night",
       "priority": 60,
@@ -89,14 +216,67 @@
         "operator": ">=",
         "value": 500
       }
+    },
+
+    {
+      "_comment": "P3: 整點報時（取代 hourly_chime）。串接時間音 + chatter category 句子",
+      "name": "hourly_active",
+      "category": "chatter",
+      "priority": 50,
+      "cooldown_sec": 3540,
+      "voice_prefix": "hour_dynamic",
+      "condition": {
+        "type": "time_marker",
+        "minute": 0,
+        "hour_range": [8, 22],
+        "min_active_sec": 60
+      }
+    },
+
+    {
+      "_comment": "P3: 早安問候 7:00 — voice_prefix=morning",
+      "name": "morning_greet",
+      "category": "time_greet",
+      "priority": 70,
+      "cooldown_sec": 86000,
+      "voice_prefix": "morning",
+      "condition": { "type": "time_marker", "minute": 0, "hour_range": [7, 7], "min_active_sec": 60 }
+    },
+    {
+      "_comment": "P3: 午餐問候 12:00",
+      "name": "lunch_greet",
+      "category": "time_greet",
+      "priority": 70,
+      "cooldown_sec": 86000,
+      "voice_prefix": "lunch",
+      "condition": { "type": "time_marker", "minute": 0, "hour_range": [12, 12], "min_active_sec": 60 }
+    },
+    {
+      "_comment": "P3: 傍晚問候 18:00",
+      "name": "evening_greet",
+      "category": "time_greet",
+      "priority": 70,
+      "cooldown_sec": 86000,
+      "voice_prefix": "evening",
+      "condition": { "type": "time_marker", "minute": 0, "hour_range": [18, 18], "min_active_sec": 60 }
+    },
+    {
+      "_comment": "P3: 晚安問候 22:00 — type 改 whisper（深夜語感）",
+      "name": "night_greet",
+      "category": "time_greet",
+      "priority": 70,
+      "cooldown_sec": 86000,
+      "voice_prefix": "night",
+      "condition": { "type": "time_marker", "minute": 0, "hour_range": [22, 22], "min_active_sec": 60 }
     }
   ],
   "dynamic_cooldown": {
+    "_comment": "P2 調整：基線 fire 率提升（target ~1.5/h），門檻往上抬避免一直觸發 high_activity",
     "enabled": true,
     "window_min": 60,
-    "high_activity_threshold": 8,
+    "high_activity_threshold": 12,
     "high_activity_multiplier": 0.7,
-    "low_activity_threshold": 2,
+    "low_activity_threshold": 1,
     "low_activity_multiplier": 1.5
   }
 }

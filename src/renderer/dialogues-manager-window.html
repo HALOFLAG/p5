@@ -11,14 +11,19 @@
   <main class="dm-root">
     <header class="dm-header">
       <h1>p5 對話庫管理</h1>
+      <div class="dm-header-actions">
+        <button type="button" class="btn-link" id="btn-persona-reveal" title="開啟當前 persona 資料夾（可手動 zip 分享）">📂 開啟資料夾</button>
+        <button type="button" class="btn-link" id="btn-persona-import" title="匯入別人給的 persona pack（資料夾形式）">📥 匯入 persona</button>
+      </div>
       <span class="dm-env" id="env-info">—</span>
     </header>
 
     <nav class="tab-nav" role="tablist">
-      <button type="button" class="tab-btn active" data-tab="browse" role="tab">📚 瀏覽 / 管理</button>
-      <button type="button" class="tab-btn" data-tab="import" role="tab">📋 批次匯入</button>
-      <button type="button" class="tab-btn" data-tab="stats" role="tab">📊 統計</button>
+      <button type="button" class="tab-btn active" data-tab="browse" role="tab">📚 對話總覽</button>
+      <button type="button" class="tab-btn" data-tab="time-voice" role="tab">🕐 時間語音</button>
+      <button type="button" class="tab-btn" data-tab="stats" role="tab">📊 統計數據</button>
       <button type="button" class="tab-btn" data-tab="prompt" role="tab">📝 LLM Prompt</button>
+      <button type="button" class="tab-btn" data-tab="import" role="tab">📋 批次匯入</button>
       <button type="button" class="tab-btn" data-tab="voice" role="tab">🔊 語音生成</button>
     </nav>
 
@@ -31,11 +36,31 @@
         <label>類別
           <select id="browse-category">
             <option value="">全部</option>
-            <option value="click_too_much">click_too_much</option>
-            <option value="long_idle">long_idle</option>
-            <option value="continuous_use">continuous_use</option>
-            <option value="deep_night">deep_night</option>
-            <option value="drag">drag</option>
+            <!-- 其他選項由 JS 從 dialogues.json 動態填 -->
+          </select>
+        </label>
+        <label>type
+          <select id="browse-type">
+            <option value="">全部</option>
+            <option value="speech">speech</option>
+            <option value="thought">thought</option>
+            <option value="whisper">whisper</option>
+            <option value="narration">narration</option>
+            <option value="system">system</option>
+          </select>
+        </label>
+        <label>內容類
+          <select id="browse-content-class">
+            <option value="">全部</option>
+            <option value="1">1 思考</option>
+            <option value="2">2 自言自語</option>
+            <option value="3">3 主動互動</option>
+            <option value="4">4 回應</option>
+            <option value="A">A 指令提醒</option>
+            <option value="B">B 詢問</option>
+            <option value="C">C 撒嬌</option>
+            <option value="D">D 情緒反應</option>
+            <option value="E">E 情境旁白</option>
           </select>
         </label>
         <label>來源
@@ -64,14 +89,16 @@
             <thead>
               <tr>
                 <th class="col-id">sequenceId</th>
+                <th class="col-cat">類別</th>
                 <th class="col-type">type</th>
+                <th class="col-class">內容類</th>
                 <th class="col-expr">表情</th>
                 <th>文字（首句）</th>
                 <th class="col-count">次數</th>
               </tr>
             </thead>
             <tbody id="browse-tbody">
-              <tr><td colspan="5" class="empty">載入中…</td></tr>
+              <tr><td colspan="7" class="empty">載入中…</td></tr>
             </tbody>
           </table>
         </div>
@@ -83,35 +110,195 @@
               <span id="edit-id">—</span>
               <span class="lock-badge" id="edit-lock-badge" hidden>🔒 initial 鎖定</span>
             </div>
-            <label>type
-              <select id="edit-type">
-                <option value="speech">speech</option>
-                <option value="thought">thought</option>
-              </select>
-            </label>
+            <div class="edit-trigger-info" id="edit-trigger-info">
+              <span class="hint">觸發條件：</span>
+              <span id="edit-trigger-text">—</span>
+            </div>
+            <div class="edit-extra">
+              <label>type
+                <select id="edit-type">
+                  <option value="speech">speech</option>
+                  <option value="thought">thought</option>
+                  <option value="whisper">whisper</option>
+                  <option value="narration">narration</option>
+                  <option value="system">system</option>
+                </select>
+              </label>
+              <label>內容類（§6.4）
+                <select id="edit-content-class">
+                  <option value="">（未分類）</option>
+                  <option value="1">1 思考</option>
+                  <option value="2">2 自言自語</option>
+                  <option value="3">3 主動互動</option>
+                  <option value="4">4 回應</option>
+                  <option value="A">A 指令提醒</option>
+                  <option value="B">B 詢問</option>
+                  <option value="C">C 撒嬌</option>
+                  <option value="D">D 情緒反應</option>
+                  <option value="E">E 情境旁白</option>
+                </select>
+              </label>
+            </div>
             <label>expression
               <input type="text" id="edit-expression" placeholder="happy / shy / pout..." />
             </label>
-            <label>text
-              <textarea id="edit-text" rows="4"></textarea>
+            <label>text（字幕，氣泡顯示用 — 通常中文）
+              <textarea id="edit-text" rows="3"></textarea>
+            </label>
+            <label>voice_text（語音合成用 — 通常日文，留空 = 與 text 同字）
+              <textarea id="edit-voice-text" rows="3" placeholder="例：今日のあなた、すごく集中してるね。"></textarea>
             </label>
             <div class="edit-extra">
+              <label>voice_lang
+                <select id="edit-voice-lang">
+                  <option value="">（用 persona 預設）</option>
+                  <option value="zh">zh 中文</option>
+                  <option value="ja">ja 日文</option>
+                  <option value="en">en 英文</option>
+                </select>
+              </label>
               <label>interaction
                 <select id="edit-interaction">
                   <option value="">（無）</option>
                   <option value="display">display</option>
+                  <option value="advance">advance</option>
                   <option value="dismissable">dismissable</option>
+                  <option value="choice">choice（多選互動）</option>
+                  <option value="binary">binary（二選一）</option>
                 </select>
               </label>
+            </div>
+            <div class="edit-extra">
               <label>auto_close_ms
                 <input type="number" id="edit-auto-close" placeholder="例 5000" min="0" />
               </label>
+              <label>&nbsp;
+                <span class="hint" style="margin-left:0;font-size:11px">字幕 + 語音文字可不同（中字日語）</span>
+              </label>
             </div>
+            <div class="edit-extra">
+              <label>權重 weight（0.5-3.0）
+                <input type="number" id="edit-weight" step="0.1" min="0.1" max="5.0" placeholder="1.0" />
+              </label>
+              <label>streak_level（click_character 用）
+                <select id="edit-streak-level">
+                  <option value="">—</option>
+                  <option value="low">low</option>
+                  <option value="mid">mid</option>
+                  <option value="high">high</option>
+                </select>
+              </label>
+            </div>
+
+            <!-- 互動式內容編輯區（P1.3）：依 interaction 顯示 choices / binary -->
+            <div class="edit-interactive" id="edit-interactive" hidden>
+              <!-- choice 模式 -->
+              <div class="edit-choice-section" id="edit-choice-section" hidden>
+                <div class="edit-section-title">
+                  <span>選項列表（choice）</span>
+                  <button type="button" class="btn-mini" id="btn-add-choice">+ 加選項</button>
+                </div>
+                <div class="edit-choices-list" id="edit-choices-list"></div>
+              </div>
+
+              <!-- binary 模式 -->
+              <div class="edit-binary-section" id="edit-binary-section" hidden>
+                <div class="edit-section-title"><span>二元分支（binary）</span></div>
+                <div class="edit-binary-grid">
+                  <fieldset class="edit-binary-side" data-side="yes">
+                    <legend>✅ Yes 分支 <button type="button" class="btn-mini" data-action="preview-binary" data-side="yes" style="float:right" title="試聽 response 語音（須先批次生成）">🔊</button></legend>
+                    <div class="row-grid">
+                      <label>Label（字幕）
+                        <input type="text" data-field="label" placeholder="想了" />
+                      </label>
+                      <label>Label JA
+                        <input type="text" data-field="label_ja" placeholder="うん" />
+                      </label>
+                    </div>
+                    <div class="row-grid">
+                      <label>Response type
+                        <select data-field="rtype">
+                          <option value="speech">speech</option>
+                          <option value="thought">thought</option>
+                          <option value="whisper">whisper</option>
+                        </select>
+                      </label>
+                      <label>Expression
+                        <input type="text" data-field="rexpr" placeholder="happy" />
+                      </label>
+                    </div>
+                    <label>Response text（字幕）
+                      <textarea rows="2" data-field="rtext" placeholder="嘿嘿～這樣才乖。"></textarea>
+                    </label>
+                    <div class="row-grid">
+                      <label>Response voice_text（語音）
+                        <textarea rows="2" data-field="rvoice_text" placeholder="えへへ⋯⋯偉い偉い。"></textarea>
+                      </label>
+                      <label>voice_lang
+                        <select data-field="rvoice_lang">
+                          <option value="">（預設）</option>
+                          <option value="zh">zh</option>
+                          <option value="ja">ja</option>
+                          <option value="en">en</option>
+                        </select>
+                      </label>
+                    </div>
+                  </fieldset>
+                  <fieldset class="edit-binary-side" data-side="no">
+                    <legend>❌ No 分支 <button type="button" class="btn-mini" data-action="preview-binary" data-side="no" style="float:right" title="試聽 response 語音（須先批次生成）">🔊</button></legend>
+                    <div class="row-grid">
+                      <label>Label（字幕）
+                        <input type="text" data-field="label" placeholder="沒呢" />
+                      </label>
+                      <label>Label JA
+                        <input type="text" data-field="label_ja" placeholder="ううん" />
+                      </label>
+                    </div>
+                    <div class="row-grid">
+                      <label>Response type
+                        <select data-field="rtype">
+                          <option value="speech">speech</option>
+                          <option value="thought">thought</option>
+                          <option value="whisper">whisper</option>
+                        </select>
+                      </label>
+                      <label>Expression
+                        <input type="text" data-field="rexpr" placeholder="pout" />
+                      </label>
+                    </div>
+                    <label>Response text（字幕）
+                      <textarea rows="2" data-field="rtext" placeholder="騙人⋯⋯哼。"></textarea>
+                    </label>
+                    <div class="row-grid">
+                      <label>Response voice_text（語音）
+                        <textarea rows="2" data-field="rvoice_text" placeholder="嘘つき⋯⋯ふん。"></textarea>
+                      </label>
+                      <label>voice_lang
+                        <select data-field="rvoice_lang">
+                          <option value="">（預設）</option>
+                          <option value="zh">zh</option>
+                          <option value="ja">ja</option>
+                          <option value="en">en</option>
+                        </select>
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+
             <dl class="edit-meta">
               <div><dt>來源</dt><dd id="meta-source">—</dd></div>
               <div><dt>加入時間</dt><dd id="meta-created">—</dd></div>
               <div><dt>編輯時間</dt><dd id="meta-edited">—</dd></div>
               <div><dt>累計 fire</dt><dd id="meta-fire-count">—</dd></div>
+              <div class="edit-meta-voice">
+                <dt>語音</dt>
+                <dd>
+                  <span id="meta-voice-status">—</span>
+                  <button type="button" class="btn-mini" id="btn-voice-preview" hidden>▶ 試聽</button>
+                </dd>
+              </div>
             </dl>
             <div class="edit-actions">
               <button type="button" class="btn btn-primary" id="btn-save">儲存</button>
@@ -125,6 +312,74 @@
       </div>
     </section>
 
+    <!-- ── Tab 6: 🕐 時間語音 ──────────────────────── -->
+    <section class="tab-content" data-tab="time-voice">
+      <div class="toolbar">
+        <label>人格
+          <select id="tv-persona"></select>
+        </label>
+        <label title="預設跟 persona.voice.voice_lang 同步；可手動切換看其他語言的音庫">語言
+          <select id="tv-lang">
+            <option value="zh">中文 zh</option>
+            <option value="ja">日文 ja</option>
+            <option value="en">英文 en</option>
+          </select>
+        </label>
+        <span id="tv-stats-summary" class="hint">—</span>
+        <button type="button" class="btn btn-secondary" id="tv-refresh">⟳ 重新整理</button>
+        <button type="button" class="btn btn-secondary" id="tv-reset-all">⚙ 重置文字回預設</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">批次生成</div>
+        <div class="form-row">
+          <fieldset>
+            <legend>範圍</legend>
+            <label class="inline"><input type="radio" name="tv-batch-mode" value="missing" checked /> 只生缺失 + stale</label>
+            <label class="inline"><input type="radio" name="tv-batch-mode" value="all" /> 全部重生</label>
+          </fieldset>
+          <button type="button" class="btn btn-primary" id="tv-batch-start">▶ 批次生成</button>
+          <button type="button" class="btn btn-danger" id="tv-batch-cancel" disabled>⏹ 取消</button>
+        </div>
+        <div class="voice-progress" id="tv-progress" hidden>
+          <div class="voice-progress-bar"><div class="voice-progress-fill" id="tv-progress-fill"></div></div>
+          <div class="voice-progress-meta">
+            <span id="tv-progress-text">0 / 0</span>
+            <span id="tv-progress-current">—</span>
+          </div>
+        </div>
+        <pre class="preview-box" id="tv-batch-result" hidden>—</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">時間音清單（24 小時 + 4 時段詞 = 28 條）</div>
+        <div class="table-wrap tv-table-wrap">
+          <table class="data-table tv-table">
+            <thead>
+              <tr>
+                <th class="tv-col-key">Key</th>
+                <th class="tv-col-cat">分類</th>
+                <th>文字</th>
+                <th class="tv-col-status">狀態</th>
+                <th class="tv-col-actions">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tv-tbody">
+              <tr><td colspan="5" class="empty">載入中…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="prompt-help">
+          <p>💡 用法：</p>
+          <ol>
+            <li>先確認 Tab「🔊 語音生成」內 ref audio + ref text 已設妥</li>
+            <li>點「▶ 批次生成」一次跑完缺失 + stale；之後可逐條 ✏ 編輯文字 → ↻ 個別重生</li>
+            <li>點「🔊」試聽當前 wav；改文字後 status 會變 ⚠ stale，建議按 ↻ 重生</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Tab 2: 批次匯入 ────────────────────────── -->
     <section class="tab-content" data-tab="import">
       <div class="form-row">
@@ -132,13 +387,10 @@
           <select id="import-persona"></select>
         </label>
         <label>類別
-          <select id="import-category">
-            <option value="click_too_much">click_too_much</option>
-            <option value="long_idle">long_idle</option>
-            <option value="continuous_use">continuous_use</option>
-            <option value="deep_night">deep_night</option>
-            <option value="drag">drag</option>
-          </select>
+          <input type="text" id="import-category" list="import-category-list" placeholder="選現有 / 直接打字新建" />
+          <datalist id="import-category-list">
+            <!-- options 由 JS 動態填 -->
+          </datalist>
         </label>
         <label>批次標籤
           <input type="text" id="import-batch-tag" placeholder="haiyin-long_idle-2026-05-09" />
@@ -168,6 +420,10 @@
       </div>
 
       <pre class="preview-box" id="import-preview">（按「預覽」看合併計畫）</pre>
+      <div class="import-voice-shortcut" id="import-voice-shortcut" hidden>
+        <span class="hint">📦 剛匯入的句子缺對應語音檔。</span>
+        <button type="button" class="btn btn-primary" id="btn-import-go-voice">🔊 點去 Tab 5 生語音</button>
+      </div>
     </section>
 
     <!-- ── Tab 3: 統計 ────────────────────────── -->
@@ -201,6 +457,21 @@
           <ol class="rank-list" id="stats-cold"><li class="empty">—</li></ol>
         </div>
       </div>
+
+      <div class="stats-cards stats-cards--secondary">
+        <div class="card">
+          <div class="card-title">⚡ 觸發類別分佈（rule_name）</div>
+          <ul class="bar-list" id="stats-by-trigger"><li class="empty">—</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title">📚 對話類別分佈（category）</div>
+          <ul class="bar-list" id="stats-by-category"><li class="empty">—</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🎭 內容類分佈（§6.4 9 類）</div>
+          <ul class="bar-list" id="stats-by-class"><li class="empty">—</li></ul>
+        </div>
+      </div>
     </section>
 
     <!-- ── Tab 4: LLM Prompt ────────────────────────── -->
@@ -211,17 +482,56 @@
         </label>
         <label>類別
           <select id="prompt-category">
-            <option value="click_too_much">click_too_much</option>
-            <option value="long_idle">long_idle</option>
-            <option value="continuous_use">continuous_use</option>
-            <option value="deep_night">deep_night</option>
-            <option value="drag">drag</option>
+            <!-- 由 JS 動態填 -->
           </select>
+        </label>
+        <label>句數
+          <input type="number" id="prompt-count" min="5" max="100" value="30" />
         </label>
         <button type="button" class="btn btn-secondary" id="btn-gen-prompt">產生 prompt</button>
         <button type="button" class="btn btn-primary" id="btn-copy-prompt" disabled>📋 複製到剪貼簿</button>
         <span class="hint" id="prompt-meta">—</span>
       </div>
+
+      <!-- 類別說明卡：選 category 時動態填內容 -->
+      <div class="category-info-card" id="category-info-card">
+        <div class="category-info-row">
+          <span class="category-info-label">情境：</span>
+          <span id="cat-info-description">—</span>
+        </div>
+        <div class="category-info-row">
+          <span class="category-info-label">觸發條件：</span>
+          <span id="cat-info-triggered-by">—</span>
+        </div>
+        <div class="category-info-row">
+          <span class="category-info-label">預期句數 / 氣泡：</span>
+          <span id="cat-info-bubble">—</span>
+        </div>
+        <div class="category-info-row category-info-notes">
+          <span class="category-info-label">備註：</span>
+          <span id="cat-info-notes">—</span>
+        </div>
+      </div>
+
+      <details class="prompt-config" id="prompt-config" open>
+        <summary>內容類配比（§6.4）— 選 category 後自動帶該 category 預設值，可手動微調</summary>
+        <div class="prompt-config-grid" id="prompt-class-mix">
+          <label title="thought 氣泡 / 內心戲（括號包文字）— 例：（這人到底⋯⋯）">1 思考 <input type="number" data-class="1" min="0" max="100" value="0" />%</label>
+          <label title="speech 或 whisper / 評論看法 / 無預期回應 — 例：今天天氣不錯呢">2 自言自語 <input type="number" data-class="2" min="0" max="100" value="0" />%</label>
+          <label title="speech / 主動發起閒聊 / 期待開放回應 — 例：想做什麼？">3 主動互動 <input type="number" data-class="3" min="0" max="100" value="0" />%</label>
+          <label title="speech / 對使用者選擇/動作的回應（choice/binary 內的 response 多）— 例：嗯！來聊吧">4 回應 <input type="number" data-class="4" min="0" max="100" value="0" />%</label>
+          <label title="speech / 期待使用者照做的提醒/命令 — 例：該休息了 / 喝水">A 指令提醒 <input type="number" data-class="A" min="0" max="100" value="0" />%</label>
+          <label title="speech / 期待封閉答案的問題（binary/choice 主）— 例：吃了沒？">B 詢問 <input type="number" data-class="B" min="0" max="100" value="0" />%</label>
+          <label title="speech 或 whisper / 情緒勾子但不一定要答 — 例：人家想要嘛">C 撒嬌 <input type="number" data-class="C" min="0" max="100" value="0" />%</label>
+          <label title="speech / 即時感嘆 / 無分析 — 例：哇！欸欸欸～">D 情緒反應 <input type="number" data-class="D" min="0" max="100" value="0" />%</label>
+          <label title="narration 第三人稱旁白 — 例：（角色看著螢幕，眼神迷茫）">E 情境旁白 <input type="number" data-class="E" min="0" max="100" value="0" />%</label>
+        </div>
+        <div class="prompt-config-hint">
+          <span class="hint" id="prompt-mix-sum">總和 0%（選 category 自動帶預設配比）</span>
+          <button type="button" class="btn btn-secondary btn-mini" id="btn-mix-reload-default">⟲ 重置回 category 預設</button>
+          <button type="button" class="btn btn-secondary btn-mini" id="btn-mix-clear">清空（讓 LLM 自由發揮）</button>
+        </div>
+      </details>
 
       <textarea id="prompt-output" class="prompt-output" readonly
         placeholder="選人格 + 類別 → 按「產生 prompt」"></textarea>
@@ -243,7 +553,32 @@
         <span>TTS 引擎：<strong id="voice-engine-name">GPT-SoVITS</strong></span>
         <span>狀態：<span id="voice-engine-status" class="voice-status voice-status--unknown">● 未檢查</span></span>
         <button type="button" class="btn btn-secondary" id="btn-voice-check">檢查連線</button>
-        <span class="hint" id="voice-engine-hint">啟動 GPT-SoVITS API server（python api.py）後點檢查</span>
+        <span class="hint" id="voice-engine-hint">啟動 GPT-SoVITS API server 後點檢查</span>
+      </div>
+
+      <!-- 引擎子進程控制 ──────────────── -->
+      <div class="card engine-control-card">
+        <div class="card-title">
+          <span>引擎子進程</span>
+          <span id="engine-proc-status" class="engine-proc-status engine-proc-status--stopped">⏹ 已停止</span>
+        </div>
+        <div class="form-row">
+          <button type="button" class="btn btn-primary" id="btn-engine-start">🚀 啟動引擎</button>
+          <button type="button" class="btn btn-danger" id="btn-engine-stop" disabled>🛑 停止引擎</button>
+          <button type="button" class="btn btn-secondary" id="btn-engine-settings">⚙ 設定路徑</button>
+          <span class="hint" id="engine-proc-hint">未啟動。點「啟動引擎」自動跑 GPT-SoVITS api.py</span>
+        </div>
+        <pre class="engine-log-box" id="engine-log-box" hidden></pre>
+      </div>
+
+      <!-- 測試輔助：一鍵清除當前 persona 對話 + 語音 ──────── -->
+      <div class="card wipe-content-card">
+        <div class="card-title">⚠ 測試輔助 — 清除當前 persona 對話 + 語音</div>
+        <div class="form-row">
+          <span class="hint">清掉 <strong id="wipe-target-name">—</strong> 的所有 sequences（保 category 結構）+ voices/ + voices-time/。會自動備份到 personas/&lt;id&gt;/_wipe-&lt;timestamp&gt;/。</span>
+          <button type="button" class="btn btn-danger" id="btn-wipe-content">🗑 清除對話 + 語音</button>
+        </div>
+        <pre class="preview-box" id="wipe-result" hidden>—</pre>
       </div>
 
       <div class="card voice-config-card">
@@ -259,7 +594,7 @@
           <label>人格
             <select id="voice-batch-persona"></select>
           </label>
-          <label>語言
+          <label title="預設跟 persona.voice.voice_lang 同步；切換可生其他語言版本">語言
             <select id="voice-batch-lang">
               <option value="zh">中文 zh</option>
               <option value="ja">日文 ja</option>
@@ -303,6 +638,38 @@
       <button type="button" class="btn-link" id="close-btn">關閉視窗 (ESC)</button>
     </footer>
   </main>
+
+  <!-- 引擎設定 modal ─────────────────────────────── -->
+  <div class="modal-backdrop" id="engine-settings-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <span>引擎啟動設定</span>
+        <button type="button" class="btn-link" id="btn-engine-settings-close">✗</button>
+      </div>
+      <div class="modal-body">
+        <label>GPT-SoVITS 安裝目錄 (cwd)
+          <input type="text" id="engine-cfg-cwd" placeholder="F:/CCTEST/TOOL/GPT-SoVITS/tools/GPT-SoVITS" />
+        </label>
+        <label>Python 路徑（相對 cwd）
+          <input type="text" id="engine-cfg-python" placeholder=".venv/Scripts/python.exe" />
+        </label>
+        <label>Script 檔案
+          <input type="text" id="engine-cfg-script" placeholder="api.py" />
+        </label>
+        <label>啟動超時（秒）
+          <input type="number" id="engine-cfg-timeout" min="30" max="600" placeholder="180" />
+        </label>
+        <label>等待文字（出現代表啟動完成）
+          <input type="text" id="engine-cfg-wait" placeholder="Uvicorn running on" />
+        </label>
+        <p class="hint" style="margin-left:0">💡 設定會存到 config/voice-config.json 的 engine_command 區塊</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btn-engine-settings-save">儲存</button>
+        <button type="button" class="btn btn-secondary" id="btn-engine-settings-cancel">取消</button>
+      </div>
+    </div>
+  </div>
 
   <script src="dialogues-manager-window.js"></script>
 </body>

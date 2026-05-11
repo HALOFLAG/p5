@@ -1,6 +1,18 @@
 {
   "$schema": "v1",
   "_comment": "App 分類清單，使用者可自行編輯擴充。exe 名稱一律小寫。",
+  "browsers": [
+    "chrome.exe",
+    "msedge.exe",
+    "firefox.exe",
+    "brave.exe",
+    "opera.exe",
+    "vivaldi.exe",
+    "arc.exe",
+    "safari.exe",
+    "iexplore.exe",
+    "browser.exe"
+  ],
   "ides": [
     "code.exe",
     "code - insiders.exe",

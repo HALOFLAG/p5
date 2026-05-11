@@ -22,6 +22,8 @@
 | 看本地 Gemma4 模型 API 整合 | [gemma4_api_guide.md](gemma4_api_guide.md) |
 | 用 LLM 生 fallback 台詞草稿（M4） | [M4-fallback-prompt-模板.md](M4-fallback-prompt-模板.md) |
 | 看 M6 GPT-SoVITS 語音實作計畫 | [M6-GPT-SoVITS-實作計畫.md](M6-GPT-SoVITS-實作計畫.md) |
+| **建立 / 匯出 / 匯入 persona 人物包** | [人物包設置指南.md](人物包設置指南.md) |
+| 看觸發系統重構設計（19 條 rules + 三軸 + 9 內容類）| [觸發系統重構-設計規格.md](觸發系統重構-設計規格.md) |
 | Claude Code 工作流程規則 | [../CLAUDE.md](../CLAUDE.md) |
 | 專案 README | [../README.md](../README.md) |
 
@@ -62,8 +64,15 @@
 | [analyze-rollup-設計.md](analyze-rollup-設計.md) | **`analyze-rollup.js` 工具設計** — 5 個 mode、profile mode 板型策略、跟 M7 整合 |
 | [M4-fallback-prompt-模板.md](M4-fallback-prompt-模板.md) | **M4 LLM prompt 模板** — 兩人格 × 五分類共 10 份完整 prompt + 篩選整理規範 + 風格自檢清單 |
 | [M6-GPT-SoVITS-實作計畫.md](M6-GPT-SoVITS-實作計畫.md) | **M6 語音實作完整指引** — GPT-SoVITS 環境 setup + ref audio 蒐集 + WebUI 試生 + API mode + Node 端開發 + 驗收 + fine-tune 進階 |
+| [觸發系統重構-設計規格.md](觸發系統重構-設計規格.md) | **觸發系統重構** — 19 條 rules（事件 / 時間 / 主動三軸）+ 時間音串接 + 互動式氣泡 + 9 內容類分類 + R1-R5 既有內容重構 |
 
 > 此分類存「**實作前討論成果**」。每個工具實作前先寫設計討論，避免直接寫 code 卻發現方向錯。
+
+### 4.5 操作指南（建立 / 設定 / 匯出）
+
+| 文件 | 用途 |
+|---|---|
+| [人物包設置指南.md](人物包設置指南.md) | **persona pack v3 完整指引** — 資料夾結構、persona.json schema、必要 vs 可選檔案、9 表情、13 categories、匯出/匯入流程、Live2D 預留位置、常見坑 |
 
 ### 5. 第三方資源（外部 API 參考）
 
@@ -216,3 +225,4 @@ M4 階段把 dialogues.json 從 15 句擴至 200-300 句的工具文件。10 份
 | v1.0 | 2026-05-09 | 文件目錄初版（M3 完成階段） |
 | v1.1 | 2026-05-09 | M4.5 — persona package 重整（dialogues-initial.json + 對話庫管理視窗）|
 | v1.2 | 2026-05-10 | 加入 M6-GPT-SoVITS-實作計畫.md（已評估、暫不啟動） |
+| v1.3 | 2026-05-11 | + 觸發系統重構-設計規格.md + 人物包設置指南.md（persona pack v3：self-contained）|

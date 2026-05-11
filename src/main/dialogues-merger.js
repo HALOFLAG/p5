@@ -21,49 +21,148 @@ const CAT_SHORT = {
   continuous_use: 'cont',
   deep_night: 'night',
   drag: 'drag',
+  hourly_chime: 'hour',
 };
 
-// LLM 原始格式：[type] text | expression: xxx
-const TXT_LINE_RE = /^\[(\w+)\]\s+(.+?)\s*\|\s*expression:\s*(\w+)\s*$/;
+// LLM 原始格式（單行）：[type] text | k1: v1 | k2: v2 ...
+//   支援 key：expression / ja（雙語 voice_text）/ c（content_class）/ streak（streak_level）
+//   舊格式 `[speech] text | expression: happy` 仍兼容
+const TXT_LINE_HEAD_RE = /^\[(\w+)\]\s+(.+)$/;
 
 function escapeRe(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function parseTxtLines(text, persona, category, opts = {}) {
+function parseTxtLines(textInput, persona, category, opts = {}) {
   const onWarn = opts.onWarn || (() => {});
   const entries = [];
-  const lines = text.split('\n');
+  const lines = textInput.split('\n');
   let valid = 0;
   let skipped = 0;
   let warned = 0;
+  let lastEntry = null;
+
+  // 互動式 @interactive {...} JSON 區塊累積
+  let inBlock = false;
+  let blockBraceDepth = 0;
+  let blockChunks = [];
+  let blockStartLine = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i].trim();
-    if (!raw) continue;
-    if (raw.startsWith('#') || raw.startsWith('//')) continue;
-    if (!raw.startsWith('[') || !raw.includes('|')) {
+    const raw = lines[i];
+
+    // ── @interactive JSON 區塊（多行）───
+    if (inBlock) {
+      blockChunks.push(raw);
+      for (const c of raw) {
+        if (c === '{') blockBraceDepth++;
+        else if (c === '}') {
+          blockBraceDepth--;
+          if (blockBraceDepth === 0) {
+            // 結束 — parse JSON 並附加到 lastEntry
+            inBlock = false;
+            const jsonText = blockChunks.join('\n').replace(/^\s*@interactive\s*/m, '');
+            try {
+              const parsed = JSON.parse(jsonText);
+              if (lastEntry) {
+                if (parsed.interaction) lastEntry.interaction = parsed.interaction;
+                if (Array.isArray(parsed.choices)) lastEntry.choices = parsed.choices;
+                if (parsed.binary && typeof parsed.binary === 'object') lastEntry.binary = parsed.binary;
+              } else {
+                onWarn(`line ${blockStartLine + 1}: @interactive 區塊找不到對應的 [type] 句`);
+              }
+            } catch (err) {
+              if (warned < 5) {
+                onWarn(`line ${blockStartLine + 1}: @interactive JSON 解析失敗 — ${err.message}`);
+                warned++;
+              }
+              skipped++;
+            }
+            blockChunks = [];
+            break;
+          }
+        }
+      }
+      continue;
+    }
+
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('#') || trimmed.startsWith('//')) continue;
+
+    // 偵測 @interactive 開頭（同行可能含 `{` 或 `{` 在下一行）
+    if (trimmed.startsWith('@interactive')) {
+      inBlock = true;
+      blockBraceDepth = 0;
+      blockChunks = [raw];
+      blockStartLine = i;
+      for (const c of raw) {
+        if (c === '{') blockBraceDepth++;
+        else if (c === '}') blockBraceDepth--;
+      }
+      if (blockBraceDepth === 0 && raw.includes('{')) {
+        // 單行內已 self-closed（rare）
+        const jsonText = raw.replace(/^\s*@interactive\s*/, '');
+        try {
+          const parsed = JSON.parse(jsonText);
+          if (lastEntry) {
+            if (parsed.interaction) lastEntry.interaction = parsed.interaction;
+            if (Array.isArray(parsed.choices)) lastEntry.choices = parsed.choices;
+            if (parsed.binary && typeof parsed.binary === 'object') lastEntry.binary = parsed.binary;
+          }
+        } catch (_e) {}
+        inBlock = false;
+        blockChunks = [];
+      }
+      continue;
+    }
+
+    if (!trimmed.startsWith('[')) {
       skipped++;
       continue;
     }
-    const m = raw.match(TXT_LINE_RE);
+    const m = trimmed.match(TXT_LINE_HEAD_RE);
     if (!m) {
       if (warned < 5) {
-        onWarn(`line ${i + 1}: "${raw.slice(0, 60)}..."`);
+        onWarn(`line ${i + 1}: "${trimmed.slice(0, 60)}..." (找不到 [type] 開頭)`);
         warned++;
       }
       skipped++;
       continue;
     }
-    entries.push({
+    const parts = m[2].split('|').map((s) => s.trim());
+    const text = parts[0];
+    if (!text) { skipped++; continue; }
+    const entry = {
       persona,
       category,
       type: m[1].toLowerCase(),
-      text: m[2].trim(),
-      expression: m[3].trim(),
+      text,
       _line: i + 1,
-    });
+    };
+    // 其餘 pipe 段是 key:value
+    for (let j = 1; j < parts.length; j++) {
+      const kv = parts[j].match(/^(\w+)\s*:\s*(.+)$/);
+      if (!kv) continue;
+      const key = kv[1].toLowerCase();
+      const val = kv[2].trim();
+      if (key === 'expression') entry.expression = val;
+      else if (key === 'ja') { entry.voice_text = val; entry.voice_lang = 'ja'; }
+      else if (key === 'voice_text') entry.voice_text = val;
+      else if (key === 'voice_lang') entry.voice_lang = val;
+      else if (key === 'c' || key === 'cc' || key === 'content_class') entry.content_class = val;
+      else if (key === 'streak' || key === 'streak_level') entry.streak_level = val;
+      else if (key === 'auto_close_ms') entry.auto_close_ms = val;
+      else if (key === 'interaction') entry.interaction = val;
+      else if (key === 'persistence') entry.persistence = val;
+    }
+    entries.push(entry);
+    lastEntry = entry;
     valid++;
+  }
+  if (inBlock) {
+    onWarn(`@interactive 區塊未閉合（從 line ${blockStartLine + 1} 開始）`);
+    skipped++;
   }
   return { entries, valid, skipped };
 }
@@ -183,14 +282,24 @@ function mergeIntoDialogues({ data, persona, entries, replace = false, batchTag 
         type: e.type || 'speech',
       };
       if (e.interaction) sequence.interaction = e.interaction;
+      if (e.persistence) sequence.persistence = e.persistence;
       if (e.auto_close_ms) {
         const ms = parseInt(e.auto_close_ms, 10);
         if (Number.isFinite(ms)) sequence.auto_close_ms = ms;
       }
-      sequence.lines = [{
+      const line = {
         text: e.text,
         ...(e.expression ? { expression: e.expression } : {}),
-      }];
+      };
+      // 雙語架構：voice_text / voice_lang 寫進 line（缺則 fallback line.text + persona default）
+      if (e.voice_text) line.voice_text = e.voice_text;
+      if (e.voice_lang) line.voice_lang = e.voice_lang;
+      sequence.lines = [line];
+
+      // 互動式 sequence：choices / binary 從 entry 寫進 sequence
+      if (Array.isArray(e.choices) && e.choices.length > 0) sequence.choices = e.choices;
+      if (e.binary && typeof e.binary === 'object' && Object.keys(e.binary).length > 0) sequence.binary = e.binary;
+
       sequence._meta = {
         created_at: ts,
         source_batch: batchTag,
@@ -198,6 +307,8 @@ function mergeIntoDialogues({ data, persona, entries, replace = false, batchTag 
         edited_at: null,
         fire_count_lifetime: 0,
       };
+      if (e.content_class) sequence._meta.content_class = e.content_class;
+      if (e.streak_level) sequence._meta.streak_level = e.streak_level;
 
       data.categories[catName].sequences.push(sequence);
       added.push(sequenceId);

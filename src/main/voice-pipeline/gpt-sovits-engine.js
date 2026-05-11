@@ -64,10 +64,13 @@ class GPTSoVITSEngine extends TTSEngine {
    * @param {string} [opts.ref_lang='zh']
    * @param {string} [opts.target_lang='zh']
    * @param {Array<string>} [opts.inp_refs=[]]    額外平均融合 ref（不需文字稿，建議同性別）
-   * @param {number} [opts.speed]
-   * @param {number} [opts.temperature]
-   * @param {number} [opts.top_k]
-   * @param {number} [opts.top_p]
+   * @param {number} [opts.speed]                 語速（0.5-2.0）
+   * @param {number} [opts.temperature]           採樣溫度（0-1，越高越隨機）
+   * @param {number} [opts.top_k]                 採樣 top-K
+   * @param {number} [opts.top_p]                 採樣 top-P
+   * @param {number} [opts.fragment_interval]     片段間靜音秒（0-1，預設 0.3）
+   * @param {number} [opts.seed]                  隨機種子（reproducible TTS）
+   * @param {number} [opts.repetition_penalty]    重複懲罰（1.0-2.0，預設 1.35）
    * @returns {Promise<{ audio: Buffer, meta: { engine, base_url, ms } }>}
    */
   async synthesize(opts) {
@@ -82,6 +85,9 @@ class GPTSoVITSEngine extends TTSEngine {
       temperature,
       top_k,
       top_p,
+      fragment_interval,
+      seed,
+      repetition_penalty,
     } = opts || {};
 
     if (!text || !ref_audio_path || !ref_text) {
@@ -100,6 +106,9 @@ class GPTSoVITSEngine extends TTSEngine {
     if (Number.isFinite(temperature)) body.temperature = temperature;
     if (Number.isFinite(top_k)) body.top_k = top_k;
     if (Number.isFinite(top_p)) body.top_p = top_p;
+    if (Number.isFinite(fragment_interval)) body.fragment_interval = fragment_interval;
+    if (Number.isFinite(seed)) body.seed = seed;
+    if (Number.isFinite(repetition_penalty)) body.repetition_penalty = repetition_penalty;
 
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), this._timeoutMs);

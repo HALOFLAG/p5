@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld('api', {
   },
   character: {
     dragStart: () => ipcRenderer.send('character:drag-start'),
+    click: () => ipcRenderer.send('character:click'),
   },
   debug: {
     testBubble: (variant) => ipcRenderer.send('debug:test-bubble', { variant }),

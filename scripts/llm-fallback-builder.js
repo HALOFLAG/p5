@@ -56,6 +56,7 @@ const categories = [
   'continuous_use',
   'deep_night',
   'drag',
+  'hourly_chime',
 ];
 
 const targets = [];

@@ -1,4 +1,4 @@
-const { app, ipcMain, shell } = require('electron');
+const { app, ipcMain, shell, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 
@@ -9,10 +9,12 @@ const {
   createDialoguesManagerWindow,
 } = require('./src/main/window-mgr');
 const dialoguesMerger = require('./src/main/dialogues-merger');
-const { buildPrompt: buildLLMPrompt } = require('./src/main/llm-prompt-builder');
+const { buildPrompt: buildLLMPrompt, getCategoryInfo, listAllCategoryInfo } = require('./src/main/llm-prompt-builder');
 const { GPTSoVITSEngine } = require('./src/main/voice-pipeline/gpt-sovits-engine');
 const { VoiceManifest } = require('./src/main/voice-pipeline/voice-manifest');
 const { BatchRunner } = require('./src/main/voice-pipeline/batch-runner');
+const { listTimeVoiceCandidates } = require('./src/main/voice-pipeline/time-voice-content');
+const { VoiceEngineManager } = require('./src/main/voice-engine-manager');
 const { createTray } = require('./src/main/tray');
 const { ConfigStore } = require('./src/main/config-store');
 const { WindowState } = require('./src/main/window-state');
@@ -50,6 +52,7 @@ let dialoguesManagerWindow = null;
 // M6 voice
 let voiceBatchRunner = null;       // 當前進行中的 batch（同時只能一個）
 let voiceEngineInstance = null;    // 共用的 GPT-SoVITS engine 實例
+let voiceEngineManager = null;     // 管 python api.py 子進程的 lifecycle
 let tray = null;
 let config = null;
 let windowState = null;
@@ -91,6 +94,7 @@ if (!gotLock) {
       if (windowState) await windowState.save();
       if (config) await config.save();
 
+      try { await voiceEngineManager?.stop(); } catch (e) { console.warn('[main] voice engine stop:', e.message); }
       try { await rollupAggregator?.stop(); } catch (e) { console.warn('[main] rollup stop:', e.message); }
       try { await dialogueDirector?.flushPendingSaves(); } catch (e) { console.warn('[main] director flush:', e.message); }
       try { triggerEngine?.stop(); } catch (e) { console.warn('[main] trigger stop:', e.message); }
@@ -182,10 +186,19 @@ async function bootstrap() {
     inputMonitor,
     contextState: contextStateTracker,
     registry: monitorRegistry,
+    appClassification,
     getSettings: () => config.getAll(),
     logger: console,
   });
   triggerEngine.loadRules(triggersCfg);
+
+  // P4: window:focus-changed 路由到 triggerEngine.handleAppFocus（app_focus 規則用）
+  monitorRegistry.on('plugin-event', ({ event_name, payload }) => {
+    if (event_name === 'window:focus-changed') {
+      try { triggerEngine?.handleAppFocus(payload); }
+      catch (err) { console.warn('[main] handleAppFocus failed:', err.message); }
+    }
+  });
 
   // ── DialogueDirector ───────────────────────────────────
   dialogueDirector = new DialogueDirector({
@@ -201,6 +214,7 @@ async function bootstrap() {
     monitorRegistry,
     logger: console,
     voiceLookup: voiceLookupForDirector,
+    timeVoiceLookup: timeVoiceLookupForDirector,
   });
   await dialogueDirector.load();
 
@@ -227,6 +241,12 @@ async function bootstrap() {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('window-state:initial', windowState.get());
     }
+    // P2: 主視窗載入完才推 app:ready，給 boot_greet 觸發開機問候
+    // 略延 1.5s，避免 dialogue 太突兀（剛啟動使用者眼睛還在適應）
+    setTimeout(() => {
+      try { triggerEngine?.handleEvent('app:ready', { t: Date.now() }); }
+      catch (err) { console.warn('[main] app:ready emit failed:', err); }
+    }, 1500);
   });
 
   setupIpc();
@@ -259,6 +279,33 @@ function getVoiceEngine() {
   return voiceEngineInstance;
 }
 
+function getVoiceEngineManager() {
+  if (!voiceEngineManager) {
+    voiceEngineManager = new VoiceEngineManager({ logger: console });
+    // 把 log / status 事件 forward 給 renderer
+    voiceEngineManager.on('log', (line) => {
+      if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+        dialoguesManagerWindow.webContents.send('voice:engine-log', line);
+      }
+    });
+    voiceEngineManager.on('status', (payload) => {
+      if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+        dialoguesManagerWindow.webContents.send('voice:engine-status', payload);
+      }
+    });
+  }
+  return voiceEngineManager;
+}
+
+const DEFAULT_ENGINE_CONFIG = {
+  cwd: 'F:/CCTEST/TOOL/GPT-SoVITS/tools/GPT-SoVITS',
+  python: '.venv/Scripts/python.exe',
+  script: 'api.py',
+  args: [],
+  wait_for_text: 'Uvicorn running on',
+  startup_timeout_sec: 180,
+};
+
 const DEFAULT_VOICE_CONFIG = {
   engine: 'gpt-sovits',
   base_url: 'http://127.0.0.1:9880',
@@ -290,12 +337,58 @@ async function saveVoiceConfig(cfg) {
   await fs.rename(tmp, VOICE_CONFIG_PATH);
 }
 
+// ─── persona pack v3：讀寫 personas/<id>/persona.json ───
+async function loadPersonaJSON(personaId) {
+  if (!personaId) throw new Error('personaId required');
+  const personaFile = path.join(PERSONAS_DIR, personaId, 'persona.json');
+  const text = await fs.readFile(personaFile, 'utf-8');
+  return JSON.parse(text);
+}
+
+async function savePersonaJSON(personaId, data) {
+  if (!personaId) throw new Error('personaId required');
+  const personaFile = path.join(PERSONAS_DIR, personaId, 'persona.json');
+  const tmp = `${personaFile}.${process.pid}.${Date.now()}.tmp`;
+  await fs.writeFile(tmp, JSON.stringify(data, null, 2) + '\n');
+  await fs.rename(tmp, personaFile);
+}
+
+// 解析 persona 內相對路徑（v3：ref_audio / appearance.static.main 等都相對 persona dir）
+function resolvePersonaPath(personaId, relPath) {
+  if (!relPath) return null;
+  if (typeof relPath !== 'string') return null;
+  if (path.isAbsolute(relPath)) return relPath;
+  return path.join(PERSONAS_DIR, personaId, relPath);
+}
+
+// 取 persona 的 voice 設定（保證物件存在）
+async function getPersonaVoice(personaId) {
+  try {
+    const persona = await loadPersonaJSON(personaId);
+    return persona.voice || {};
+  } catch (_e) {
+    return {};
+  }
+}
+
 // director 用：handleFire 時查 voice manifest 是否有對應 wav 檔
 const _voiceManifestCache = new Map();   // key=`${personaId}:${lang}` → VoiceManifest
-async function voiceLookupForDirector(personaId, sequenceId, lineIdx) {
-  if (!personaId) return null;
+// 解析 persona 預設語音 lang（v3：從 persona.json.voice 讀；fallback voice-config）
+async function resolvePersonaVoiceLang(personaId) {
+  try {
+    const persona = await loadPersonaJSON(personaId);
+    if (persona.voice?.voice_lang) return persona.voice.voice_lang;
+    if (persona.voice?.lang) return persona.voice.lang;
+  } catch (_e) {}
+  // legacy fallback
   const cfg = await loadVoiceConfig();
-  const lang = cfg.voices?.[personaId]?.lang || 'zh';
+  const voice = cfg.voices?.[personaId] || {};
+  return voice.voice_lang || voice.lang || 'zh';
+}
+
+async function voiceLookupForDirector(personaId, sequenceId, lineIdx, langOverride = null) {
+  if (!personaId) return null;
+  const lang = langOverride || await resolvePersonaVoiceLang(personaId);
   const key = `${personaId}:${lang}`;
   let manifest = _voiceManifestCache.get(key);
   if (!manifest) {
@@ -306,8 +399,30 @@ async function voiceLookupForDirector(personaId, sequenceId, lineIdx) {
   return await manifest.lookup(sequenceId, lineIdx);
 }
 
+// P3: 時間音庫查詢（voices-time/<lang>/<key>_0.wav）
+const _timeVoiceManifestCache = new Map();
+async function timeVoiceLookupForDirector(personaId, timeKey, langOverride = null) {
+  if (!personaId || !timeKey) return null;
+  const lang = langOverride || await resolvePersonaVoiceLang(personaId);
+  const cacheKey = `${personaId}:${lang}`;
+  let manifest = _timeVoiceManifestCache.get(cacheKey);
+  if (!manifest) {
+    manifest = new VoiceManifest({
+      personaPath: path.join(PERSONAS_DIR, personaId),
+      lang,
+      subdir: 'voices-time',
+    });
+    await manifest.load();
+    _timeVoiceManifestCache.set(cacheKey, manifest);
+  }
+  return await manifest.lookup(timeKey, 0);
+}
+
 // 批次完成 / 設定變動時清掉，下次 fire 重讀新 manifest
-function invalidateVoiceManifestCache() { _voiceManifestCache.clear(); }
+function invalidateVoiceManifestCache() {
+  _voiceManifestCache.clear();
+  _timeVoiceManifestCache.clear();
+}
 
 // ref audio 相對路徑解析成絕對（GPT-SoVITS server 跑在自己目錄、相對路徑會找不到）
 function resolveRefAudioPath(refPath) {
@@ -347,20 +462,39 @@ function setupIpc() {
     try {
       const text = await fs.readFile(file, 'utf-8');
       const persona = JSON.parse(text);
+      const personaDir = path.dirname(file);
 
-      // M5a-real: 解析 appearance.image 為絕對 file:// URL（renderer 用）
-      // appearance.image 的路徑相對於 persona.json 所在目錄
-      if (persona?.appearance?.image) {
-        const imageRel = persona.appearance.image;
-        const imageAbs = path.resolve(path.dirname(file), imageRel);
+      // 內部 helper：相對 persona dir 的路徑 → file:// URL（若檔案存在）
+      const toFileUrl = async (relPath) => {
+        if (!relPath) return null;
+        const abs = path.isAbsolute(relPath) ? relPath : path.resolve(personaDir, relPath);
         try {
-          await fs.access(imageAbs);
-          // file:// URL on Windows 要用正斜線
-          persona.appearance._image_url = 'file:///' + imageAbs.replace(/\\/g, '/');
+          await fs.access(abs);
+          return 'file:///' + abs.replace(/\\/g, '/');
         } catch (_e) {
-          // 圖檔不存在 → 不加 _image_url，renderer 會 fallback color-block
-          console.warn(`[personas:get] image not found: ${imageAbs}`);
+          return null;
         }
+      };
+
+      // v3: 解析 appearance.static.main + expressions[]
+      if (persona?.appearance?.static) {
+        const stat = persona.appearance.static;
+        // main image
+        const mainUrl = await toFileUrl(stat.main);
+        if (mainUrl) persona.appearance._image_url = mainUrl;
+        // expressions（按需 resolve；missing 不報，UI 自行 fallback）
+        if (stat.expressions && typeof stat.expressions === 'object') {
+          const exprUrls = {};
+          for (const [name, rel] of Object.entries(stat.expressions)) {
+            const url = await toFileUrl(rel);
+            if (url) exprUrls[name] = url;
+          }
+          persona.appearance._expression_urls = exprUrls;
+        }
+      } else if (persona?.appearance?.image) {
+        // legacy v2 fallback：appearance.image 直接指定一張圖
+        const url = await toFileUrl(persona.appearance.image);
+        if (url) persona.appearance._image_url = url;
       }
 
       return persona;
@@ -466,6 +600,15 @@ function setupIpc() {
     return data;
   });
 
+  // 動態列 dialogues.json 內所有 category，給 UI dropdown 用
+  ipcMain.handle('dialogues:list-categories', async (_e, { persona }) => {
+    if (!persona) throw new Error('persona required');
+    const dialoguesPath = path.join(PERSONAS_DIR, persona, 'dialogues.json');
+    const data = await dialoguesMerger.loadDialogues(dialoguesPath);
+    if (!data?.categories) return [];
+    return Object.keys(data.categories).sort();
+  });
+
   ipcMain.handle('dialogues:read-initial', async (_e, { persona }) => {
     if (!persona) throw new Error('persona required');
     const initialPath = path.join(PERSONAS_DIR, persona, 'dialogues-initial.json');
@@ -522,7 +665,17 @@ function setupIpc() {
     return { ok: true, summary, warnings, parsed: { valid: parsed.valid, skipped: parsed.skipped } };
   });
 
-  ipcMain.handle('dialogues:gen-prompt', async (_e, { persona, category, count }) => {
+  // Tab 3 UI 用：列出全部 categories 的說明 + 預設配比（用戶選 category 時顯示）
+  ipcMain.handle('dialogues:list-category-info', async () => {
+    return listAllCategoryInfo();
+  });
+
+  ipcMain.handle('dialogues:get-category-info', async (_e, { category } = {}) => {
+    if (!category) throw new Error('category required');
+    return getCategoryInfo(category);
+  });
+
+  ipcMain.handle('dialogues:gen-prompt', async (_e, { persona, category, count, classMix, streakLevel }) => {
     if (!persona || !category) throw new Error('persona / category required');
     const personaPath = path.join(PERSONAS_DIR, persona, 'persona.json');
     const initialPath = path.join(PERSONAS_DIR, persona, 'dialogues-initial.json');
@@ -540,6 +693,8 @@ function setupIpc() {
       category,
       count: count || 30,
       dialoguesInitial: initialData,
+      classMix: classMix || null,
+      streakLevel: streakLevel || null,
     });
     return { prompt };
   });
@@ -551,13 +706,31 @@ function setupIpc() {
       : 0;  // 0 = 全部
     const events = await eventLogger.readRange(since, Date.now());
     const counts = {};
+    const byTrigger = {};
+    const byCategory = {};
     for (const e of events) {
       if (e.type !== 'trigger:fired') continue;
       if (e.persona && e.persona !== persona) continue;
-      if (!e.sequence_id) continue;
-      counts[e.sequence_id] = (counts[e.sequence_id] || 0) + 1;
+      if (e.sequence_id) counts[e.sequence_id] = (counts[e.sequence_id] || 0) + 1;
+      if (e.rule_name) byTrigger[e.rule_name] = (byTrigger[e.rule_name] || 0) + 1;
+      if (e.category) byCategory[e.category] = (byCategory[e.category] || 0) + 1;
     }
-    return { counts, since, until: Date.now() };
+    return { counts, byTrigger, byCategory, since, until: Date.now() };
+  });
+
+  // 列出所有 trigger rules + 條件摘要（給對話庫管理 UI 顯示「該 category 怎麼觸發」用）
+  ipcMain.handle('triggers:list-rules', async () => {
+    const data = await loadJsonOr(TRIGGERS_PATH, { rules: [] });
+    const rules = Array.isArray(data?.rules) ? data.rules : [];
+    return rules.map((r) => ({
+      name: r.name,
+      category: r.category,
+      priority: r.priority || 0,
+      cooldown_sec: r.cooldown_sec || 0,
+      condition: r.condition,
+      action: r.action,
+      voice_prefix: r.voice_prefix || null,
+    }));
   });
 
   // ── M6 Voice：GPT-SoVITS 整合 ──────────────────────
@@ -567,13 +740,204 @@ function setupIpc() {
     return { online, base_url: engine._baseUrl };
   });
 
+  // ── persona pack 管理（R4）─────────────────────────────
+  ipcMain.handle('persona-pack:reveal', async (_e, { personaId } = {}) => {
+    if (!personaId) throw new Error('personaId required');
+    const personaDir = path.join(PERSONAS_DIR, personaId);
+    const stat = await fs.stat(personaDir).catch(() => null);
+    if (!stat?.isDirectory()) throw new Error(`persona "${personaId}" 不存在`);
+    await shell.openPath(personaDir);
+    return { ok: true, path: personaDir };
+  });
+
+  ipcMain.handle('persona-pack:import', async () => {
+    const result = await dialog.showOpenDialog(mainWindow || undefined, {
+      title: '選擇要匯入的 persona pack 資料夾（內含 persona.json）',
+      properties: ['openDirectory'],
+    });
+    if (result.canceled || !result.filePaths?.[0]) return { ok: false, cancelled: true };
+    const srcDir = result.filePaths[0];
+
+    const personaFile = path.join(srcDir, 'persona.json');
+    let personaJson;
+    try {
+      personaJson = JSON.parse(await fs.readFile(personaFile, 'utf-8'));
+    } catch (err) {
+      throw new Error(`所選資料夾沒有有效的 persona.json：${err.message}`);
+    }
+    const personaId = personaJson.id || path.basename(srcDir);
+    if (!personaId.match(/^[a-z0-9_-]+$/i)) {
+      throw new Error(`persona id 格式錯誤：${personaId}（只允許英數 / _ / -）`);
+    }
+
+    const destDir = path.join(PERSONAS_DIR, personaId);
+    const exists = await fs.stat(destDir).catch(() => null);
+    if (exists) {
+      throw new Error(`persona "${personaId}" 已存在。請先移除或改名後再匯入。`);
+    }
+
+    await fs.cp(srcDir, destDir, { recursive: true, force: false });
+    return { ok: true, persona_id: personaId, dest: destDir };
+  });
+
+  // 一鍵清除當前 persona 的對話 + 語音（測試用，自動備份）
+  ipcMain.handle('persona-pack:wipe-content', async (_e, { personaId } = {}) => {
+    if (!personaId) throw new Error('personaId required');
+    const personaDir = path.join(PERSONAS_DIR, personaId);
+    const stat = await fs.stat(personaDir).catch(() => null);
+    if (!stat?.isDirectory()) throw new Error(`persona "${personaId}" 不存在`);
+
+    const ts = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupDir = path.join(personaDir, `_wipe-${ts}`);
+    const summary = { wiped: { dialogues: 0, voices: 0, time_voices: 0 }, backup_dir: backupDir };
+
+    // 1. dialogues.json + dialogues-initial.json sequences 清空（保 category structure）
+    for (const fname of ['dialogues.json', 'dialogues-initial.json']) {
+      const fpath = path.join(personaDir, fname);
+      try { await fs.access(fpath); } catch (_e) { continue; }
+      await fs.mkdir(backupDir, { recursive: true });
+      await fs.copyFile(fpath, path.join(backupDir, fname));
+      const text = await fs.readFile(fpath, 'utf-8');
+      const data = JSON.parse(text);
+      let n = 0;
+      for (const cat of Object.values(data.categories || {})) {
+        n += Array.isArray(cat.sequences) ? cat.sequences.length : 0;
+        cat.sequences = [];
+      }
+      await fs.writeFile(fpath, JSON.stringify(data, null, 2) + '\n');
+      summary.wiped.dialogues += n;
+    }
+
+    // 2. voices/ + voices-time/ 整個移到 backup
+    for (const sub of ['voices', 'voices-time']) {
+      const subDir = path.join(personaDir, sub);
+      try { await fs.access(subDir); } catch (_e) { continue; }
+      // 計算 wav 數量
+      let wavs = 0;
+      try {
+        const langs = await fs.readdir(subDir);
+        for (const lang of langs) {
+          const langDir = path.join(subDir, lang);
+          const langStat = await fs.stat(langDir).catch(() => null);
+          if (!langStat?.isDirectory()) continue;
+          const files = await fs.readdir(langDir);
+          wavs += files.filter((f) => f.endsWith('.wav')).length;
+        }
+      } catch (_e) {}
+      await fs.mkdir(backupDir, { recursive: true });
+      await fs.rename(subDir, path.join(backupDir, sub));
+      if (sub === 'voices') summary.wiped.voices = wavs;
+      else summary.wiped.time_voices = wavs;
+    }
+
+    // 清快取
+    invalidateVoiceManifestCache();
+    try { dialogueDirector?.invalidatePersonaCache(); } catch (_e) {}
+
+    return summary;
+  });
+
+  ipcMain.handle('persona-pack:list', async () => {
+    const out = [];
+    try {
+      const entries = await fs.readdir(PERSONAS_DIR);
+      for (const id of entries) {
+        if (id.startsWith('_') || id.startsWith('.')) continue;
+        const personaFile = path.join(PERSONAS_DIR, id, 'persona.json');
+        try {
+          const data = JSON.parse(await fs.readFile(personaFile, 'utf-8'));
+          out.push({
+            id,
+            display_name: data.display_name || id,
+            schema: data.$schema || 'unknown',
+            has_voice_ref: !!(data.voice?.ref_audio),
+            has_appearance: !!(data.appearance?.static?.main),
+            has_live2d: data.appearance?.live2d?.enabled || false,
+          });
+        } catch (_e) {}
+      }
+    } catch (_e) {}
+    return out;
+  });
+
+  // 引擎整合：子進程 lifecycle ───────────────────────────
+  ipcMain.handle('voice:engine-get-status', () => {
+    const mgr = getVoiceEngineManager();
+    return {
+      status: mgr.getStatus(),
+      started_at: mgr.getStartedAt(),
+      last_error: mgr.getLastError(),
+      logs: mgr.getRecentLogs(200),
+    };
+  });
+
+  ipcMain.handle('voice:engine-config-get', async () => {
+    const cfg = await loadVoiceConfig();
+    return cfg.engine_command || { ...DEFAULT_ENGINE_CONFIG };
+  });
+
+  ipcMain.handle('voice:engine-config-set', async (_e, engineCfg) => {
+    const cfg = await loadVoiceConfig();
+    cfg.engine_command = { ...DEFAULT_ENGINE_CONFIG, ...(engineCfg || {}) };
+    await saveVoiceConfig(cfg);
+    return { ok: true };
+  });
+
+  ipcMain.handle('voice:engine-start', async () => {
+    const cfg = await loadVoiceConfig();
+    const engineCfg = { ...DEFAULT_ENGINE_CONFIG, ...(cfg.engine_command || {}) };
+    const mgr = getVoiceEngineManager();
+    if (mgr.isRunning()) throw new Error('引擎已在跑（或啟動中）');
+    try {
+      await mgr.start(engineCfg);
+      return { ok: true, status: mgr.getStatus() };
+    } catch (err) {
+      throw new Error(`啟動失敗：${err.message}`);
+    }
+  });
+
+  ipcMain.handle('voice:engine-stop', async () => {
+    const mgr = getVoiceEngineManager();
+    if (!mgr.isRunning()) return { ok: true, status: 'stopped' };
+    await mgr.stop();
+    return { ok: true, status: mgr.getStatus() };
+  });
+
   ipcMain.handle('voice:get-config', async () => {
-    return await loadVoiceConfig();
+    // v3: 合併 voice-config.json + 每個 persona.json.voice，回傳 legacy 形狀給 UI
+    const cfg = await loadVoiceConfig();
+    cfg.voices = {};
+    try {
+      const personas = await fs.readdir(PERSONAS_DIR);
+      for (const pid of personas) {
+        const stat = await fs.stat(path.join(PERSONAS_DIR, pid)).catch(() => null);
+        if (!stat?.isDirectory()) continue;
+        try {
+          const persona = await loadPersonaJSON(pid);
+          if (persona.voice) cfg.voices[pid] = persona.voice;
+        } catch (_e) { /* skip */ }
+      }
+    } catch (_e) {}
+    return cfg;
   });
 
   ipcMain.handle('voice:set-config', async (_e, cfg) => {
     if (!cfg || typeof cfg !== 'object') throw new Error('config required');
-    await saveVoiceConfig(cfg);
+    // v3: 把 cfg.voices 拆回每個 persona.json
+    const voices = cfg.voices || {};
+    for (const [pid, v] of Object.entries(voices)) {
+      try {
+        const persona = await loadPersonaJSON(pid);
+        persona.voice = { ...(persona.voice || {}), ...v };
+        await savePersonaJSON(pid, persona);
+      } catch (err) {
+        console.warn(`[voice:set-config] save ${pid} failed:`, err.message);
+      }
+    }
+    // 全域部分（engine_command / sampling / engine / base_url）寫回 voice-config.json
+    const globalCfg = { ...cfg };
+    delete globalCfg.voices;
+    await saveVoiceConfig(globalCfg);
     invalidateVoiceManifestCache();
     return { ok: true };
   });
@@ -581,26 +945,35 @@ function setupIpc() {
   ipcMain.handle('voice:test-tts', async (_e, { persona, text, lang }) => {
     if (!persona || !text) throw new Error('persona and text required');
     const cfg = await loadVoiceConfig();
-    const voice = cfg.voices?.[persona];
+    const voice = await getPersonaVoice(persona);
     if (!voice?.ref_audio || !voice?.ref_text) {
       throw new Error(`persona "${persona}" 還沒設 ref audio / ref text（先到 Tab 5 設定）`);
     }
     const inpRefs = (voice.additional_refs || [])
       .filter((p) => typeof p === 'string' && p.trim())
-      .map(resolveRefAudioPath);
+      .map((p) => resolvePersonaPath(persona, p) || p);
     const sampling = { ...(cfg.sampling || {}), ...(voice.sampling || {}) };
 
     const engine = getVoiceEngine();
+    const refLang = voice.ref_lang || voice.lang || 'zh';
     const result = await engine.synthesize({
       text,
-      ref_audio_path: resolveRefAudioPath(voice.ref_audio),
+      ref_audio_path: resolvePersonaPath(persona, voice.ref_audio) || voice.ref_audio,
       ref_text: voice.ref_text,
-      ref_lang: voice.lang || 'zh',
-      target_lang: lang || voice.lang || 'zh',
+      ref_lang: refLang,
+      target_lang: lang || voice.voice_lang || voice.lang || 'zh',
       inp_refs: inpRefs,
       temperature: sampling.temperature,
       top_k: sampling.top_k,
       top_p: sampling.top_p,
+            speed: sampling.speed,
+            fragment_interval: sampling.fragment_interval,
+            seed: sampling.seed,
+            repetition_penalty: sampling.repetition_penalty,
+      speed: sampling.speed,
+      fragment_interval: sampling.fragment_interval,
+      seed: sampling.seed,
+      repetition_penalty: sampling.repetition_penalty,
     });
     // 寫到暫存檔，回傳 file path 給 renderer 試聽
     const tmpDir = path.join(DATA_DIR, '_voice_test');
@@ -610,77 +983,161 @@ function setupIpc() {
     return { file_path: tmpFile, ms: result.meta.ms, bytes: result.meta.bytes };
   });
 
+  // 單句語音狀態查詢（Tab 1 編輯面板用）
+  ipcMain.handle('voice:get-status', async (_e, { persona, sequenceId, lineIdx = 0, lang = 'zh' }) => {
+    if (!persona || !sequenceId) throw new Error('persona / sequenceId required');
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const manifest = new VoiceManifest({ personaPath, lang });
+    await manifest.load();
+    const found = await manifest.lookup(sequenceId, lineIdx);
+    if (!found) return { has_voice: false };
+    return {
+      has_voice: true,
+      file_path: found.file_path,
+      file_url: 'file:///' + found.file_path.replace(/\\/g, '/'),
+      bytes: found.bytes,
+      ms: found.ms,
+      generated_at: found.generated_at,
+    };
+  });
+
   ipcMain.handle('voice:list-stats', async (_e, { persona, lang = 'zh' }) => {
     if (!persona) throw new Error('persona required');
     const personaPath = path.join(PERSONAS_DIR, persona);
     const dialogues = await dialoguesMerger.loadDialogues(path.join(personaPath, 'dialogues.json'));
-    if (!dialogues) return { total_lines: 0, generated: 0, missing: 0 };
+    if (!dialogues) return { total_lines: 0, generated: 0, missing: 0, main: 0, responses: 0 };
 
-    let totalLines = 0;
+    let mainLines = 0;
+    let responseLines = 0;
     for (const cat of Object.values(dialogues.categories || {})) {
       for (const seq of cat.sequences || []) {
-        totalLines += (seq.lines || []).length;
+        mainLines += (seq.lines || []).length;
+        // P5 補：含 choice / binary response 計入總數
+        if (seq.interaction === 'choice' && Array.isArray(seq.choices)) {
+          for (const c of seq.choices) {
+            if (c?.response?.text || c?.response?.voice_text) responseLines++;
+          }
+        }
+        if (seq.interaction === 'binary' && seq.binary) {
+          for (const side of ['yes', 'no']) {
+            const r = seq.binary[side]?.response;
+            if (r?.text || r?.voice_text) responseLines++;
+          }
+        }
       }
     }
+    const totalLines = mainLines + responseLines;
 
     const manifest = new VoiceManifest({ personaPath, lang });
     await manifest.load();
     const stats = await manifest.stats();
     return {
       total_lines: totalLines,
+      main: mainLines,
+      responses: responseLines,
       generated: stats.total,
       missing: Math.max(0, totalLines - stats.total),
     };
   });
 
-  ipcMain.handle('voice:generate-batch', async (_e, { persona, mode = 'missing', lang = 'zh' }) => {
+  ipcMain.handle('voice:generate-batch', async (_e, { persona, mode = 'missing', lang = null }) => {
     if (!persona) throw new Error('persona required');
     if (voiceBatchRunner?.isRunning()) {
       throw new Error('已有批次在跑，請先取消或等完成');
     }
 
     const cfg = await loadVoiceConfig();
-    const voice = cfg.voices?.[persona];
+    const voice = await getPersonaVoice(persona);
     if (!voice?.ref_audio || !voice?.ref_text) {
       throw new Error(`persona "${persona}" 還沒設 ref audio / ref text`);
     }
+
+    // 雙語架構：lang 參數作為「篩選 / 預設」用
+    //   未指定 → 用 persona default_voice_lang（per persona override），fallback voice.lang
+    const defaultLang = voice.voice_lang || voice.lang || 'zh';
+    const targetLang = lang || defaultLang;
 
     const personaPath = path.join(PERSONAS_DIR, persona);
     const dialogues = await dialoguesMerger.loadDialogues(path.join(personaPath, 'dialogues.json'));
     if (!dialogues) throw new Error(`${persona}/dialogues.json 不存在`);
 
-    const refAudioAbs = resolveRefAudioPath(voice.ref_audio);
+    const refAudioAbs = resolvePersonaPath(persona, voice.ref_audio) || voice.ref_audio;
     const inpRefsAbs = (voice.additional_refs || [])
       .filter((p) => typeof p === 'string' && p.trim())
-      .map(resolveRefAudioPath);
+      .map((p) => resolvePersonaPath(persona, p) || p);
     const sampling = { ...(cfg.sampling || {}), ...(voice.sampling || {}) };
 
-    // 蒐集所有候選（每個 line 一筆）
+    // 蒐集所有候選（每個 line 一筆）— 雙語：每條 line 用 voice_text || text 當合成來源，
+    // 並以 line.voice_lang || persona default 對齊 lang。targetLang 過濾只跑該 lang 的。
+    // P5 補：含 choice / binary response（synthetic sequence_id：${parent}__choice_${idx} / __binary_${side}）
     const candidates = [];
+
+    function pushResponseCandidate(synthId, response) {
+      if (!response?.text && !response?.voice_text) return;
+      const lineLang = response.voice_lang || defaultLang;
+      if (lineLang !== targetLang) return;
+      const synthText = response.voice_text || response.text;
+      candidates.push({
+        sequence_id: synthId,
+        line_idx: 0,
+        text: synthText,
+        ref_audio: refAudioAbs,
+        ref_text: voice.ref_text,
+        ref_lang: voice.ref_lang || voice.lang || 'zh',
+        lang: lineLang,
+        inp_refs: inpRefsAbs,
+        temperature: sampling.temperature,
+        top_k: sampling.top_k,
+        top_p: sampling.top_p,
+            speed: sampling.speed,
+            fragment_interval: sampling.fragment_interval,
+            seed: sampling.seed,
+            repetition_penalty: sampling.repetition_penalty,
+      });
+    }
+
     for (const cat of Object.values(dialogues.categories || {})) {
       for (const seq of cat.sequences || []) {
         const lines = seq.lines || [];
         for (let i = 0; i < lines.length; i++) {
           if (typeof lines[i].text !== 'string') continue;
+          const lineLang = lines[i].voice_lang || defaultLang;
+          if (lineLang !== targetLang) continue;
+          const synthText = lines[i].voice_text || lines[i].text;
           candidates.push({
             sequence_id: seq.sequenceId,
             line_idx: i,
-            text: lines[i].text,
-            // batch-runner 把 ref_audio 透傳給 engine.synthesize，所以這裡就要絕對路徑
+            text: synthText,
             ref_audio: refAudioAbs,
             ref_text: voice.ref_text,
-            ref_lang: voice.lang || 'zh',
-            lang,
+            ref_lang: voice.ref_lang || voice.lang || 'zh',
+            lang: lineLang,
             inp_refs: inpRefsAbs,
             temperature: sampling.temperature,
             top_k: sampling.top_k,
             top_p: sampling.top_p,
+            speed: sampling.speed,
+            fragment_interval: sampling.fragment_interval,
+            seed: sampling.seed,
+            repetition_penalty: sampling.repetition_penalty,
           });
+        }
+        // choice response
+        if (seq.interaction === 'choice' && Array.isArray(seq.choices)) {
+          for (let ci = 0; ci < seq.choices.length; ci++) {
+            pushResponseCandidate(`${seq.sequenceId}__choice_${ci}`, seq.choices[ci]?.response);
+          }
+        }
+        // binary response（yes/no）
+        if (seq.interaction === 'binary' && seq.binary) {
+          for (const side of ['yes', 'no']) {
+            pushResponseCandidate(`${seq.sequenceId}__binary_${side}`, seq.binary[side]?.response);
+          }
         }
       }
     }
 
-    const manifest = new VoiceManifest({ personaPath, lang });
+    const manifest = new VoiceManifest({ personaPath, lang: targetLang });
     await manifest.load();
 
     // mode='all' 時清空 manifest 強制全部重生
@@ -695,11 +1152,12 @@ function setupIpc() {
       manifest,
       concurrency: 2,
       onProgress: (state) => {
+        const payload = { persona, lang: targetLang, ...state };
         if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send('voice:progress', { persona, lang, ...state });
+          mainWindow.webContents.send('voice:progress', payload);
         }
         if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
-          dialoguesManagerWindow.webContents.send('voice:progress', { persona, lang, ...state });
+          dialoguesManagerWindow.webContents.send('voice:progress', payload);
         }
       },
       onError: ({ item, error }) => {
@@ -711,14 +1169,281 @@ function setupIpc() {
     voiceBatchRunner.run(candidates).then((summary) => {
       invalidateVoiceManifestCache();
       if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
-        dialoguesManagerWindow.webContents.send('voice:batch-done', { persona, lang, summary });
+        dialoguesManagerWindow.webContents.send('voice:batch-done', { persona, lang: targetLang, summary });
       }
     }).catch((err) => {
       console.warn('[voice] batch failed:', err.message);
       if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
         dialoguesManagerWindow.webContents.send('voice:batch-done', {
-          persona, lang, error: err.message,
+          persona, lang: targetLang, error: err.message,
         });
+      }
+    });
+
+    return { ok: true, total_candidates: candidates.length, lang: targetLang };
+  });
+
+  // P3 / Tab 6: 時間語音庫管理 ───────────────────────────
+  ipcMain.handle('voice:list-time-stats', async (_e, { persona, lang = 'zh' } = {}) => {
+    if (!persona) throw new Error('persona required');
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const manifest = new VoiceManifest({ personaPath, lang, subdir: 'voices-time' });
+    await manifest.load();
+
+    const voice = await getPersonaVoice(persona);
+    const refAudioAbs = voice.ref_audio ? (resolvePersonaPath(persona, voice.ref_audio) || voice.ref_audio) : null;
+    const personaJson = await loadPersonaJSON(persona).catch(() => ({}));
+    const overrides = personaJson.time_voice_overrides?.[lang] || {};
+
+    const candidates = listTimeVoiceCandidates(lang);
+    const items = [];
+    let generated = 0;
+    let stale = 0;
+    let missing = 0;
+    for (const c of candidates) {
+      const overrideText = overrides[c.key];
+      const isOverride = typeof overrideText === 'string' && overrideText.trim().length > 0;
+      const text = isOverride ? overrideText : c.text;
+
+      // 對 manifest 拿 entry（不檢 hash，避免 lookup 早早 reject）
+      // 然後在這裡自己算 expected hash 比對
+      const entry = manifest._data?.entries?.[VoiceManifest.makeKey(c.key, 0)] || null;
+      let status = 'missing';
+      let fileUrl = null;
+      let bytes = 0;
+      let ms = 0;
+      let generatedAt = null;
+
+      if (entry) {
+        // 檢查 wav 檔還在
+        const wavPath = path.join(personaPath, 'voices-time', lang, entry.file);
+        let wavExists = false;
+        try { await fs.access(wavPath); wavExists = true; } catch (_e) {}
+
+        if (!wavExists) {
+          status = 'missing';
+        } else if (refAudioAbs) {
+          const expectedHash = VoiceManifest.computeHash({ text, refAudio: refAudioAbs, lang });
+          status = entry.hash === expectedHash ? 'fresh' : 'stale';
+          fileUrl = 'file:///' + wavPath.replace(/\\/g, '/');
+          bytes = entry.bytes || 0;
+          ms = entry.ms || 0;
+          generatedAt = entry.generated_at || null;
+        } else {
+          // 沒設 ref_audio → 無法判 stale，視為 fresh（總比 missing 好）
+          status = 'fresh';
+          fileUrl = 'file:///' + wavPath.replace(/\\/g, '/');
+          bytes = entry.bytes || 0;
+          ms = entry.ms || 0;
+          generatedAt = entry.generated_at || null;
+        }
+      }
+
+      if (status === 'fresh') generated++;
+      else if (status === 'stale') stale++;
+      else missing++;
+
+      items.push({
+        key: c.key,
+        category: c.category,
+        default_text: c.text,
+        text,
+        is_override: isOverride,
+        status,                // 'fresh' | 'stale' | 'missing'
+        file_url: fileUrl,
+        bytes,
+        ms,
+        generated_at: generatedAt,
+      });
+    }
+    return { lang, total: candidates.length, generated, stale, missing, items };
+  });
+
+  // 寫單條 override 文字（v3：寫到 persona.json.time_voice_overrides）
+  ipcMain.handle('voice:set-time-text-override', async (_e, { persona, lang = 'zh', key, text } = {}) => {
+    if (!persona || !key) throw new Error('persona / key required');
+    const personaJson = await loadPersonaJSON(persona);
+    personaJson.time_voice_overrides ||= {};
+    personaJson.time_voice_overrides[lang] ||= {};
+    if (typeof text === 'string' && text.trim().length > 0) {
+      personaJson.time_voice_overrides[lang][key] = text.trim();
+    } else {
+      delete personaJson.time_voice_overrides[lang][key];
+    }
+    await savePersonaJSON(persona, personaJson);
+    return { ok: true };
+  });
+
+  // 重置一條 override（回預設字典）
+  ipcMain.handle('voice:reset-time-text-override', async (_e, { persona, lang = 'zh', key } = {}) => {
+    if (!persona || !key) throw new Error('persona / key required');
+    const personaJson = await loadPersonaJSON(persona);
+    if (personaJson.time_voice_overrides?.[lang]) {
+      delete personaJson.time_voice_overrides[lang][key];
+      await savePersonaJSON(persona, personaJson);
+    }
+    return { ok: true };
+  });
+
+  // 批次重置整個 persona/lang 的 overrides
+  ipcMain.handle('voice:reset-all-time-overrides', async (_e, { persona, lang = 'zh' } = {}) => {
+    if (!persona) throw new Error('persona required');
+    const personaJson = await loadPersonaJSON(persona);
+    if (personaJson.time_voice_overrides?.[lang]) {
+      delete personaJson.time_voice_overrides[lang];
+      await savePersonaJSON(persona, personaJson);
+    }
+    return { ok: true };
+  });
+
+  // 個別刪除一條時間音 wav + manifest entry（重生改走批次）
+  ipcMain.handle('voice:delete-time-one', async (_e, { persona, lang = 'zh', key } = {}) => {
+    if (!persona || !key) throw new Error('persona / key required');
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const manifest = new VoiceManifest({ personaPath, lang, subdir: 'voices-time' });
+    await manifest.load();
+    const entry = manifest._data?.entries?.[VoiceManifest.makeKey(key, 0)];
+    if (!entry) {
+      // manifest 沒記錄 → 算成功（idempotent）
+      return { ok: true, deleted: false };
+    }
+    const wavPath = path.join(personaPath, 'voices-time', lang, entry.file);
+    try { await fs.unlink(wavPath); } catch (err) {
+      if (err.code !== 'ENOENT') throw err;
+    }
+    delete manifest._data.entries[VoiceManifest.makeKey(key, 0)];
+    await manifest._save();
+    invalidateVoiceManifestCache();
+    return { ok: true, deleted: true };
+  });
+
+  // 個別重生一條時間音（同步生 + record，不走 BatchRunner）
+  ipcMain.handle('voice:regenerate-time-one', async (_e, { persona, lang = 'zh', key } = {}) => {
+    if (!persona || !key) throw new Error('persona / key required');
+    if (voiceBatchRunner?.isRunning()) throw new Error('已有批次在跑，請先取消');
+    const cfg = await loadVoiceConfig();
+    const voice = await getPersonaVoice(persona);
+    if (!voice?.ref_audio || !voice?.ref_text) {
+      throw new Error(`persona "${persona}" 還沒設 ref audio / ref text`);
+    }
+    const refAudioAbs = resolvePersonaPath(persona, voice.ref_audio) || voice.ref_audio;
+    const inpRefsAbs = (voice.additional_refs || [])
+      .filter((p) => typeof p === 'string' && p.trim())
+      .map((p) => resolvePersonaPath(persona, p) || p);
+    const sampling = { ...(cfg.sampling || {}), ...(voice.sampling || {}) };
+
+    const personaJson = await loadPersonaJSON(persona).catch(() => ({}));
+    const overrides = personaJson.time_voice_overrides?.[lang] || {};
+    const candidates = listTimeVoiceCandidates(lang);
+    const c = candidates.find((x) => x.key === key);
+    if (!c) throw new Error(`unknown time key: ${key}`);
+    const text = (overrides[key] || '').trim() || c.text;
+
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const manifest = new VoiceManifest({ personaPath, lang, subdir: 'voices-time' });
+    await manifest.load();
+
+    const engine = getVoiceEngine();
+    const t0 = Date.now();
+    const result = await engine.synthesize({
+      text,
+      ref_audio_path: refAudioAbs,
+      ref_text: voice.ref_text,
+      ref_lang: voice.ref_lang || voice.lang || 'zh',
+      target_lang: lang,
+      inp_refs: inpRefsAbs,
+      temperature: sampling.temperature,
+      top_k: sampling.top_k,
+      top_p: sampling.top_p,
+            speed: sampling.speed,
+            fragment_interval: sampling.fragment_interval,
+            seed: sampling.seed,
+            repetition_penalty: sampling.repetition_penalty,
+    });
+    const hash = VoiceManifest.computeHash({ text, refAudio: refAudioAbs, lang });
+    await manifest.record({
+      sequence_id: key,
+      line_idx: 0,
+      text,
+      ref_audio: refAudioAbs,
+      lang,
+      hash,
+      audio: result.audio,
+      engine: engine.name,
+      meta: result.meta,
+    });
+    invalidateVoiceManifestCache();
+    return { ok: true, ms: result.meta.ms, bytes: result.meta.bytes, took_ms: Date.now() - t0 };
+  });
+
+  ipcMain.handle('voice:generate-time-batch', async (_e, { persona, mode = 'missing', lang = 'zh' } = {}) => {
+    if (!persona) throw new Error('persona required');
+    if (voiceBatchRunner?.isRunning()) throw new Error('已有批次在跑，請先取消或等完成');
+
+    const cfg = await loadVoiceConfig();
+    const voice = await getPersonaVoice(persona);
+    if (!voice?.ref_audio || !voice?.ref_text) {
+      throw new Error(`persona "${persona}" 還沒設 ref audio / ref text`);
+    }
+
+    const personaPath = path.join(PERSONAS_DIR, persona);
+    const refAudioAbs = resolvePersonaPath(persona, voice.ref_audio) || voice.ref_audio;
+    const inpRefsAbs = (voice.additional_refs || [])
+      .filter((p) => typeof p === 'string' && p.trim())
+      .map((p) => resolvePersonaPath(persona, p) || p);
+    const sampling = { ...(cfg.sampling || {}), ...(voice.sampling || {}) };
+
+    // 候選：listTimeVoiceCandidates + 自動 merge persona.json 的 time_voice_overrides
+    const personaJson = await loadPersonaJSON(persona).catch(() => ({}));
+    const overrides = personaJson.time_voice_overrides?.[lang] || {};
+    const baseCandidates = listTimeVoiceCandidates(lang);
+    const candidates = baseCandidates.map((c) => ({
+      sequence_id: c.key,
+      line_idx: 0,
+      text: (overrides[c.key] || '').trim() || c.text,
+      ref_audio: refAudioAbs,
+      ref_text: voice.ref_text,
+      ref_lang: voice.ref_lang || voice.lang || 'zh',
+      lang,
+      inp_refs: inpRefsAbs,
+      temperature: sampling.temperature,
+      top_k: sampling.top_k,
+      top_p: sampling.top_p,
+            speed: sampling.speed,
+            fragment_interval: sampling.fragment_interval,
+            seed: sampling.seed,
+            repetition_penalty: sampling.repetition_penalty,
+    }));
+
+    const manifest = new VoiceManifest({ personaPath, lang, subdir: 'voices-time' });
+    await manifest.load();
+    if (mode === 'all') { manifest._data.entries = {}; await manifest._save(); }
+
+    const engine = getVoiceEngine();
+    voiceBatchRunner = new BatchRunner({
+      engine,
+      manifest,
+      concurrency: 2,
+      onProgress: (state) => {
+        const payload = { persona, lang, kind: 'time', ...state };
+        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('voice:progress', payload);
+        if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed())
+          dialoguesManagerWindow.webContents.send('voice:progress', payload);
+      },
+      onError: ({ item, error }) => {
+        console.warn('[voice-time] item error:', item.sequence_id, error?.message);
+      },
+    });
+
+    voiceBatchRunner.run(candidates).then((summary) => {
+      invalidateVoiceManifestCache();
+      if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+        dialoguesManagerWindow.webContents.send('voice:batch-done', { persona, lang, kind: 'time', summary });
+      }
+    }).catch((err) => {
+      console.warn('[voice-time] batch failed:', err.message);
+      if (dialoguesManagerWindow && !dialoguesManagerWindow.isDestroyed()) {
+        dialoguesManagerWindow.webContents.send('voice:batch-done', { persona, lang, kind: 'time', error: err.message });
       }
     });
 
@@ -781,22 +1506,32 @@ function setupIpc() {
   });
   ipcMain.on('dialogue:choice-selected', (_e, payload) => {
     if (IS_DEV) console.log('[main] dialogue:choice-selected', payload);
-    // M3 階段：dev demo 仍走 lookupDemoSequence。M4 之後 choice → 觸發其他 category。
-    if (!payload || !payload.next) return;
-    if (!mainWindow || mainWindow.isDestroyed()) return;
-    const nextSeq = lookupDemoSequence(payload.next);
-    if (nextSeq) {
-      setTimeout(() => {
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send('dialogue:show', nextSeq);
-        }
-      }, 250);
+    if (!payload?.sequenceId) return;
+    // P1：交給 DialogueDirector 處理（從 sequence.choices/binary 抽 response 推下一輪 dialogue:show）
+    dialogueDirector?.handleChoiceSelected(payload).catch((err) =>
+      console.warn('[main] handleChoiceSelected failed:', err)
+    );
+    // 舊 demo 路徑（payload.next 帶 sequence id）保留 fallback，給 debug:test-bubble 等舊流程用
+    if (payload.next && mainWindow && !mainWindow.isDestroyed()) {
+      const nextSeq = lookupDemoSequence(payload.next);
+      if (nextSeq) {
+        setTimeout(() => {
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('dialogue:show', nextSeq);
+          }
+        }, 250);
+      }
     }
   });
 
   // ── M3：character drag ────────────────────────────────
   ipcMain.on('character:drag-start', () => {
     triggerEngine?.handleEvent('character:drag-start', { t: Date.now() });
+  });
+
+  // ── P1：character click（主動互動入口）────────────────
+  ipcMain.on('character:click', () => {
+    triggerEngine?.handleEvent('character:click', { t: Date.now() });
   });
 
   // ── M3：debug 面板 ────────────────────────────────────

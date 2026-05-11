@@ -191,6 +191,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
+.bubble[data-interaction="binary"] .bubble-binary,
 .bubble[data-interaction="binary_split"] .bubble-binary {
   display: flex;
 }
@@ -213,11 +214,13 @@
   border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.bubble-binary-zone[data-side="yes"]:hover,
 .bubble-binary-zone[data-side="left"]:hover {
   background: rgba(110, 190, 130, 0.28);
   color: #d8f4d8;
 }
 
+.bubble-binary-zone[data-side="no"]:hover,
 .bubble-binary-zone[data-side="right"]:hover {
   background: rgba(210, 130, 130, 0.28);
   color: #f4d8d8;
